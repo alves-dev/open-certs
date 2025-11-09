@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <title>OpenCerts</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+
+<div th:replace="fragments/navbar :: navbar"></div>
+
+<main>
+    <h2>Certificações disponíveis</h2>
+    <ul>
+        <li th:each="cert : ${certifications}"
+            th:text="${cert.displayName}"></li>
+    </ul>
+</main>
+</body>
+</html>

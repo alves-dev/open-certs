@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <title>New Question - OpenCerts</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}"/>
+</head>
+<body>
+
+<div th:replace="fragments/navbar :: navbar"></div>
+
+<main>
+    <header>
+        <h1>New question</h1>
+    </header>
+
+    <form th:action="@{/questions}" method="post" class="form-card">
+
+        <label>Certifications:</label>
+        <select name="certification" required>
+            <option th:each="cert : ${certifications}"
+                    th:value="${cert.id}"
+                    th:text="${cert.displayName}"></option>
+        </select>
+
+        <label>Topic:</label>
+        <input type="text" name="topic" placeholder="Topic" required>
+
+        <label>Question description:</label>
+        <textarea name="description" rows="4" required></textarea>
+
+        <label>Responses:</label>
+        <div id="responses">
+            <div><input type="text" name="responses" placeholder="Option A" required></div>
+            <div><input type="text" name="responses" placeholder="Option B" required></div>
+            <div><input type="text" name="responses" placeholder="Option C"></div>
+            <div><input type="text" name="responses" placeholder="Option D"></div>
+        </div>
+
+        <label>Resposta Correta:</label>
+        <select name="correctIndex" required>
+            <option value="0">Option A</option>
+            <option value="1">Option B</option>
+            <option value="2">Option C</option>
+            <option value="3">Option D</option>
+        </select>
+
+        <button type="submit">Save</button>
+    </form>
+</main>
+</body>
+</html>

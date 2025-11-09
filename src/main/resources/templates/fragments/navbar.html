@@ -1,0 +1,19 @@
+<!-- templates/fragments/navbar.html -->
+<nav th:fragment="navbar" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml">
+    <div class="nav-left">
+        <a href="/">OpenCerts</a>
+    </div>
+
+    <div class="nav-right" sec:authorize="isAuthenticated()">
+        <a href="/questions/new" class="btn">+ New Question</a>
+
+        <img th:src="${user.profileImage}" alt="User" width="32" height="32" style="border-radius: 50%;">
+        <span th:text="${user.name}">Usuário</span>
+
+        <a href="/logout">Exit</a>
+    </div>
+
+    <div class="nav-right" sec:authorize="!isAuthenticated()">
+        <a href="/login">Login</a>
+    </div>
+</nav>
