@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Login - OpenCerts</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <style>
+        /* Estilo específico da página de login */
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #0b132b;
+        }
+
+        .login-container {
+            background: #fff;
+            padding: 48px;
+            border-radius: 12px;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+            text-align: center;
+            width: 100%;
+            max-width: 380px;
+        }
+
+        .login-container h1 {
+            color: #0b132b;
+            margin-bottom: 32px;
+        }
+
+        .google-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            background-color: #4285f4;
+            color: white;
+            font-weight: 500;
+            text-decoration: none;
+            padding: 12px 20px;
+            border-radius: 6px;
+            transition: background-color 0.2s ease;
+        }
+
+        .google-btn:hover {
+            background-color: #357ae8;
+        }
+
+        .google-btn img {
+            width: 20px;
+            height: 20px;
+        }
+    </style>
+</head>
+<body>
+<div class="login-container">
+    <h1>Entrar no <span style="color:#5bc0be;">OpenCerts</span></h1>
+    <a href="/oauth2/authorization/google" class="google-btn">
+        <img src="https://www.svgrepo.com/show/355037/google.svg" alt="Google logo">
+        Login com Google
+    </a>
+</div>
+</body>
+</html>

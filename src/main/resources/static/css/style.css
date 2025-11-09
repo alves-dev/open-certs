@@ -1,0 +1,100 @@
+/* Reset básico */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Roboto, sans-serif;
+}
+
+/* Corpo */
+body {
+    background-color: #f7f9fb;
+    color: #333;
+}
+
+/* Navbar */
+nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #0b132b;
+    color: #fff;
+    padding: 12px 24px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
+
+nav a {
+    color: #fff;
+    text-decoration: none;
+    font-weight: 500;
+    margin-left: 16px;
+    transition: color 0.2s ease;
+}
+
+nav a:hover {
+    color: #5bc0be;
+}
+
+/* Nome e imagem do usuário */
+.nav-right {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.nav-right img {
+    border-radius: 50%;
+    border: 2px solid #5bc0be;
+}
+
+/* Container principal */
+main {
+    max-width: 900px;
+    margin: 40px auto;
+    background-color: #fff;
+    border-radius: 12px;
+    padding: 32px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+}
+
+main h2 {
+    margin-bottom: 24px;
+    color: #0b132b;
+    font-size: 1.8rem;
+}
+
+/* Lista de certificações */
+ul {
+    list-style: none;
+}
+
+ul li {
+    background: #eaf2f8;
+    margin-bottom: 12px;
+    padding: 16px;
+    border-radius: 8px;
+    transition: transform 0.2s ease, background-color 0.2s ease;
+    cursor: pointer;
+}
+
+ul li:hover {
+    background-color: #d9ecf2;
+    transform: translateY(-2px);
+}
+
+/* Responsividade */
+@media (max-width: 600px) {
+    nav {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .nav-right {
+        margin-top: 10px;
+    }
+
+    main {
+        margin: 20px;
+        padding: 20px;
+    }
+}
