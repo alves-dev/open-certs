@@ -10,8 +10,14 @@ public class Response {
         this.text = text;
     }
 
-    // Getters //
+    public static Response of(String text) {
+        return new Response(text);
+    }
 
+    // Getters //
+    public String text() {
+        return text;
+    }
 
     // Modificadores //
 

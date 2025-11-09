@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="'Question - ' + ${certification.displayName}"></title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<div th:replace="fragments/navbar :: navbar"></div>
+
+<main>
+    <h2 th:text="${certification.displayName}"></h2>
+    <h3 th:text="${question.topic}"></h3>
+    <p th:text="${question.description}"></p>
+
+    <form th:action="@{/questions/{id}/check(id=${certification.id})}" method="post">
+        <input type="hidden" name="questionId" th:value="${question.id}"/>
+
+        <ul>
+            <li th:each="resp : ${answers}">
+                <label>
+                    <input type="radio" name="selected" th:value="${resp.text}" required>
+                    <span th:text="${resp.text}"></span>
+                </label>
+            </li>
+        </ul>
+
+        <button type="submit">Verificar resposta</button>
+        <a th:href="@{/questions/{id}(id=${certification.id})}">Pular questão</a>
+    </form>
+
+    <div th:if="${isCorrect != null}">
+        <p th:text="${isCorrect ? '✅ Resposta correta!' : '❌ Resposta errada!'}"></p>
+    </div>
+</main>
+
+</body>
+</html>

@@ -24,7 +24,7 @@ public class Question {
     private UUID createBy;
 
     public Question(UUID certification, String description, String topic, List<Response> responses, Response correct,
-                     User user) {
+                    User user) {
         this.id = UUID.randomUUID();
         this.certification = certification;
         this.description = description;
@@ -35,8 +35,29 @@ public class Question {
         this.createBy = user.id();
     }
 
-    // Getters //
+    public Question() {
+    }
 
+    // Getters //
+    public UUID id() {
+        return id;
+    }
+
+    public String description() {
+        return description;
+    }
+
+    public String topic() {
+        return topic;
+    }
+
+    public List<Response> responses() {
+        return responses;
+    }
+
+    public boolean checkAnswer(Response answer) {
+        return responseCorrect.equals(answer);
+    }
 
     // Modificadores //
 
