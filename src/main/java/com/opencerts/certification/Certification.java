@@ -1,34 +1,30 @@
 package com.opencerts.certification;
 
 import java.util.Arrays;
-import java.util.UUID;
 
 public enum Certification {
-    AWS_CLOUD_PRACTITIONER(UUID.fromString("061b23d7-8311-4608-82b0-e6f5ff49938e"),
-            "AWS", "AWS Certified Cloud Practitioner"),
-    AWS_SOLUTIONS_ARCHITECT(UUID.fromString("9ec6487a-1b33-431c-b962-1aae60a37cd7"),
-            "AWS", "AWS Solutions Architect – Associate"),
-    GOOGLE_CLOUD_LEADER(UUID.fromString("0fab4c57-3d4a-4ac5-868c-3e3253a8b878"),
-            "Google", "Google Cloud Digital Leader");
+    AWS_CLOUD_PRACTITIONER("aws-certi", "AWS", "Certified Cloud Practitioner"),
+    AWS_SOLUTIONS_ARCHITECT("aws-solutions", "AWS", "Solutions Architect – Associate"),
+    GOOGLE_CLOUD_LEADER("google-cloud", "Google", "Cloud Digital Leader");
 
-    private UUID id;
+    private String identifier;
     private String provider;
     private String name;
 
-    Certification(UUID id, String provider, String name) {
-        this.id = id;
+    Certification(String identifier, String provider, String name) {
+        this.identifier = identifier;
         this.provider = provider;
         this.name = name;
     }
 
-    public static Certification getById(UUID certificationId) {
+    public static Certification getById(String identifier) {
         return Arrays.stream(Certification.values())
-                .filter(c -> c.id.equals(certificationId))
+                .filter(c -> c.identifier.equals(identifier))
                 .findFirst().get();
     }
 
-    public UUID id() {
-        return id;
+    public String id() {
+        return identifier;
     }
 
     public String displayName() {

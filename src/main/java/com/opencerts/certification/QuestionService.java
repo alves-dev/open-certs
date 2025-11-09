@@ -18,7 +18,7 @@ public class QuestionService {
         return repository.save(question);
     }
 
-    public Question findRandomByCertification(UUID certificationId) {
+    public Question findRandomByCertification(String certificationId) {
         var all = repository.findByCertification(certificationId);
         if (all.isEmpty())
             return null;

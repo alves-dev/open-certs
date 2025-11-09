@@ -30,7 +30,7 @@ public class QuestionController {
 
     @PostMapping
     public String saveQuestion(
-            @RequestParam UUID certification,
+            @RequestParam String certification,
             @RequestParam String topic,
             @RequestParam String description,
             @RequestParam List<String> responses,
@@ -52,7 +52,7 @@ public class QuestionController {
     }
 
     @GetMapping("/{certificationId}")
-    public String showQuestion(@PathVariable UUID certificationId, Model model, @AuthenticationPrincipal User user) {
+    public String showQuestion(@PathVariable String certificationId, Model model, @AuthenticationPrincipal User user) {
         var question = questionService.findRandomByCertification(certificationId);
 
         model.addAttribute("certification", Certification.getById(certificationId));
@@ -64,7 +64,7 @@ public class QuestionController {
     }
 
     @PostMapping("/{certificationId}/check")
-    public String checkAnswer(@PathVariable UUID certificationId,
+    public String checkAnswer(@PathVariable String certificationId,
                               @RequestParam("questionId") UUID questionId,
                               @RequestParam("selected") String responseText,
                               Model model,

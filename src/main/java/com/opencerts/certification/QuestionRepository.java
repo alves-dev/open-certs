@@ -7,5 +7,5 @@ import java.util.UUID;
 
 public interface QuestionRepository extends MongoRepository<Question, UUID> {
 
-    List<Question> findByCertification(UUID certificationId);
+    List<Question> findByCertification(String certificationId);
 }

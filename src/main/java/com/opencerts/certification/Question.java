@@ -13,7 +13,7 @@ public class Question {
 
     @Id
     private UUID id;
-    private UUID certification;
+    private String certification;
     private String description;
     private String topic;
 
@@ -23,7 +23,7 @@ public class Question {
     private LocalDateTime createdAt;
     private UUID createBy;
 
-    public Question(UUID certification, String description, String topic, List<Response> responses, Response correct,
+    public Question(String certification, String description, String topic, List<Response> responses, Response correct,
                     User user) {
         this.id = UUID.randomUUID();
         this.certification = certification;
