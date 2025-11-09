@@ -8,6 +8,10 @@ group = "com.opencerts"
 version = "0.0.1-SNAPSHOT"
 description = "Demo project for Spring Boot"
 
+bootJar {
+    archiveFileName = "application.jar"
+}
+
 java {
     toolchain {
         languageVersion = JavaLanguageVersion.of(25)
