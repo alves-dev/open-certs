@@ -11,7 +11,7 @@ spring:
             scope: openid,profile,email
   data:
     mongodb:
-      uri: mongodb://${MONGO_USER}:${MONGO_PASSWORD}@localhost:27017/opencerts?authSource=admin
+      uri: mongodb://${MONGO_USER}:${MONGO_PASSWORD}@${MONGO_HOST}:27017/opencerts?authSource=admin
 
 server:
   forward-headers-strategy: framework
