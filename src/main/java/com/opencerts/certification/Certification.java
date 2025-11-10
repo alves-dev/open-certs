@@ -1,33 +1,42 @@
 package com.opencerts.certification;
 
-import java.util.Arrays;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
 
-public enum Certification {
-    AWS_CLOUD_PRACTITIONER("aws-certi", "AWS", "Certified Cloud Practitioner"),
-    AWS_SOLUTIONS_ARCHITECT("aws-solutions", "AWS", "Solutions Architect – Associate"),
-    GOOGLE_CLOUD_LEADER("google-cloud", "Google", "Cloud Digital Leader");
+@Document(collection = "certification")
+public class Certification {
 
+    @Id
     private String identifier;
     private String provider;
     private String name;
+    private String level;
 
-    Certification(String identifier, String provider, String name) {
-        this.identifier = identifier;
+    Certification() {
+    }
+
+    public Certification(String provider, String name, String level) {
+        this.identifier = provider
+                .concat("-").concat(name)
+                .concat("-").concat(level)
+                .toLowerCase().replace(" ", "-");
         this.provider = provider;
         this.name = name;
+        this.level = level;
     }
 
-    public static Certification getById(String identifier) {
-        return Arrays.stream(Certification.values())
-                .filter(c -> c.identifier.equals(identifier))
-                .findFirst().get();
-    }
-
+    // Getters //
     public String id() {
         return identifier;
     }
 
     public String displayName() {
-        return provider.concat(" - ").concat(name);
+        return provider.concat(" - ").concat(name).concat(" | ").concat(level);
     }
+
+    // Modificadores //
+
+
+    // Outros //
+
 }

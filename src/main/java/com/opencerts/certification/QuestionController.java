@@ -15,14 +15,16 @@ import java.util.UUID;
 public class QuestionController {
 
     private final QuestionService questionService;
+    private final CertificationService certificationService;
 
-    public QuestionController(QuestionService questionService) {
+    public QuestionController(QuestionService questionService, CertificationService certificationService) {
         this.questionService = questionService;
+        this.certificationService = certificationService;
     }
 
     @GetMapping("/new")
     public String showForm(Model model, @AuthenticationPrincipal User user) {
-        model.addAttribute("certifications", Certification.values());
+        model.addAttribute("certifications", certificationService.listAll());
         model.addAttribute("user", user);
 
         return "question-form";
@@ -55,9 +57,14 @@ public class QuestionController {
     public String showQuestion(@PathVariable String certificationId, Model model, @AuthenticationPrincipal User user) {
         var question = questionService.findRandomByCertification(certificationId);
 
-        model.addAttribute("certification", Certification.getById(certificationId));
-        model.addAttribute("question", question);
-        model.addAttribute("answers", question.responses());
+        model.addAttribute("certification", certificationService.getById(certificationId));
+
+        if (question != null) {
+            model.addAttribute("question", question);
+            model.addAttribute("answers", question.responses());
+        } else {
+            model.addAttribute("noQuestion", true);
+        }
         model.addAttribute("user", user);
 
         return "question";
@@ -73,7 +80,7 @@ public class QuestionController {
         var question = questionService.getQuestionById(questionId);
         var isCorrect = questionService.checkAnswer(questionId, responseText);
 
-        model.addAttribute("certification", Certification.getById(certificationId));
+        model.addAttribute("certification", certificationService.getById(certificationId));
         model.addAttribute("question", question);
         model.addAttribute("answers", question.responses());
         model.addAttribute("user", user);

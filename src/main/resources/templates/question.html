@@ -10,27 +10,40 @@
 
 <main>
     <h2 th:text="${certification.displayName}"></h2>
-    <h3 th:text="${question.topic}"></h3>
-    <p th:text="${question.description}"></p>
 
-    <form th:action="@{/questions/{id}/check(id=${certification.id})}" method="post">
-        <input type="hidden" name="questionId" th:value="${question.id}"/>
+    <!-- Exibe mensagem se não houver questão -->
+    <div th:if="${noQuestion}">
+        <p>Esta certificação ainda não possui questões cadastradas.</p>
+        <p>
+            Que tal colaborar criando uma nova questão?
+            <a th:href="@{/questions/new(certId=${certification.id})}">Criar questão</a>
+        </p>
+    </div>
 
-        <ul>
-            <li th:each="resp : ${answers}">
-                <label>
-                    <input type="radio" name="selected" th:value="${resp.text}" required>
-                    <span th:text="${resp.text}"></span>
-                </label>
-            </li>
-        </ul>
+    <!-- Exibe a questão se houver -->
+    <div th:unless="${noQuestion}">
+        <h3 th:text="${question.topic}"></h3>
+        <p th:text="${question.description}"></p>
 
-        <button type="submit">Verificar resposta</button>
-        <a th:href="@{/questions/{id}(id=${certification.id})}">Pular questão</a>
-    </form>
+        <form th:action="@{/questions/{id}/check(id=${certification.id})}" method="post">
+            <input type="hidden" name="questionId" th:value="${question.id}"/>
 
-    <div th:if="${isCorrect != null}">
-        <p th:text="${isCorrect ? '✅ Resposta correta!' : '❌ Resposta errada!'}"></p>
+            <ul>
+                <li th:each="resp : ${answers}">
+                    <label>
+                        <input type="radio" name="selected" th:value="${resp.text}" required>
+                        <span th:text="${resp.text}"></span>
+                    </label>
+                </li>
+            </ul>
+
+            <button type="submit">Verificar resposta</button>
+            <a th:href="@{/questions/{id}(id=${certification.id})}">Pular questão</a>
+        </form>
+
+        <div th:if="${isCorrect != null}">
+            <p th:text="${isCorrect ? '✅ Resposta correta!' : '❌ Resposta errada!'}"></p>
+        </div>
     </div>
 </main>
 
