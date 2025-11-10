@@ -1,0 +1,17 @@
+spring:
+  application:
+    name: open-certs
+  data:
+    mongodb:
+      uri: mongodb://localhost:27017/testdb
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            clientId: fake
+            clientSecret: fake
+            scope: openid,profile,email
+
+server:
+  forward-headers-strategy: framework

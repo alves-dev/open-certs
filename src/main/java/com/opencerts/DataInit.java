@@ -3,9 +3,11 @@ package com.opencerts;
 import com.opencerts.certification.Certification;
 import com.opencerts.certification.CertificationService;
 import jakarta.annotation.PostConstruct;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
 @Component
+@Profile("!test")
 public class DataInit {
 
     private final CertificationService certificationService;
