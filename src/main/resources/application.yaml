@@ -12,3 +12,6 @@ spring:
   data:
     mongodb:
       uri: mongodb://${MONGO_USER}:${MONGO_PASSWORD}@localhost:27017/opencerts?authSource=admin
+
+server:
+  forward-headers-strategy: framework
