@@ -4,6 +4,62 @@
     <meta charset="UTF-8">
     <title th:text="'Question - ' + ${certification.displayName}"></title>
     <link rel="stylesheet" th:href="@{/css/style.css}">
+    <style>
+        /* Estilizando os botões */
+        button[type="submit"],
+        a[href$='Skip question'] { /* Seleciona o link de 'Skip question' */
+            padding: 10px 20px;
+            margin-right: 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            text-decoration: none; /* Para o link */
+            display: inline-block;
+            text-align: center;
+            transition: background-color 0.3s ease;
+            font-weight: bold;
+        }
+
+        /* Estilo para o botão de Submeter (Check answer) */
+        button[type="submit"] {
+            background-color: #007bff; /* Azul */
+            color: white;
+        }
+
+        button[type="submit"]:hover {
+            background-color: #0056b3;
+        }
+
+        /* Estilo para o link de Pular (Skip question) */
+        a[href$='Skip question'] {
+            background-color: #6c757d; /* Cinza */
+            color: white;
+        }
+
+        a[href$='Skip question']:hover {
+            background-color: #5a6268;
+        }
+
+        /* Melhorando o layout da lista de respostas (opcional, mas melhora a visualização) */
+        ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        li {
+            margin-bottom: 10px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        /* Estilo para focar o input de rádio/checkbox (para acessibilidade/UX) */
+        li:has(input:focus) {
+            border-color: #007bff;
+            box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+        }
+    </style>
 </head>
 <body>
 <div th:replace="fragments/navbar :: navbar"></div>
@@ -11,7 +67,6 @@
 <main>
     <h2 th:text="${certification.displayName}"></h2>
 
-    <!-- Show message if there are no questions -->
     <div th:if="${noQuestion}">
         <p>This certification has no questions yet.</p>
         <p>
@@ -20,14 +75,16 @@
         </p>
     </div>
 
-    <!-- Show question if available -->
     <div th:unless="${noQuestion}">
-        <h3 th:text="'Topic: ' + ${question.topic}"></h3>
-        <p th:text="'Description: ' + ${question.description}"></p>
-
-        <!-- Indicate if the question allows multiple answers -->
         <p>
-            <strong th:text="${question.isMultipleChoice ? 'Multiple choice question — select all correct answers:' : 'Single choice question — select one answer:'}"></strong>
+            <strong>Topic</strong>: <span th:text="${question.topic}"></span>
+        </p>
+        <p>
+            <strong>Description</strong>: <span th:text="${question.description}"></span>
+        </p>
+        <p>
+            <strong>Type</strong>: <span
+                th:text="${question.isMultipleChoice ? 'Multiple choice' : 'Single choice'}"></span>
         </p>
 
         <form th:action="@{/questions/{id}/check(id=${certification.id})}" method="post">
@@ -36,7 +93,6 @@
             <ul>
                 <li th:each="resp, iterStat : ${answers}">
                     <label>
-                        <!-- Use checkbox if multiple choice, radio otherwise -->
                         <input th:type="${question.isMultipleChoice} ? 'checkbox' : 'radio'"
                                th:name="selectedOptions"
                                th:value="${resp.text}">
