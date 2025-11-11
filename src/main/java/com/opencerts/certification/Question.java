@@ -18,19 +18,19 @@ public class Question {
     private String topic;
 
     private List<Response> responses;
-    private Response responseCorrect;
+    private List<Response> correctAnswers;
 
     private LocalDateTime createdAt;
     private UUID createBy;
 
-    public Question(String certification, String description, String topic, List<Response> responses, Response correct,
-                    User user) {
+    public Question(String certification, String description, String topic, List<Response> responses,
+                    List<Response> correctAnswers, User user) {
         this.id = UUID.randomUUID();
         this.certification = certification;
         this.description = description;
         this.topic = topic;
         this.responses = responses;
-        this.responseCorrect = correct;
+        this.correctAnswers = correctAnswers;
         this.createdAt = LocalDateTime.now();
         this.createBy = user.id();
     }
@@ -55,8 +55,26 @@ public class Question {
         return responses;
     }
 
-    public boolean checkAnswer(Response answer) {
-        return responseCorrect.equals(answer);
+    public boolean isMultipleChoice() {
+        return this.correctAnswers.size() > 1;
+    }
+
+    public boolean checkAnswerByString(List<String> answers) {
+        return checkAnswer(
+                answers.stream().map(Response::of).toList()
+        );
+    }
+
+    public boolean checkAnswer(List<Response> answers) {
+        if (this.correctAnswers.size() != answers.size())
+            return false;
+
+        for (Response answer : answers) {
+            if (!this.correctAnswers.contains(answer))
+                return false;
+        }
+
+        return true;
     }
 
     // Modificadores //

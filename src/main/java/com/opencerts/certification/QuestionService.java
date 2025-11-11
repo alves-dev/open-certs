@@ -25,11 +25,6 @@ public class QuestionService {
         return all.get(new Random().nextInt(all.size()));
     }
 
-    public boolean checkAnswer(UUID questionId, String responseText) {
-        var question = repository.findById(questionId).orElseThrow();
-        return question.checkAnswer(Response.of(responseText));
-    }
-
     public Question getQuestionById(UUID questionId) {
         return repository.findById(questionId).get();
     }

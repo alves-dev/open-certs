@@ -36,18 +36,23 @@ public class QuestionController {
             @RequestParam String topic,
             @RequestParam String description,
             @RequestParam List<String> responses,
-            @RequestParam int correctIndex,
+            @RequestParam List<Integer> correctIndexes,
             @AuthenticationPrincipal User user
     ) {
+        if (topic.isEmpty())
+            topic = "not_defined";
+
         List<Response> responseList = new ArrayList<>();
         for (String response : responses) {
+            if (response.isEmpty()) continue;
             Response r = new Response(response);
             responseList.add(r);
         }
 
-        Response correct = responseList.get(correctIndex);
+        List<Response> correctAnswers = new ArrayList<>();
+        correctIndexes.forEach(e -> correctAnswers.add(responseList.get(e)));
 
-        Question question = new Question(certification, description, topic, responseList, correct, user);
+        Question question = new Question(certification, description, topic, responseList, correctAnswers, user);
         questionService.save(question);
 
         return "redirect:/questions/new";
@@ -73,12 +78,12 @@ public class QuestionController {
     @PostMapping("/{certificationId}/check")
     public String checkAnswer(@PathVariable String certificationId,
                               @RequestParam("questionId") UUID questionId,
-                              @RequestParam("selected") String responseText,
+                              @RequestParam("selectedOptions") List<String> selectedOptions,
                               Model model,
                               @AuthenticationPrincipal User user) {
 
         var question = questionService.getQuestionById(questionId);
-        var isCorrect = questionService.checkAnswer(questionId, responseText);
+        var isCorrect = question.checkAnswerByString(selectedOptions);
 
         model.addAttribute("certification", certificationService.getById(certificationId));
         model.addAttribute("question", question);

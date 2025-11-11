@@ -11,41 +11,48 @@
 <main>
     <h2 th:text="${certification.displayName}"></h2>
 
-    <!-- Exibe mensagem se não houver questão -->
+    <!-- Show message if there are no questions -->
     <div th:if="${noQuestion}">
-        <p>Esta certificação ainda não possui questões cadastradas.</p>
+        <p>This certification has no questions yet.</p>
         <p>
-            Que tal colaborar criando uma nova questão?
-            <a th:href="@{/questions/new(certId=${certification.id})}">Criar questão</a>
+            How about contributing by creating a new one?
+            <a th:href="@{/questions/new(certId=${certification.id})}">Create question</a>
         </p>
     </div>
 
-    <!-- Exibe a questão se houver -->
+    <!-- Show question if available -->
     <div th:unless="${noQuestion}">
-        <h3 th:text="${question.topic}"></h3>
-        <p th:text="${question.description}"></p>
+        <h3 th:text="'Topic: ' + ${question.topic}"></h3>
+        <p th:text="'Description: ' + ${question.description}"></p>
+
+        <!-- Indicate if the question allows multiple answers -->
+        <p>
+            <strong th:text="${question.isMultipleChoice ? 'Multiple choice question — select all correct answers:' : 'Single choice question — select one answer:'}"></strong>
+        </p>
 
         <form th:action="@{/questions/{id}/check(id=${certification.id})}" method="post">
             <input type="hidden" name="questionId" th:value="${question.id}"/>
 
             <ul>
-                <li th:each="resp : ${answers}">
+                <li th:each="resp, iterStat : ${answers}">
                     <label>
-                        <input type="radio" name="selected" th:value="${resp.text}" required>
+                        <!-- Use checkbox if multiple choice, radio otherwise -->
+                        <input th:type="${question.isMultipleChoice} ? 'checkbox' : 'radio'"
+                               th:name="selectedOptions"
+                               th:value="${resp.text}">
                         <span th:text="${resp.text}"></span>
                     </label>
                 </li>
             </ul>
 
-            <button type="submit">Verificar resposta</button>
-            <a th:href="@{/questions/{id}(id=${certification.id})}">Pular questão</a>
+            <button type="submit">Check answer</button>
+            <a th:href="@{/questions/{id}(id=${certification.id})}">Skip question</a>
         </form>
 
         <div th:if="${isCorrect != null}">
-            <p th:text="${isCorrect ? '✅ Resposta correta!' : '❌ Resposta errada!'}"></p>
+            <p th:text="${isCorrect ? '✅ Correct answer!' : '❌ Wrong answer!'}"></p>
         </div>
     </div>
 </main>
-
 </body>
 </html>
