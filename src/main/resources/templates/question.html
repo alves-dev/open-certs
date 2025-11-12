@@ -2,22 +2,27 @@
 <html lang="pt-br" xmlns:th="http://www.thymeleaf.org"
       th:replace="~{base :: layout(
           title='Question | OpenCerts',
-          pageHeader='Question - ' + ${certification.displayName},
+          pageHeader='Questionário',
           content=~{::content},
           styles=~{::styles},
           scripts=~{::scripts}
       )}">
+
 <th:block th:fragment="styles">
     <style>
-        /* Estilizando os botões */
-        button[type="submit"],
-        a[href$='Skip question'] { /* Seleciona o link de 'Skip question' */
+        /* ---------------------------------
+           --- Estilos Específicos de Questões ---
+           --------------------------------- */
+
+        /* Estilizando os botões usando classes específicas */
+        .btn-submit,
+        .btn-skip {
             padding: 10px 20px;
             margin-right: 10px;
             border: none;
             border-radius: 5px;
             cursor: pointer;
-            text-decoration: none; /* Para o link */
+            text-decoration: none; /* Para links */
             display: inline-block;
             text-align: center;
             transition: background-color 0.3s ease;
@@ -25,51 +30,70 @@
         }
 
         /* Estilo para o botão de Submeter (Check answer) */
-        button[type="submit"] {
-            background-color: #007bff; /* Azul */
+        .btn-submit {
+            background-color: var(--color-primary); /* Usando a variável primária */
             color: white;
         }
 
-        button[type="submit"]:hover {
-            background-color: #0056b3;
+        .btn-submit:hover {
+            background-color: #0056b3; /* Cor mais escura no hover */
         }
 
         /* Estilo para o link de Pular (Skip question) */
-        a[href$='Skip question'] {
-            background-color: #6c757d; /* Cinza */
+        .btn-skip {
+            background-color: var(--color-secondary); /* Usando a variável secundária (cinza) */
             color: white;
         }
 
-        a[href$='Skip question']:hover {
+        .btn-skip:hover {
             background-color: #5a6268;
         }
 
-        /* Melhorando o layout da lista de respostas (opcional, mas melhora a visualização) */
-        ul {
+        /* Melhorando o layout da lista de respostas */
+        .question-list {
             list-style: none;
             padding: 0;
+            margin-top: 20px;
         }
 
-        li {
+        .question-list li {
             margin-bottom: 10px;
             padding: 10px;
-            border: 1px solid #ddd;
+            border: 1px solid var(--color-text-secondary); /* Borda mais clara */
             border-radius: 5px;
             cursor: pointer;
+            transition: background-color 0.2s;
         }
 
         /* Estilo para focar o input de rádio/checkbox (para acessibilidade/UX) */
-        li:has(input:focus) {
-            border-color: #007bff;
-            box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+        .question-list li:has(input:checked) {
+            background-color: rgba(var(--color-primary), 0.1); /* Fundo sutil ao selecionar */
+            border-color: var(--color-primary);
+        }
+        .question-list li:hover {
+            background-color: rgba(var(--color-primary), 0.05);
+        }
+
+        /* Ajustes de Tema Dark */
+        .theme-dark .question-list li {
+            border-color: var(--color-text-secondary);
+        }
+        .theme-dark .question-list li:has(input:checked) {
+            background-color: rgba(0, 123, 255, 0.2);
+            border-color: var(--color-primary);
+        }
+        .theme-dark .question-list li:hover {
+            background-color: rgba(0, 123, 255, 0.1);
         }
     </style>
 </th:block>
 
 <th:block th:fragment="content">
     <div class="card">
-        <h2 th:text="${certification.displayName}"></h2>
+        <h2 th:text="${certification.displayName}">Certification Name</h2>
+    </div>
 
+    <div class="card">
         <div th:if="${noQuestion}">
             <p>This certification has no questions yet.</p>
             <p>
@@ -79,6 +103,34 @@
         </div>
 
         <div th:unless="${noQuestion}">
+
+            <div style="margin-bottom: 25px; padding: 10px; border: 1px solid var(--color-secondary); border-radius: 5px;">
+                <label for="testIdentifier" style="font-weight: bold; display: block; margin-bottom: 5px;">
+                    Identificação da Sessão (Opcional): Defina uma identificação para o test, use a mesma identificação
+                    para continuar ele mais tarde
+                </label>
+                <input type="text"
+                       id="testIdentifier"
+                       name="testIdentifier"
+                       placeholder="Ex: aws-test-janeiro"
+                       maxlength="50"
+                       style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 3px; box-sizing: border-box;"
+                       oninput="this.value = this.value.replace(/[^a-zA-Z0-9_-]/g, '')"
+                       th:value="${testSession != null} ? ${testSession.indentifier} : ''">
+                <small style="color: var(--color-text-secondary);">Apenas letras, números, hífen (-) e underscore
+                    (_).</small>
+
+                <div th:if="${testSession != null}"
+                     style="margin-top: 15px; padding-top: 10px; border-top: 1px solid #eee;">
+                    <p style="margin: 5px 0; font-size: 0.9em;">
+                        Estatísticas da Sessão:
+                        <strong style="color: var(--color-success); margin-left: 10px;">✅ Acertos: <span
+                                th:text="${testSession.totalCorrect}">0</span></strong>
+                        <strong style="color: var(--color-danger); margin-left: 15px;">❌ Erros: <span
+                                th:text="${testSession.totalError}">0</span></strong>
+                    </p>
+                </div>
+            </div>
             <p>
                 <strong>Topic</strong>: <span th:text="${question.topic}"></span>
             </p>
@@ -93,22 +145,27 @@
             <form th:action="@{/questions/{id}/check(id=${certification.id})}" method="post">
                 <input type="hidden" name="questionId" th:value="${question.id}"/>
 
-                <ul>
+                <input type="hidden" id="hiddenTestIdentifier" name="testIdentifier"/>
+
+                <ul class="question-list">
                     <li th:each="resp, iterStat : ${answers}">
-                        <label>
+                        <label style="width: 100%; display: block;">
                             <input th:type="${question.isMultipleChoice} ? 'checkbox' : 'radio'"
                                    th:name="selectedOptions"
-                                   th:value="${resp.text}">
+                                   th:value="${resp.text}"
+                                   style="margin-right: 10px;">
                             <span th:text="${resp.text}"></span>
                         </label>
                     </li>
                 </ul>
 
-                <button type="submit">Check answer</button>
-                <a th:href="@{/questions/{id}(id=${certification.id})}">Skip question</a>
+                <div style="margin-top: 30px;">
+                    <button type="submit" class="btn-submit">Check answer</button>
+                    <a th:href="@{/questions/{id}(id=${certification.id})}" class="btn-skip">Skip question</a>
+                </div>
             </form>
 
-            <div th:if="${isCorrect != null}">
+            <div th:if="${isCorrect != null}" style="margin-top: 15px;">
                 <p th:text="${isCorrect ? '✅ Correct answer!' : '❌ Wrong answer!'}"></p>
             </div>
         </div>
@@ -117,7 +174,43 @@
 
 <th:block th:fragment="scripts">
     <script>
-        console.log("Página Dashboard carregada com sucesso.");
+        document.addEventListener('DOMContentLoaded', function() {
+            // 🎯 LÓGICA PARA GARANTIR O ENVIO DO CAMPO DE IDENTIFICAÇÃO
+            const visibleInput = document.getElementById('testIdentifier');
+            const hiddenInput = document.getElementById('hiddenTestIdentifier');
+            const form = document.querySelector('form');
+            const checkButton = document.getElementById('checkButton');
+
+            if (visibleInput && hiddenInput && form) {
+                // Atualiza o input hidden (que será enviado) sempre que o input visível mudar
+                visibleInput.addEventListener('input', function() {
+                    hiddenInput.value = this.value;
+                });
+            }
+
+            // 🎯 LÓGICA DE BLOQUEIO DE BOTÃO APÓS SUBMISSÃO 🎯
+            if (form && checkButton) {
+                form.addEventListener('submit', function() {
+                    // Desabilita o botão imediatamente para feedback visual e evita multi-submissões
+                    checkButton.disabled = true;
+                    checkButton.textContent = 'Checando...';
+
+                    // Opcional: Desabilitar o link de Skip (se você quiser)
+                    // document.querySelector('.btn-skip').style.pointerEvents = 'none';
+                });
+            }
+
+            // 🎯 LÓGICA DE ESTADO (se a resposta já foi checada)
+            const resultDiv = document.querySelector('[th\\:if="${isCorrect != null}"]');
+            if (resultDiv) {
+                // Se o resultado for exibido (isCorrect != null),
+                // desabilita todos os inputs de resposta para evitar alterações visuais.
+                const inputs = document.querySelectorAll('.question-list input');
+                inputs.forEach(input => input.disabled = true);
+            }
+        });
+        
+        // (Mantenha aqui a lógica de LocalStorage se for usá-la)
     </script>
 </th:block>
 </html>
