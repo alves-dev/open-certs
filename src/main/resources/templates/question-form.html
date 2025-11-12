@@ -1,8 +1,14 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
-<head>
-    <title>Nova Questão - OpenCerts</title>
-    <link rel="stylesheet" th:href="@{/css/style.css}"/>
+<html lang="pt-br" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{base :: layout(
+          title='New Question | OpenCerts',
+          pageHeader='New Question',
+          content=~{::content},
+          styles=~{::styles},
+          scripts=~{::scripts}
+      )}">
+
+<th:block th:fragment="styles">
     <style>
         .form-card {
             max-width: 700px;
@@ -73,73 +79,69 @@
             background-color: #3a506b;
         }
     </style>
-</head>
-<body>
+</th:block>
 
-<div th:replace="fragments/navbar :: navbar"></div>
+<th:block th:fragment="content">
+    <div class="card">
+        <form th:action="@{/questions}" method="post" class="form-card">
+            <label>Certification:</label>
+            <select name="certification" required>
+                <option th:each="cert : ${certifications}"
+                        th:value="${cert.id}"
+                        th:text="${cert.displayName}"></option>
+            </select>
 
-<main>
-    <header>
-        <h1>Create new Question</h1>
-    </header>
+            <label>Topic:</label>
+            <input type="text" name="topic" placeholder="Tópico">
 
-    <form th:action="@{/questions}" method="post" class="form-card">
-        <label>Certification:</label>
-        <select name="certification" required>
-            <option th:each="cert : ${certifications}"
-                    th:value="${cert.id}"
-                    th:text="${cert.displayName}"></option>
-        </select>
+            <label>Description question:</label>
+            <textarea name="description" rows="4" placeholder="Digite o enunciado da questão..." required></textarea>
 
-        <label>Topic:</label>
-        <input type="text" name="topic" placeholder="Tópico">
-
-        <label>Description question:</label>
-        <textarea name="description" rows="4" placeholder="Digite o enunciado da questão..." required></textarea>
-
-        <div class="multi-option">
-            <input type="checkbox" id="multiCorrect" name="multiCorrect" onchange="toggleSelectionMode()">
-            <label for="multiCorrect">Contains multiple correct answers
-            </label>
-        </div>
-
-        <label>Responses:</label>
-        <div id="responses" class="responses">
-            <div class="response-item">
-                <input type="radio" name="correctIndexes" value="0" class="correct-check">
-                <input type="text" name="responses" placeholder="Opção A" required>
+            <div class="multi-option">
+                <input type="checkbox" id="multiCorrect" name="multiCorrect" onchange="toggleSelectionMode()">
+                <label for="multiCorrect">Contains multiple correct answers
+                </label>
             </div>
-            <div class="response-item">
-                <input type="radio" name="correctIndexes" value="1" class="correct-check">
-                <input type="text" name="responses" placeholder="Opção B" required>
-            </div>
-            <div class="response-item">
-                <input type="radio" name="correctIndexes" value="2" class="correct-check">
-                <input type="text" name="responses" placeholder="Opção C">
-            </div>
-            <div class="response-item">
-                <input type="radio" name="correctIndexes" value="3" class="correct-check">
-                <input type="text" name="responses" placeholder="Opção D">
-            </div>
-            <div class="response-item">
-                <input type="radio" name="correctIndexes" value="4" class="correct-check">
-                <input type="text" name="responses" placeholder="Opção E">
-            </div>
-        </div>
 
-        <button type="submit">Save Question</button>
-    </form>
-</main>
+            <label>Responses:</label>
+            <div id="responses" class="responses">
+                <div class="response-item">
+                    <input type="radio" name="correctIndexes" value="0" class="correct-check">
+                    <input type="text" name="responses" placeholder="Opção A" required>
+                </div>
+                <div class="response-item">
+                    <input type="radio" name="correctIndexes" value="1" class="correct-check">
+                    <input type="text" name="responses" placeholder="Opção B" required>
+                </div>
+                <div class="response-item">
+                    <input type="radio" name="correctIndexes" value="2" class="correct-check">
+                    <input type="text" name="responses" placeholder="Opção C">
+                </div>
+                <div class="response-item">
+                    <input type="radio" name="correctIndexes" value="3" class="correct-check">
+                    <input type="text" name="responses" placeholder="Opção D">
+                </div>
+                <div class="response-item">
+                    <input type="radio" name="correctIndexes" value="4" class="correct-check">
+                    <input type="text" name="responses" placeholder="Opção E">
+                </div>
+            </div>
 
-<script>
-    function toggleSelectionMode() {
-        const multi = document.getElementById('multiCorrect').checked;
-        const checks = document.querySelectorAll('.correct-check');
+            <button type="submit">Save Question</button>
+        </form>
+    </div>
+</th:block>
 
-        checks.forEach(c => {
-            c.type = multi ? 'checkbox' : 'radio';
-        });
-    }
-</script>
-</body>
+<th:block th:fragment="scripts">
+    <script>
+        function toggleSelectionMode() {
+            const multi = document.getElementById('multiCorrect').checked;
+            const checks = document.querySelectorAll('.correct-check');
+
+            checks.forEach(c => {
+                c.type = multi ? 'checkbox' : 'radio';
+            });
+        }
+    </script>
+</th:block>
 </html>

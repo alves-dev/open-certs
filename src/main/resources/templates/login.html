@@ -1,40 +1,60 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html lang="pt-br" xmlns:th="http://www.thymeleaf.org">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login - OpenCerts</title>
-    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
     <style>
-        body {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            background-color: #0b132b;
+        /* Ajustes Globais */
+        html, body {
+            height: 100%;
             margin: 0;
+            padding: 0;
+            /* Garante que o body ocupe a altura total da viewport */
+            box-sizing: border-box;
         }
 
+        body {
+            display: flex;
+            flex-direction: column; /* Necessário para posicionar o footer */
+            justify-content: center;
+            align-items: center;
+            /* Altura mínima para mobile, mas flex-direction: column ajuda */
+            min-height: 100vh;
+            background-color: #0b132b; /* Fundo azul escuro */
+            position: relative; /* Para o rodapé absoluto */
+            font-family: Arial, sans-serif;
+        }
+
+        /* 📦 Container Principal de Login */
         .login-container {
             background: #fff;
             padding: 48px 32px;
             border-radius: 12px;
             box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
-            width: 100%;
+            width: 90%; /* Aumenta a largura em mobile */
             max-width: 380px;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
             gap: 24px;
+            /* Garante que o box não ultrapasse a tela em mobile */
+            box-sizing: border-box;
         }
 
+        /* 🖼️ Logo */
         .login-logo {
-            width: 70%;
-            max-width: 320px;
+            width: 80%; /* Ocupa mais espaço no mobile */
+            max-width: 280px; /* Limite de largura ligeiramente menor */
             height: auto;
+            object-fit: contain;
         }
 
+        /* 🌐 Botão Google */
         .google-btn {
-            display: inline-flex;
+            display: flex; /* Alterado de inline-flex para flex */
             align-items: center;
             justify-content: center;
             gap: 10px;
@@ -42,10 +62,12 @@
             color: white;
             font-weight: 500;
             text-decoration: none;
-            padding: 12px 24px;
+            padding: 12px 0; /* Removido padding lateral, usaremos width 100% */
+            width: 100%; /* Ocupa a largura total do container */
             border-radius: 6px;
             transition: background-color 0.2s ease;
             border: none;
+            box-sizing: border-box;
         }
 
         .google-btn:hover {
@@ -55,16 +77,53 @@
         .google-btn img {
             width: 20px;
             height: 20px;
+            /* Opcional: Adicionar um pequeno espaço à esquerda da imagem para alinhamento */
+            margin-left: -5px;
+        }
+
+        /* 🦶 Rodapé Discreto (NOVO) */
+        .login-footer {
+            position: absolute;
+            bottom: 20px;
+            width: 100%;
+            text-align: center;
+            font-size: 0.75rem;
+            color: rgba(255, 255, 255, 0.7); /* Texto claro no fundo escuro */
+            padding: 0 20px;
+            box-sizing: border-box;
+        }
+
+        .login-footer a {
+            color: #4285f4; /* Cor azul do Google para o link */
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        .login-footer a:hover {
+            text-decoration: underline;
+        }
+
+        /* 📱 Mobile Adjustments */
+        @media (max-height: 600px) and (max-width: 450px) {
+            /* Se a tela for pequena (altura e largura), reduz o padding */
+             .login-container {
+                padding: 30px 20px;
+                gap: 20px;
+            }
         }
     </style>
 </head>
 <body>
 <div class="login-container">
     <img src="/images/logo.png" alt="OpenCerts Logo" class="login-logo" th:src="@{/images/logo.png}">
-    <a href="/oauth2/authorization/google" class="google-btn">
+    <a th:href="@{/oauth2/authorization/google}" class="google-btn">
         <img src="https://www.svgrepo.com/show/355037/google.svg" alt="Google logo">
         Login com Google
     </a>
 </div>
+
+<footer class="login-footer">
+    © 2025 OpenCerts. Desenvolvido por <a href="https://alves-dev.com/en/" target="_blank">alves-dev</a>.
+</footer>
 </body>
 </html>

@@ -1,9 +1,13 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
-<head>
-    <meta charset="UTF-8">
-    <title th:text="'Question - ' + ${certification.displayName}"></title>
-    <link rel="stylesheet" th:href="@{/css/style.css}">
+<html lang="pt-br" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{base :: layout(
+          title='Question | OpenCerts',
+          pageHeader='Question - ' + ${certification.displayName},
+          content=~{::content},
+          styles=~{::styles},
+          scripts=~{::scripts}
+      )}">
+<th:block th:fragment="styles">
     <style>
         /* Estilizando os botões */
         button[type="submit"],
@@ -60,55 +64,60 @@
             box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
         }
     </style>
-</head>
-<body>
-<div th:replace="fragments/navbar :: navbar"></div>
+</th:block>
 
-<main>
-    <h2 th:text="${certification.displayName}"></h2>
+<th:block th:fragment="content">
+    <div class="card">
+        <h2 th:text="${certification.displayName}"></h2>
 
-    <div th:if="${noQuestion}">
-        <p>This certification has no questions yet.</p>
-        <p>
-            How about contributing by creating a new one?
-            <a th:href="@{/questions/new(certId=${certification.id})}">Create question</a>
-        </p>
-    </div>
+        <div th:if="${noQuestion}">
+            <p>This certification has no questions yet.</p>
+            <p>
+                How about contributing by creating a new one?
+                <a th:href="@{/questions/new(certId=${certification.id})}">Create question</a>
+            </p>
+        </div>
 
-    <div th:unless="${noQuestion}">
-        <p>
-            <strong>Topic</strong>: <span th:text="${question.topic}"></span>
-        </p>
-        <p>
-            <strong>Description</strong>: <span th:text="${question.description}"></span>
-        </p>
-        <p>
-            <strong>Type</strong>: <span
-                th:text="${question.isMultipleChoice ? 'Multiple choice' : 'Single choice'}"></span>
-        </p>
+        <div th:unless="${noQuestion}">
+            <p>
+                <strong>Topic</strong>: <span th:text="${question.topic}"></span>
+            </p>
+            <p>
+                <strong>Description</strong>: <span th:text="${question.description}"></span>
+            </p>
+            <p>
+                <strong>Type</strong>: <span
+                    th:text="${question.isMultipleChoice ? 'Multiple choice' : 'Single choice'}"></span>
+            </p>
 
-        <form th:action="@{/questions/{id}/check(id=${certification.id})}" method="post">
-            <input type="hidden" name="questionId" th:value="${question.id}"/>
+            <form th:action="@{/questions/{id}/check(id=${certification.id})}" method="post">
+                <input type="hidden" name="questionId" th:value="${question.id}"/>
 
-            <ul>
-                <li th:each="resp, iterStat : ${answers}">
-                    <label>
-                        <input th:type="${question.isMultipleChoice} ? 'checkbox' : 'radio'"
-                               th:name="selectedOptions"
-                               th:value="${resp.text}">
-                        <span th:text="${resp.text}"></span>
-                    </label>
-                </li>
-            </ul>
+                <ul>
+                    <li th:each="resp, iterStat : ${answers}">
+                        <label>
+                            <input th:type="${question.isMultipleChoice} ? 'checkbox' : 'radio'"
+                                   th:name="selectedOptions"
+                                   th:value="${resp.text}">
+                            <span th:text="${resp.text}"></span>
+                        </label>
+                    </li>
+                </ul>
 
-            <button type="submit">Check answer</button>
-            <a th:href="@{/questions/{id}(id=${certification.id})}">Skip question</a>
-        </form>
+                <button type="submit">Check answer</button>
+                <a th:href="@{/questions/{id}(id=${certification.id})}">Skip question</a>
+            </form>
 
-        <div th:if="${isCorrect != null}">
-            <p th:text="${isCorrect ? '✅ Correct answer!' : '❌ Wrong answer!'}"></p>
+            <div th:if="${isCorrect != null}">
+                <p th:text="${isCorrect ? '✅ Correct answer!' : '❌ Wrong answer!'}"></p>
+            </div>
         </div>
     </div>
-</main>
-</body>
+</th:block>
+
+<th:block th:fragment="scripts">
+    <script>
+        console.log("Página Dashboard carregada com sucesso.");
+    </script>
+</th:block>
 </html>

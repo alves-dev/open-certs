@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="pt-br" xmlns:th="http://www.thymeleaf.org" th:fragment="layout(title, pageHeader, content, styles, scripts)">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${title}">Base Template</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+    <th:block th:replace="${styles} ?: _"></th:block>
+</head>
+<body>
+<div class="wrapper">
+    <div th:replace="fragments/navbar :: navbar"></div>
+
+    <div th:replace="fragments/sidebar :: sidebar"></div>
+
+    <main id="main-content" class="main-content">
+        <h1 th:text="${pageHeader}">Título da Página</h1>
+        <div th:replace="${content}">
+            <p>O conteúdo da página será carregado aqui.</p>
+        </div>
+    </main>
+</div>
+
+<script th:src="@{/js/scripts.js}"></script>
+<th:block th:replace="${scripts} ?: _"></th:block>
+
+</body>
+</html>

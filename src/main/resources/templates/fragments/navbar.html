@@ -1,19 +1,23 @@
-<!-- templates/fragments/navbar.html -->
-<nav th:fragment="navbar" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml">
-    <div class="nav-left">
-        <a href="/">OpenCerts</a>
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<header th:fragment="navbar" class="navbar">
+    <div class="menu-toggle" id="menu-toggle">
+        &#9776;
     </div>
 
-    <div class="nav-right" sec:authorize="isAuthenticated()">
-        <a href="/questions/new" class="btn">+ New Question</a>
+    <div class="app-name">OpenCerts</div>
 
-        <img th:src="${user.profileImage}" alt="User" width="32" height="32" style="border-radius: 50%;">
-        <span th:text="${user.name}">Usuário</span>
-
-        <a href="/logout">Exit</a>
+    <div class="theme-toggle-container">
+        <label class="theme-toggle-switch">
+            <input type="checkbox" id="theme-toggle">
+            <span class="slider"></span>
+        </label>
     </div>
 
-    <div class="nav-right" sec:authorize="!isAuthenticated()">
-        <a href="/login">Login</a>
+    <div class="navbar-right">
+        <img th:src="${user.profileImage}" alt="User" class="user-photo">
+        <span th:text="${user.name}" class="user-name">Usuário</span>
+        <a href="/logout" class="logout-action">Exit</a>
     </div>
-</nav>
+</header>
+</html>

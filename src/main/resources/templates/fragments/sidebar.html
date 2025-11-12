@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<nav th:fragment="sidebar" class="sidebar" id="sidebar">
+    <ul class="sidebar-menu">
+        <li th:classappend="${currentRequest.requestURI == '/' ? 'active' : ''}">
+            <a th:href="@{/}">🏠 Home</a>
+        </li>
+        <li th:classappend="${currentRequest.requestURI == '/questions/new' ? 'active' : ''}">
+            <a th:href="@{/questions/new}">➕ New Question</a>
+        </li>
+<!--        <li th:classappend="${currentRequest.requestURI.startsWith('/produtos') ? 'active' : ''}">-->
+<!--            <a th:href="@{/produtos}">📦 Produtos</a>-->
+<!--        </li>-->
+<!--        <li th:classappend="${currentRequest.requestURI.startsWith('/clientes') ? 'active' : ''}">-->
+<!--            <a th:href="@{/clientes}">👥 Clientes</a>-->
+<!--        </li>-->
+<!--        <li>-->
+<!--            <a href="#">⚙️ Configurações</a>-->
+<!--        </li>-->
+    </ul>
+</nav>
+</html>

@@ -1,20 +1,50 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
-<head>
-    <title>OpenCerts</title>
-    <link rel="stylesheet" th:href="@{/css/style.css}">
-</head>
-<body>
+<html lang="pt-br" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{base :: layout(
+          title='Home | OpenCerts',
+          pageHeader='Home',
+          content=~{::content},
+          styles=~{::styles},
+          scripts=~{::scripts}
+      )}">
 
-<div th:replace="fragments/navbar :: navbar"></div>
+<th:block th:fragment="styles">
+    <style>
+        .card {
+            background-color: var(--color-surface);
+            padding: 20px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-base);
+            margin-bottom: 20px;
+        }
+    </style>
+</th:block>
 
-<main>
-    <h2>Certificações disponíveis</h2>
-    <ul>
-        <li th:each="cert : ${certifications}">
-            <a th:href="@{/questions/{id}(id=${cert.id})}" th:text="${cert.displayName}"></a>
-        </li>
-    </ul>
-</main>
-</body>
+<th:block th:fragment="content">
+    <div class="card">
+        <h2>Bem-vindo!</h2>
+        <p>Este é o conteúdo da sua primeira página, carregado dentro do template base com a barra lateral e a
+            navbar.</p>
+    </div>
+
+    <div class="card">
+        <h3>Métricas Importantes</h3>
+        <p>A experiência é agradável e responsiva, adaptando-se bem a telas de smartphone.</p>
+    </div>
+
+    <div class="card">
+        <h2>Certificações disponíveis</h2>
+        <ul>
+            <li th:each="cert : ${certifications}">
+                <a th:href="@{/questions/{id}(id=${cert.id})}" th:text="${cert.displayName}"></a>
+            </li>
+        </ul>
+    </div>
+</th:block>
+
+<th:block th:fragment="scripts">
+    <script>
+        console.log("Página Dashboard carregada com sucesso.");
+    </script>
+</th:block>
 </html>
