@@ -24,10 +24,10 @@ document.addEventListener('DOMContentLoaded', () => {
         themeToggle.addEventListener('change', () => {
             if (themeToggle.checked) {
                 body.classList.add('theme-dark');
-                localStorage.setItem('theme', 'dark');
+                localStorage.setItem('opencerts.theme', 'dark');
             } else {
                 body.classList.remove('theme-dark');
-                localStorage.setItem('theme', 'light');
+                localStorage.setItem('opencerts.theme', 'light');
             }
         });
     }

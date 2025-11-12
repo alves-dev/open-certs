@@ -1,3 +1,6 @@
 .gradle
 
 .env
+
+.dev/data
+.dev/local
