@@ -1,8 +1,6 @@
 package com.opencerts;
 
 import com.opencerts.certification.CertificationService;
-import com.opencerts.user.User;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -17,8 +15,7 @@ public class HomeController {
     }
 
     @GetMapping("/")
-    public String home(Model model, @AuthenticationPrincipal User user) {
-        model.addAttribute("user", user);
+    public String home(Model model) {
         model.addAttribute("certifications", certificationService.listAll());
         return "index";
     }

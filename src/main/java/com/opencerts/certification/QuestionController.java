@@ -23,9 +23,8 @@ public class QuestionController {
     }
 
     @GetMapping("/new")
-    public String showForm(Model model, @AuthenticationPrincipal User user) {
+    public String showForm(Model model) {
         model.addAttribute("certifications", certificationService.listAll());
-        model.addAttribute("user", user);
 
         return "question-form";
     }
@@ -59,7 +58,7 @@ public class QuestionController {
     }
 
     @GetMapping("/{certificationId}")
-    public String showQuestion(@PathVariable String certificationId, Model model, @AuthenticationPrincipal User user) {
+    public String showQuestion(@PathVariable String certificationId, Model model) {
         var question = questionService.findRandomByCertification(certificationId);
 
         model.addAttribute("certification", certificationService.getById(certificationId));
@@ -70,7 +69,6 @@ public class QuestionController {
         } else {
             model.addAttribute("noQuestion", true);
         }
-        model.addAttribute("user", user);
 
         return "question";
     }
@@ -79,8 +77,7 @@ public class QuestionController {
     public String checkAnswer(@PathVariable String certificationId,
                               @RequestParam("questionId") UUID questionId,
                               @RequestParam("selectedOptions") List<String> selectedOptions,
-                              Model model,
-                              @AuthenticationPrincipal User user) {
+                              Model model) {
 
         var question = questionService.getQuestionById(questionId);
         var isCorrect = question.checkAnswerByString(selectedOptions);
@@ -88,7 +85,6 @@ public class QuestionController {
         model.addAttribute("certification", certificationService.getById(certificationId));
         model.addAttribute("question", question);
         model.addAttribute("answers", question.responses());
-        model.addAttribute("user", user);
         model.addAttribute("isCorrect", isCorrect);
 
         return "question";
