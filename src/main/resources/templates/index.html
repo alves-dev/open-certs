@@ -2,7 +2,7 @@
 <html lang="pt-br" xmlns:th="http://www.thymeleaf.org"
       th:replace="~{base :: layout(
           title='Home | OpenCerts',
-          pageHeader='Home',
+          pageHeader='',
           content=~{::content},
           styles=~{::styles},
           scripts=~{::scripts}
@@ -10,12 +10,57 @@
 
 <th:block th:fragment="styles">
     <style>
+        /* --- Card Básico (Já deve existir, mas vamos garantir o estilo) --- */
         .card {
             background-color: var(--color-surface);
-            padding: 20px;
+            padding: 25px; /* Aumentar um pouco o padding para mais respiro */
             border-radius: var(--border-radius);
             box-shadow: var(--shadow-base);
-            margin-bottom: 20px;
+            margin-bottom: 25px; /* Espaçamento entre cards */
+        }
+
+        .card h2 {
+            color: var(--color-text);
+            margin-top: 0; /* Remove margem superior padrão do h2 */
+            margin-bottom: 15px; /* Espaçamento abaixo do título */
+            font-size: 1.5rem; /* Tamanho da fonte padrão para títulos de card */
+            border-bottom: 1px solid var(--color-background); /* Linha divisória */
+            padding-bottom: 10px; /* Espaçamento entre título e linha */
+        }
+
+        /* --- Estilo da Lista de Certificações dentro do Card --- */
+        .card ul {
+            list-style: none; /* Remove os marcadores de lista padrão */
+            padding: 0;
+            margin: 0;
+        }
+
+        .card ul li {
+            margin-bottom: 8px; /* Espaçamento entre os itens da lista */
+        }
+
+        .card ul li a {
+            color: var(--color-primary); /* Usa a cor primária para os links */
+            text-decoration: none; /* Remove o sublinhado padrão */
+            font-size: 1rem; /* Tamanho da fonte */
+            display: block; /* O link ocupa toda a largura do item da lista */
+            padding: 5px 0; /* Pequeno padding para facilitar o clique */
+            transition: color 0.2s ease, transform 0.2s ease; /* Transição suave */
+        }
+
+        .card ul li a:hover {
+            color: var(--color-primary); /* Garante a cor primária no hover */
+            text-decoration: underline; /* Adiciona sublinhado no hover */
+            transform: translateX(3px); /* Pequeno movimento para a direita no hover */
+        }
+
+        /* --- Ajustes para o Tema Dark --- */
+        .theme-dark .card h2 {
+            border-bottom-color: var(--color-surface); /* Adapta a cor da linha divisória */
+        }
+
+        .theme-dark .card ul li a {
+            color: var(--color-primary); /* Links mantêm a cor primária */
         }
     </style>
 </th:block>
@@ -23,13 +68,7 @@
 <th:block th:fragment="content">
     <div class="card">
         <h2>Bem-vindo!</h2>
-        <p>Este é o conteúdo da sua primeira página, carregado dentro do template base com a barra lateral e a
-            navbar.</p>
-    </div>
-
-    <div class="card">
-        <h3>Métricas Importantes</h3>
-        <p>A experiência é agradável e responsiva, adaptando-se bem a telas de smartphone.</p>
+        <p>Este é um ambiente colaborativo para testes de certificações.</p>
     </div>
 
     <div class="card">

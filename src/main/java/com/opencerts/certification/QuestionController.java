@@ -1,5 +1,7 @@
 package com.opencerts.certification;
 
+import com.opencerts.test.TestSessionDTO;
+import com.opencerts.test.TestSessionService;
 import com.opencerts.user.User;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
@@ -8,7 +10,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 @Controller
 @RequestMapping("/questions")
@@ -16,10 +17,12 @@ public class QuestionController {
 
     private final QuestionService questionService;
     private final CertificationService certificationService;
+    private final TestSessionService testSessionService;
 
-    public QuestionController(QuestionService questionService, CertificationService certificationService) {
+    public QuestionController(QuestionService questionService, CertificationService certificationService, TestSessionService testSessionService) {
         this.questionService = questionService;
         this.certificationService = certificationService;
+        this.testSessionService = testSessionService;
     }
 
     @GetMapping("/new")
@@ -58,34 +61,47 @@ public class QuestionController {
     }
 
     @GetMapping("/{certificationId}")
-    public String showQuestion(@PathVariable String certificationId, Model model) {
+    public String showQuestion(@PathVariable String certificationId,
+                               Model model,
+                               @RequestParam(value = "testIdentifier", defaultValue = "") String testIdentifier
+    ) {
         var question = questionService.findRandomByCertification(certificationId);
 
         model.addAttribute("certification", certificationService.getById(certificationId));
+        model.addAttribute("question", question);
 
-        if (question != null) {
-            model.addAttribute("question", question);
+        if (question != null)
             model.addAttribute("answers", question.responses());
-        } else {
-            model.addAttribute("noQuestion", true);
-        }
+
+        TestSessionDTO testSession = null;
+        if (!testIdentifier.isEmpty())
+            testSession = testSessionService.findByIdentifierAndCertification(testIdentifier, certificationId);
+
+        model.addAttribute("testSession", testSession);
 
         return "question";
     }
 
     @PostMapping("/{certificationId}/check")
     public String checkAnswer(@PathVariable String certificationId,
-                              @RequestParam("questionId") UUID questionId,
-                              @RequestParam("selectedOptions") List<String> selectedOptions,
+                              @ModelAttribute AnswerFormDTO form,
                               Model model) {
 
-        var question = questionService.getQuestionById(questionId);
-        var isCorrect = question.checkAnswerByString(selectedOptions);
+        var question = questionService.getQuestionById(form.questionId());
+        var isCorrect = question.checkAnswerByString(form.selectedOptions());
+
+        TestSessionDTO testSession = null;
+        if (!form.testIdentifier().isEmpty())
+            testSession = testSessionService.addQuestionInTest(
+                    form.testIdentifier(), certificationId, form.questionId(), isCorrect
+            );
+
 
         model.addAttribute("certification", certificationService.getById(certificationId));
         model.addAttribute("question", question);
         model.addAttribute("answers", question.responses());
         model.addAttribute("isCorrect", isCorrect);
+        model.addAttribute("testSession", testSession);
 
         return "question";
     }
