@@ -30,6 +30,22 @@ public class Certification {
         return identifier;
     }
 
+    public String identifier() {
+        return identifier;
+    }
+
+    public String provider() {
+        return provider;
+    }
+
+    public String name() {
+        return name;
+    }
+
+    public String level() {
+        return level;
+    }
+
     public String displayName() {
         return provider.concat(" - ").concat(name).concat(" | ").concat(level);
     }

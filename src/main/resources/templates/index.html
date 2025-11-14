@@ -10,74 +10,116 @@
 
 <th:block th:fragment="styles">
     <style>
-        /* --- Card Básico (Já deve existir, mas vamos garantir o estilo) --- */
+        /* --- Card Básico: Mantenha este estilo global para todos os cards --- */
         .card {
             background-color: var(--color-surface);
-            padding: 25px; /* Aumentar um pouco o padding para mais respiro */
+            padding: 25px;
             border-radius: var(--border-radius);
             box-shadow: var(--shadow-base);
-            margin-bottom: 25px; /* Espaçamento entre cards */
+            margin-bottom: 25px;
         }
 
         .card h2 {
             color: var(--color-text);
-            margin-top: 0; /* Remove margem superior padrão do h2 */
-            margin-bottom: 15px; /* Espaçamento abaixo do título */
-            font-size: 1.5rem; /* Tamanho da fonte padrão para títulos de card */
-            border-bottom: 1px solid var(--color-background); /* Linha divisória */
-            padding-bottom: 10px; /* Espaçamento entre título e linha */
+            margin-top: 0;
+            margin-bottom: 20px; /* Mais espaço */
+            font-size: 1.5rem;
+            border-bottom: 1px solid var(--color-background);
+            padding-bottom: 10px;
         }
 
-        /* --- Estilo da Lista de Certificações dentro do Card --- */
-        .card ul {
-            list-style: none; /* Remove os marcadores de lista padrão */
+        /* 🎯 NOVO: Estilos para o Grid de Certificações */
+        .cert-grid {
+            display: grid;
+            /* 3 colunas em telas grandes, 2 em médias, 1 em pequenas */
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px; /* Espaçamento entre os cards */
             padding: 0;
-            margin: 0;
+            list-style: none;
         }
 
-        .card ul li {
-            margin-bottom: 8px; /* Espaçamento entre os itens da lista */
+        /* 🎯 NOVO: Estilo para o Mini-Card de Certificação */
+        .cert-item {
+            background-color: var(--color-background); /* Fundo sutil para destaque */
+            border-radius: var(--border-radius);
+            overflow: hidden; /* Garante que o conteúdo não saia */
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            transition: transform 0.2s, box-shadow 0.2s;
+            border: 1px solid var(--color-background);
         }
 
-        .card ul li a {
-            color: var(--color-primary); /* Usa a cor primária para os links */
-            text-decoration: none; /* Remove o sublinhado padrão */
-            font-size: 1rem; /* Tamanho da fonte */
-            display: block; /* O link ocupa toda a largura do item da lista */
-            padding: 5px 0; /* Pequeno padding para facilitar o clique */
-            transition: color 0.2s ease, transform 0.2s ease; /* Transição suave */
+        .cert-item:hover {
+            transform: translateY(-5px); /* Efeito de elevação */
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+            border-color: var(--color-primary); /* Destaque no hover */
         }
 
-        .card ul li a:hover {
-            color: var(--color-primary); /* Garante a cor primária no hover */
-            text-decoration: underline; /* Adiciona sublinhado no hover */
-            transform: translateX(3px); /* Pequeno movimento para a direita no hover */
+        /* Estilo do Link Clicável (Cobre todo o card) */
+        .cert-link {
+            display: block;
+            padding: 15px;
+            text-decoration: none;
+            color: var(--color-text);
         }
 
-        /* --- Ajustes para o Tema Dark --- */
-        .theme-dark .card h2 {
-            border-bottom-color: var(--color-surface); /* Adapta a cor da linha divisória */
+        /* Título Principal */
+        .cert-name {
+            font-size: 1.1rem;
+            font-weight: bold;
+            color: var(--color-primary);
+            margin-bottom: 5px;
         }
 
-        .theme-dark .card ul li a {
-            color: var(--color-primary); /* Links mantêm a cor primária */
+        /* Provedor */
+        .cert-provider {
+            font-size: 0.8rem;
+            color: var(--color-text-secondary);
+            margin-bottom: 10px;
+            text-transform: uppercase;
+        }
+
+        /* Nível */
+        .cert-level {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: bold;
+            background-color: #3f51b5; /* Azul Padrão */
+            color: white;
+        }
+
+        /* Ajustes de Tema Dark */
+        .theme-dark .cert-item {
+            background-color: #1f1f1f;
+            border-color: #333;
+        }
+        .theme-dark .cert-level {
+            background-color: #536dfe; /* Azul mais claro no dark mode */
         }
     </style>
 </th:block>
 
 <th:block th:fragment="content">
     <div class="card">
-        <h2>Bem-vindo!</h2>
-        <p>Este é um ambiente colaborativo para testes de certificações.</p>
+        <h2>Bem-vindo(a) ao OpenCerts! 🚀</h2>
+        <p>Este é um ambiente colaborativo para testes de certificações. Clique em qualquer card abaixo para iniciar um teste e desafiar seu conhecimento.</p>
     </div>
 
     <div class="card">
-        <h2>Certificações disponíveis</h2>
-        <ul>
-            <li th:each="cert : ${certifications}">
-                <a th:href="@{/questions/{id}(id=${cert.id})}" th:text="${cert.displayName}"></a>
+        <h2>Certificações Disponíveis</h2>
+
+        <ul class="cert-grid">
+            <li th:each="cert : ${certifications}" class="cert-item">
+                <a th:href="@{/questions/{id}(id=${cert.identifier})}" class="cert-link">
+                    <div class="cert-provider" th:text="${cert.provider}">Provider</div>
+                    <div class="cert-name" th:text="${cert.name}">Certification Name</div>
+
+                    <span class="cert-level" th:text="${cert.level}">Level</span>
+                </a>
             </li>
         </ul>
+
     </div>
 </th:block>
 

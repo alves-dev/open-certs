@@ -78,10 +78,10 @@
 
     <div class="card">
         <div th:if="${question == null}">
-            <p>This certification has no questions yet.</p>
+            <p>The certification has no more questions available.</p>
             <p>
                 How about contributing by creating a new one?
-                <a th:href="@{/questions/new(certId=${certification.id})}">Create question</a>
+                <a th:href="@{/questions/new(certId=${certification.id})}" class="btn-next">Create question</a>
             </p>
         </div>
 
