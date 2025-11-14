@@ -106,11 +106,17 @@
                 <div th:if="${testSession != null}"
                      style="margin-top: 15px; padding-top: 10px; border-top: 1px solid #eee;">
                     <p style="margin: 5px 0; font-size: 0.9em;">
-                        Estatísticas da Sessão:
-                        <strong style="color: var(--color-success); margin-left: 10px;">✅ Acertos: <span
-                                th:text="${testSession.totalCorrect}">0</span></strong>
-                        <strong style="color: var(--color-danger); margin-left: 15px;">❌ Erros: <span
-                                th:text="${testSession.totalError}">0</span></strong>
+                        Statistics:
+                        <strong style="color: var(--color-primary); margin-left: 15px;">% of correct:
+                            <span th:text="${testSession.percentageCorrect}">0</span>
+                        </strong>
+                        <strong style="color: var(--color-success); margin-left: 10px;">✅:
+                            <span th:text="${testSession.totalCorrect}">0</span>
+                        </strong>
+                        <strong style="color: var(--color-danger); margin-left: 15px;">❌:
+                            <span th:text="${testSession.totalError}">0</span>
+                        </strong>
+
                     </p>
                 </div>
             </div>
@@ -130,7 +136,8 @@
                   method="post">
                 <input type="hidden" name="questionId" th:value="${question.id}"/>
 
-                <input type="hidden" id="hiddenTestIdentifier" name="testIdentifier"/>
+                <input type="hidden" id="hiddenTestIdentifier" name="testIdentifier"
+                       th:value="${testSession != null ? testSession.identifier : ''}"/>
 
                 <ul class="question-list">
                     <li th:each="resp, iterStat : ${answers}">
@@ -179,9 +186,6 @@
 <th:block th:fragment="scripts">
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            const form = document.getElementById('questionForm');
-            const checkButton = document.getElementById('checkButton');
-
             // --- Lógica de Sincronização do Identificador ---
             const visibleInput = document.getElementById('testIdentifier');
             const hiddenInput = document.getElementById('hiddenTestIdentifier');
@@ -191,6 +195,11 @@
                     hiddenInput.value = this.value;
                 });
             }
+        });
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.getElementById('questionForm');
+            const checkButton = document.getElementById('checkButton');
 
             // --- Lógica de Bloqueio do Botão (UX Imediata) ---
             if (form && checkButton) {
