@@ -3,6 +3,7 @@ package com.opencerts.test;
 import com.opencerts.user.UserService;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -15,6 +16,11 @@ public class TestSessionService {
     public TestSessionService(TestSessionRepository repository, UserService userService) {
         this.repository = repository;
         this.userService = userService;
+    }
+
+    public List<ListTestSessionDTO> listByUser(){
+        var userId = userService.getUser().id();
+        return repository.findByUserId(userId).stream().map(ListTestSessionDTO::new).toList();
     }
 
     public TestSessionDTO findByIdentifierAndCertification(String testIdentifier, String certificationId){

@@ -43,15 +43,23 @@ public class TestSession {
     }
 
     // --- Getters ---
-    public String identifier(){
+    public String certificationId() {
+        return certificationId;
+    }
+
+    public String identifier() {
         return identifier;
     }
 
-    public int totalCorrect(){
+    public LocalDateTime startedAt() {
+        return startedAt;
+    }
+
+    public int totalCorrect() {
         return totalCorrect;
     }
 
-    public int totalError(){
+    public int totalError() {
         return totalError;
     }
 
@@ -65,6 +73,11 @@ public class TestSession {
             questionsIncorrect.add(questionId);
             totalError++;
         }
+    }
+
+    public int percentageCorrect() {
+        int total = totalCorrect + totalError;
+        return total == 0 ? 0 : (int) Math.round(totalCorrect * 100.0 / total);
     }
 
 //    public void finish() {

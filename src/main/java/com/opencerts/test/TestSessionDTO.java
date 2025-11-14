@@ -8,8 +8,6 @@ public record TestSessionDTO(
 ) {
 
     public TestSessionDTO(TestSession test) {
-        int total = test.totalCorrect() + test.totalError();
-        int percentage = total == 0 ? 0 : (int) Math.round(test.totalCorrect() * 100.0 / total);
-        this(test.identifier(), test.totalCorrect(), test.totalError(), percentage);
+        this(test.identifier(), test.totalCorrect(), test.totalError(), test.percentageCorrect());
     }
 }
