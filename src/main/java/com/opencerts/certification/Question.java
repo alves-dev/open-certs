@@ -55,6 +55,10 @@ public class Question {
         return responses;
     }
 
+    public List<String> correctAnswers(){
+        return correctAnswers.stream().map(Response::text).toList();
+    }
+
     public boolean isMultipleChoice() {
         return this.correctAnswers.size() > 1;
     }

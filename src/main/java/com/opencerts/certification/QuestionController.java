@@ -102,6 +102,7 @@ public class QuestionController {
         model.addAttribute("answers", question.responses());
         model.addAttribute("isCorrect", isCorrect);
         model.addAttribute("testSession", testSession);
+        model.addAttribute("correctAnswers", question.correctAnswers());
 
         return "question";
     }

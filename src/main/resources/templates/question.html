@@ -68,6 +68,37 @@
         .question-list li:hover {
             background-color: rgba(0, 123, 255, 0.05);
         }
+
+        /* Estilo para a caixa de feedback da resposta correta */
+        .feedback-box {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid var(--color-success); /* Borda verde */
+            background-color: rgba(var(--color-success-rgb), 0.1); /* Fundo verde claro */
+        }
+
+        .feedback-box h4 {
+            color: var(--color-success);
+            margin-top: 0;
+            margin-bottom: 10px;
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .feedback-box ul {
+            list-style: none; /* Remove bullets padrão */
+            padding-left: 0;
+            margin-bottom: 0;
+        }
+
+        .feedback-box li {
+            font-size: 0.95rem;
+            padding: 3px 0;
+            color: var(--color-text);
+        }
     </style>
 </th:block>
 
@@ -176,8 +207,23 @@
                 </div>
             </form>
 
-            <div th:if="${isCorrect != null}" style="margin-top: 15px;">
-                <p th:text="${isCorrect ? '✅ Correct answer!' : '❌ Wrong answer!'}"></p>
+            <div th:if="${isCorrect != null}" style="margin-top: 25px;">
+
+                <p th:text="${isCorrect ? '✅ Correct answer!' : '❌ Wrong answer.'}"
+                   style="font-size: 1.2rem; font-weight: bold; margin-bottom: 10px;"></p>
+
+                <div th:if="${!isCorrect}" class="feedback-box">
+
+                    <h4><span style="font-size: 1.5rem;">💡</span> The answer correct isé:</h4>
+
+                    <ul th:if="${!correctAnswers.isEmpty()}">
+                        <li th:each="answer : ${correctAnswers}" th:text="${answer}"></li>
+                    </ul>
+
+                    <p th:if="${correctAnswers.isEmpty()}" style="font-style: italic; color: var(--color-text-secondary);">
+                        A resposta correta não foi especificada para esta questão.
+                    </p>
+                </div>
             </div>
         </div>
     </div>
