@@ -18,12 +18,17 @@ public class TestSessionService {
         this.userService = userService;
     }
 
-    public List<ListTestSessionDTO> listByUser(){
+    public List<ListTestSessionDTO> listByUser() {
         var userId = userService.getUser().id();
         return repository.findByUserId(userId).stream().map(ListTestSessionDTO::new).toList();
     }
 
-    public TestSessionDTO findByIdentifierAndCertification(String testIdentifier, String certificationId){
+    public Optional<TestSession> findByIdentifier(String identifier) {
+        var userId = userService.getUser().id();
+        return repository.findByUserIdAndIdentifier(userId, identifier);
+    }
+
+    public TestSessionDTO findByIdentifierAndCertification(String testIdentifier, String certificationId) {
         TestSession test = createOrGetByIdentifier(testIdentifier, certificationId);
         return new TestSessionDTO(test);
     }

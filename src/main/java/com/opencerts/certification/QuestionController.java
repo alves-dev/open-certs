@@ -65,7 +65,7 @@ public class QuestionController {
                                Model model,
                                @RequestParam(value = "testIdentifier", defaultValue = "") String testIdentifier
     ) {
-        var question = questionService.findRandomByCertification(certificationId);
+        var question = questionService.findRandomByCertification(certificationId, testIdentifier);
 
         model.addAttribute("certification", certificationService.getById(certificationId));
         model.addAttribute("question", question);

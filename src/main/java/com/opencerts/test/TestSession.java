@@ -4,9 +4,7 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 @Document(collection = "tests")
 public class TestSession {
@@ -78,6 +76,13 @@ public class TestSession {
     public int percentageCorrect() {
         int total = totalCorrect + totalError;
         return total == 0 ? 0 : (int) Math.round(totalCorrect * 100.0 / total);
+    }
+
+    public Set<UUID> answeredQuestionIds() {
+        Set<UUID> full = new HashSet<>();
+        full.addAll(questionsIncorrect);
+        full.addAll(questionsCorrect);
+        return full;
     }
 
 //    public void finish() {
