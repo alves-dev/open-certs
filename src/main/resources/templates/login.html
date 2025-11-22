@@ -1,129 +1,67 @@
 <!DOCTYPE html>
-<html lang="pt-br" xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login - OpenCerts</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+
     <link rel="stylesheet" th:href="@{/css/styles.css}">
-    <style>
-        /* Ajustes Globais */
-        html, body {
-            height: 100%;
-            margin: 0;
-            padding: 0;
-            /* Garante que o body ocupe a altura total da viewport */
-            box-sizing: border-box;
-        }
-
-        body {
-            display: flex;
-            flex-direction: column; /* Necessário para posicionar o footer */
-            justify-content: center;
-            align-items: center;
-            /* Altura mínima para mobile, mas flex-direction: column ajuda */
-            min-height: 100vh;
-            background-color: #0b132b; /* Fundo azul escuro */
-            position: relative; /* Para o rodapé absoluto */
-            font-family: Arial, sans-serif;
-        }
-
-        /* 📦 Container Principal de Login */
-        .login-container {
-            background: #fff;
-            padding: 48px 32px;
-            border-radius: 12px;
-            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
-            width: 90%; /* Aumenta a largura em mobile */
-            max-width: 380px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            gap: 24px;
-            /* Garante que o box não ultrapasse a tela em mobile */
-            box-sizing: border-box;
-        }
-
-        /* 🖼️ Logo */
-        .login-logo {
-            width: 80%; /* Ocupa mais espaço no mobile */
-            max-width: 280px; /* Limite de largura ligeiramente menor */
-            height: auto;
-            object-fit: contain;
-        }
-
-        /* 🌐 Botão Google */
-        .google-btn {
-            display: flex; /* Alterado de inline-flex para flex */
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            background-color: #4285f4;
-            color: white;
-            font-weight: 500;
-            text-decoration: none;
-            padding: 12px 0; /* Removido padding lateral, usaremos width 100% */
-            width: 100%; /* Ocupa a largura total do container */
-            border-radius: 6px;
-            transition: background-color 0.2s ease;
-            border: none;
-            box-sizing: border-box;
-        }
-
-        .google-btn:hover {
-            background-color: #357ae8;
-        }
-
-        .google-btn img {
-            width: 20px;
-            height: 20px;
-            /* Opcional: Adicionar um pequeno espaço à esquerda da imagem para alinhamento */
-            margin-left: -5px;
-        }
-
-        /* 🦶 Rodapé Discreto (NOVO) */
-        .login-footer {
-            position: absolute;
-            bottom: 20px;
-            width: 100%;
-            text-align: center;
-            font-size: 0.75rem;
-            color: rgba(255, 255, 255, 0.7); /* Texto claro no fundo escuro */
-            padding: 0 20px;
-            box-sizing: border-box;
-        }
-
-        .login-footer a {
-            color: #4285f4; /* Cor azul do Google para o link */
-            text-decoration: none;
-            transition: color 0.2s;
-        }
-
-        .login-footer a:hover {
-            text-decoration: underline;
-        }
-
-        /* 📱 Mobile Adjustments */
-        @media (max-height: 600px) and (max-width: 450px) {
-            /* Se a tela for pequena (altura e largura), reduz o padding */
-             .login-container {
-                padding: 30px 20px;
-                gap: 20px;
-            }
-        }
-    </style>
 </head>
 <body>
-<div class="login-container">
-    <img src="/images/logo.png" alt="OpenCerts Logo" class="login-logo" th:src="@{/images/logo.png}">
-    <a th:href="@{/oauth2/authorization/google}" class="google-btn">
-        <img src="https://www.svgrepo.com/show/355037/google.svg" alt="Google logo">
-        Login com Google
-    </a>
-</div>
 
-<footer class="login-footer">
-    © 2025 OpenCerts. Desenvolvido por <a href="https://alves-dev.com/en/" target="_blank">alves-dev</a>.
+<main class="login-container">
+    <div class="login-card">
+
+        <div class="login-logo">
+            <svg width="300" height="60" viewBox="0 0 300 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M30 10L50 20V40L30 50L10 40V20L30 10Z" fill="#1E293B" stroke="#10B981" stroke-width="3"/>
+                <path d="M22 30L30 38L40 22" stroke="#3B82F6" stroke-width="4" stroke-linecap="round"
+                      stroke-linejoin="round"/>
+
+                <text x="70" y="42" font-family="Arial, sans-serif" font-weight="bold" font-size="32" fill="#F1F5F9">
+                    Open
+                </text>
+
+                <text x="155" y="42" font-family="Arial, sans-serif" font-weight="normal" font-size="32" fill="#10B981">
+                    Certs
+                </text>
+
+                <circle cx="240" cy="38" r="4" fill="#3B82F6"/>
+            </svg>
+        </div>
+
+        <h1 class="login-title">Bem-vindo de volta!</h1>
+        <p class="login-subtitle">Prepare-se para sua próxima certificação.</p>
+
+        <div class="actions">
+            <a href="/oauth2/authorization/google" class="btn btn-google">
+                <svg width="20" height="20" viewBox="0 0 24 24" style="margin-right: 10px;">
+                    <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
+                          fill="#4285F4"/>
+                    <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
+                          fill="#34A853"/>
+                    <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.84z"
+                          fill="#FBBC05"/>
+                    <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
+                          fill="#EA4335"/>
+                </svg>
+                Entrar com Google
+            </a>
+        </div>
+    </div>
+</main>
+
+<footer class="footer-login">
+    <p>&copy; 2025 OpenCerts. Desenvolvido por
+        <span style="color: var(--color-primary)">
+            <a href="https://alves-dev.com/en" target="_blank">alves-dev</a>
+        </span>
+    </p>
 </footer>
+
 </body>
 </html>

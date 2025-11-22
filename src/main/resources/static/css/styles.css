@@ -1,246 +1,408 @@
+/* =========================================
+   1. Variáveis e Cores (Design System)
+   ========================================= */
 :root {
-    /* Cores Primárias */
-    --color-primary: #007bff;
-    --color-secondary: #6c757d;
-    --color-success: #28a745;
-    --color-danger: #dc3545;
+    /* Palette alves-dev (Default Dark Mode) */
+    --color-bg-body: #0F172A;       /* Midnight Slate */
+    --color-bg-card: #1E293B;       /* Card Slate */
+    --color-bg-input: #0F172A;      /* Input field background */
 
-    /* Cores de Fundo e Texto (Tema Claro Padrão) */
-    --color-background: #f8f9fa;
-    --color-surface: #ffffff;
-    --color-text: #212529;
-    --color-text-secondary: #6c757d;
+    --color-primary: #10B981;       /* Spring Emerald (Ações, Sucesso) */
+    --color-primary-hover: #059669; /* Emerald Darker */
 
-    /* Sombras e Bordas */
-    --shadow-base: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
-    --border-radius: 0.25rem;
+    --color-secondary: #3B82F6;     /* Reliable Blue (Links, Info) */
+    --color-danger: #EF4444;        /* Bug Red (Erro) */
 
-    /* Configurações da Sidebar */
-    --sidebar-width: 250px;
-    --sidebar-transition: all 0.3s;
+    --color-text-main: #F1F5F9;     /* Cloud White */
+    --color-text-muted: #94A3B8;    /* Steel Grey */
+
+    --border-color: #334155;        /* Slate border */
+    --shadow-card: 0 4px 6px -1px rgba(0, 0, 0, 0.5), 0 2px 4px -1px rgba(0, 0, 0, 0.3);
+
+    --font-family: 'Inter', system-ui, -apple-system, sans-serif;
 }
 
-/* 🌙 Variantes do Tema Dark */
-.theme-dark {
-    --color-background: #121212;
-    --color-surface: #1e1e1e;
-    --color-text: #f8f9fa;
-    --color-text-secondary: #adb5bd;
-    --shadow-base: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.5);
+/* Classe para Tema Claro (Para uso futuro nas outras páginas) */
+body.light-theme {
+    --color-bg-body: #F1F5F9;       /* Cloud White */
+    --color-bg-card: #FFFFFF;       /* Pure White */
+    --color-bg-input: #E2E8F0;
+    --color-text-main: #0F172A;     /* Midnight Slate */
+    --color-text-muted: #64748B;
+    --border-color: #CBD5E1;
+    --shadow-card: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
 }
 
-/* Estilos Globais */
-body {
-    font-family: Arial, sans-serif;
-    background-color: var(--color-background);
-    color: var(--color-text);
+/* =========================================
+   2. Reset & Base
+   ========================================= */
+* {
+    box-sizing: border-box;
     margin: 0;
-    transition: background-color var(--sidebar-transition), color var(--sidebar-transition);
+    padding: 0;
 }
 
+body {
+    background-color: var(--color-bg-body);
+    color: var(--color-text-main);
+    font-family: var(--font-family);
+    line-height: 1.6;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* =========================================
+   3. Componentes Globais
+   ========================================= */
 a {
-    color: var(--color-primary);
+    color: var(--color-secondary);
     text-decoration: none;
 }
-
-/* 🖼️ Layout Principal */
-.wrapper {
-    display: flex;
+a:hover {
+    text-decoration: underline;
 }
 
-/* ⚓ Navbar */
-.navbar {
-    background-color: var(--color-surface);
-    box-shadow: var(--shadow-base);
-    height: 60px;
-    display: flex;
-    justify-content: space-between;
+/* Botões Genéricos */
+.btn {
+    display: inline-flex;
     align-items: center;
-    padding: 0 1rem;
-    position: fixed;
+    justify-content: center;
+    padding: 0.75rem 1.5rem;
+    border-radius: 0.5rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    border: none;
+    gap: 0.5rem;
+}
+
+.btn-primary {
+    background-color: var(--color-primary);
+    color: #0F172A; /* Contraste forte no verde */
+}
+.btn-primary:hover {
+    background-color: var(--color-primary-hover);
+}
+
+/* =========================================
+   4. Página de Login (Layout Específico)
+   ========================================= */
+.login-container {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+}
+
+.login-card {
+    background-color: var(--color-bg-card);
+    padding: 3rem 2rem;
+    border-radius: 1rem;
+    box-shadow: var(--shadow-card);
+    width: 100%;
+    max-width: 420px;
+    text-align: center;
+    border: 1px solid var(--border-color);
+}
+
+.login-logo {
+    margin-bottom: 2rem;
+    /* O SVG vai se adaptar aqui */
+}
+
+.login-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    color: var(--color-text-main);
+}
+
+.login-subtitle {
+    color: var(--color-text-muted);
+    margin-bottom: 2.5rem;
+    font-size: 0.95rem;
+}
+
+/* Botão Google Customizado */
+.btn-google {
+    background-color: #FFFFFF;
+    color: #1F2937;
+    width: 100%;
+    border: 1px solid var(--border-color);
+    font-size: 1rem;
+    position: relative;
+}
+.btn-google:hover {
+    background-color: #F8FAFC;
+    border-color: var(--color-secondary); /* Toque da marca no hover */
+}
+
+.footer-login {
+    text-align: center;
+    padding: 2rem;
+    color: var(--color-text-muted);
+    font-size: 0.875rem;
+}
+
+/* =========================================
+   5. Layout Dashboard (Navbar & Sidebar)
+   ========================================= */
+
+/* --- Navbar --- */
+.navbar {
+    height: 64px;
+    background-color: var(--color-bg-card); /* Card Slate */
+    border-bottom: 1px solid var(--border-color);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 1.5rem;
+    position: sticky;
     top: 0;
-    left: 0;
-    right: 0;
-    z-index: 1000;
+    z-index: 50;
+    transition: background-color 0.3s, border-color 0.3s;
 }
 
-.app-name {
+.navbar-left {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.menu-toggle {
+    cursor: pointer;
+    color: var(--color-text-muted);
+    padding: 0.5rem;
+    border-radius: 0.375rem;
+    display: flex; /* Para alinhar o SVG */
+}
+.menu-toggle:hover {
+    background-color: rgba(255,255,255, 0.05);
+    color: var(--color-text-main);
+}
+
+.app-brand {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-weight: 700;
     font-size: 1.25rem;
-    font-weight: bold;
-    color: var(--color-primary);
-}
-
-.user-name {
+    color: var(--color-text-main);
+    text-decoration: none;
 }
 
 .navbar-right {
     display: flex;
     align-items: center;
-    gap: 15px;
+    gap: 1.5rem;
+}
+
+/* User Profile na Navbar */
+.user-profile {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    border-left: 1px solid var(--border-color);
+    padding-left: 1.5rem;
 }
 
 .user-photo {
-    width: 40px;
-    height: 40px;
+    width: 32px;
+    height: 32px;
     border-radius: 50%;
     object-fit: cover;
-    cursor: pointer;
+    border: 2px solid var(--color-primary);
 }
 
-.logout-action {
-    color: var(--color-danger);
-    cursor: pointer;
-    font-size: 0.9rem;
-}
-
-/* 🌘 Theme Toggle Switch */
-.theme-toggle-container {
+.user-info {
     display: flex;
-    align-items: center;
-    margin: 0 auto; /* Centraliza na navbar */
+    flex-direction: column;
+    line-height: 1.2;
 }
 
-.theme-toggle-switch {
-    position: relative;
-    display: inline-block;
-    width: 60px;
-    height: 34px;
+.user-name {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--color-text-main);
 }
 
-.theme-toggle-switch input {
-    opacity: 0;
-    width: 0;
-    height: 0;
+.logout-link {
+    font-size: 0.75rem;
+    color: var(--color-danger); /* Vermelho sutil para sair */
+    text-decoration: none;
 }
 
-.slider {
-    position: absolute;
-    cursor: pointer;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-color: var(--color-secondary);
-    transition: 0.4s;
-    border-radius: 34px;
-}
-
-.slider:before {
-    position: absolute;
-    content: "";
-    height: 26px;
-    width: 26px;
-    left: 4px;
-    bottom: 4px;
-    background-color: white;
-    transition: 0.4s;
-    border-radius: 50%;
-}
-
-input:checked + .slider {
-    background-color: var(--color-primary);
-}
-
-input:checked + .slider:before {
-    transform: translateX(26px);
-}
-
-/* 🧭 Sidebar */
+/* --- Sidebar --- */
 .sidebar {
-    width: var(--sidebar-width);
-    background-color: var(--color-surface);
-    color: var(--color-text);
-    height: 100vh;
+    width: 260px;
+    height: calc(100vh - 64px); /* Altura total menos navbar */
+    background-color: var(--color-bg-card);
+    border-right: 1px solid var(--border-color);
     position: fixed;
-    top: 60px; /* Abaixo da Navbar */
+    top: 64px;
     left: 0;
-    padding-top: 1rem;
-    box-shadow: var(--shadow-base);
-    transition: margin-left var(--sidebar-transition);
-    z-index: 900;
+    padding-top: 1.5rem;
+    transition: transform 0.3s ease-in-out;
+    z-index: 40;
+    overflow-y: auto;
+}
+
+/* Estilo quando a sidebar está oculta (mobile ou toggle) */
+.sidebar.closed {
+    transform: translateX(-100%);
 }
 
 .sidebar-menu {
     list-style: none;
-    padding: 0;
-    margin: 0;
+    padding: 0 0.75rem;
 }
 
-.sidebar-menu li a {
-    display: block;
-    padding: 10px 15px;
-    color: var(--color-text);
-    transition: background-color 0.2s, color 0.2s;
+.nav-item {
+    margin-bottom: 0.25rem;
 }
 
-.sidebar-menu li a:hover, .sidebar-menu li.active a {
-    background-color: var(--color-primary);
-    color: var(--color-surface);
+.nav-link {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem 1rem;
+    border-radius: 0.5rem;
+    color: var(--color-text-muted);
+    font-weight: 500;
+    transition: all 0.2s;
+    text-decoration: none;
 }
 
-/* Adicione esta seção ao CSS */
-.menu-toggle {
-    display: none; /* Oculto por padrão no desktop */
-    font-size: 1.5rem;
+.nav-link svg {
+    width: 20px;
+    height: 20px;
+    stroke-width: 2;
+}
+
+/* Hover State */
+.nav-link:hover {
+    background-color: rgba(59, 130, 246, 0.1); /* Azul bem transparente */
+    color: var(--color-secondary); /* Azul */
+}
+
+/* Active State */
+.nav-item.active .nav-link {
+    background-color: var(--color-secondary); /* Azul Sólido */
+    color: #FFFFFF;
+}
+/* Ajuste sutil no ícone quando ativo */
+.nav-item.active .nav-link svg {
+    stroke: #FFFFFF;
+}
+
+/* --- Theme Toggle (Switch Moderno) --- */
+.theme-switch-wrapper {
+    display: flex;
+    align-items: center;
+}
+.theme-switch {
+    display: inline-block;
+    height: 24px;
+    position: relative;
+    width: 44px;
+}
+.theme-switch input {
+    display: none;
+}
+.slider {
+    background-color: var(--border-color);
+    bottom: 0;
     cursor: pointer;
-    color: var(--color-text);
-    padding: 0 10px;
-    line-height: 1;
+    left: 0;
+    position: absolute;
+    right: 0;
+    top: 0;
+    transition: .4s;
+    border-radius: 34px;
+}
+.slider:before {
+    background-color: var(--color-text-main);
+    bottom: 3px;
+    content: "";
+    height: 18px;
+    left: 4px;
+    position: absolute;
+    transition: .4s;
+    width: 18px;
+    border-radius: 50%;
+}
+input:checked + .slider {
+    background-color: var(--color-secondary);
+}
+input:checked + .slider:before {
+    transform: translateX(19px);
 }
 
-/* 📱 Responsividade (Mobile) */
+/* Mobile Adjustments */
 @media (max-width: 768px) {
-    /* ... (código existente) ... */
-
-    /* Torna o botão hambúrguer visível no mobile */
-    .menu-toggle {
-        display: block;
-    }
-
-    /* ... (restante do código de responsividade) ... */
-}
-
-/* 📦 Conteúdo Principal */
-.main-content {
-    margin-left: var(--sidebar-width);
-    padding: 20px;
-    padding-top: 80px; /* Espaço para a navbar */
-    flex-grow: 1;
-    transition: margin-left var(--sidebar-transition);
-}
-
-/* 📱 Responsividade (Mobile) */
-@media (max-width: 768px) {
-    /* Esconde a sidebar e move o conteúdo */
     .sidebar {
-        margin-left: calc(-1 * var(--sidebar-width));
+        transform: translateX(-100%); /* Começa escondida no mobile */
     }
-
-    .sidebar.expanded {
-        margin-left: 0;
+    .sidebar.open {
+        transform: translateX(0);
     }
+    .user-name {
+        display: none; /* Esconde nome no mobile para economizar espaço */
+    }
+}
 
+/* =========================================
+   6. Layout Engine (Correção do Sidebar)
+   ========================================= */
+
+/* Wrapper evita rolagem horizontal indesejada */
+.wrapper {
+    display: flex;
+    width: 100%;
+    min-height: 100vh;
+    background-color: var(--color-bg-body);
+}
+
+/* O Conteúdo Principal */
+.main-content {
+    flex: 1;
+    margin-left: 260px; /* Largura da Sidebar */
+    padding: 2rem; /* Espaçamento interno */
+    transition: margin-left 0.3s ease-in-out;
+    width: 100%;
+    margin-top: 64px; /* Altura da Navbar (opcional se navbar for fixed) */
+}
+
+/* Estado: Sidebar Fechada (Desktop) */
+/* Essa classe será adicionada ao BODY via JS */
+body.sidebar-closed .sidebar {
+    transform: translateX(-100%);
+}
+
+body.sidebar-closed .main-content {
+    margin-left: 0; /* Conteúdo expande */
+}
+
+/* Estado: Mobile */
+@media (max-width: 768px) {
+    /* No mobile, o conteúdo sempre ocupa tudo */
     .main-content {
         margin-left: 0;
+        padding: 1rem;
     }
 
-    .main-content.sidebar-expanded {
-        /* Para telas muito pequenas, o menu pode sobrepor o conteúdo */
-        margin-left: var(--sidebar-width); 
+    /* Sidebar começa escondida no mobile (sem classe extra) */
+    .sidebar {
+        transform: translateX(-100%);
+        box-shadow: none;
     }
 
-    /* Oculta o nome da aplicação na navbar para ganhar espaço */
-    .app-name {
-        display: none;
-    }
-
-    /* Oculta o nome do user na navbar para ganhar espaço */
-    .user-name {
-        display: none;
-    }
-    
-    /* Move o toggle de tema para a direita no mobile */
-    .theme-toggle-container {
-        margin: 0;
+    /* Quando aberta no mobile, ela entra por cima (com sombra) */
+    .sidebar.mobile-open {
+        transform: translateX(0);
+        box-shadow: 5px 0 15px rgba(0,0,0,0.5);
     }
 }

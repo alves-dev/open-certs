@@ -10,253 +10,416 @@
 
 <th:block th:fragment="styles">
     <style>
-        /* Estilos de Botões */
-        .btn-submit,
-        .btn-skip,
-        .btn-next { /* Adicionado btn-next */
-            padding: 10px 20px;
-            margin-right: 10px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            text-decoration: none;
-            display: inline-block;
-            text-align: center;
-            transition: background-color 0.3s ease;
-            font-weight: bold;
+        /* --- Container Principal --- */
+        .question-card {
+            background-color: var(--color-bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 1rem;
+            padding: 2rem;
+            box-shadow: var(--shadow-card);
+            position: relative;
+            overflow: hidden;
         }
 
-        .btn-submit, .btn-next { /* Aplicando cor primária para submeter e próxima */
-            background-color: var(--color-primary);
-            color: white;
+        /* --- Toolbar de Sessão (Topo) --- */
+        .session-toolbar {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+            background-color: var(--color-bg-body);
+            padding: 0.75rem 1rem;
+            border-radius: 0.5rem;
+            margin-bottom: 2rem;
+            gap: 1rem;
+            border: 1px solid var(--border-color);
         }
 
-        .btn-submit:hover, .btn-next:hover {
-            background-color: #0056b3;
-        }
-
-        .btn-skip {
-            background-color: var(--color-secondary);
-            color: white;
-        }
-
-        .btn-skip:hover {
-            background-color: #5a6268;
-        }
-
-        /* Estilos de Lista de Respostas */
-        .question-list {
-            list-style: none;
-            padding: 0;
-            margin-top: 20px;
-        }
-
-        .question-list li {
-            margin-bottom: 10px;
-            padding: 10px;
-            border: 1px solid var(--color-text-secondary);
-            border-radius: 5px;
-            cursor: pointer;
-            transition: background-color 0.2s;
-        }
-
-        /* Estilo para item selecionado */
-        .question-list li:has(input:checked) {
-            background-color: rgba(0, 123, 255, 0.1);
-            border-color: var(--color-primary);
-        }
-        .question-list li:hover {
-            background-color: rgba(0, 123, 255, 0.05);
-        }
-
-        /* Estilo para a caixa de feedback da resposta correta */
-        .feedback-box {
-            margin-top: 20px;
-            padding: 15px;
-            border-radius: 8px;
-            border: 1px solid var(--color-success); /* Borda verde */
-            background-color: rgba(var(--color-success-rgb), 0.1); /* Fundo verde claro */
-        }
-
-        .feedback-box h4 {
-            color: var(--color-success);
-            margin-top: 0;
-            margin-bottom: 10px;
-            font-size: 1.1rem;
+        .session-input-group {
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 0.5rem;
+            flex: 1;
+            min-width: 250px;
         }
 
-        .feedback-box ul {
-            list-style: none; /* Remove bullets padrão */
-            padding-left: 0;
-            margin-bottom: 0;
+        .session-input {
+            background: transparent;
+            border: none;
+            border-bottom: 1px solid var(--color-text-muted);
+            color: var(--color-text-main);
+            padding: 0.25rem;
+            width: 100%;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.9rem;
+        }
+        .session-input:focus { outline: none; border-color: var(--color-secondary); }
+
+        .stats-group {
+            display: flex;
+            gap: 1rem;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+        .stat-badge {
+            padding: 4px 8px;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .stat-success { color: var(--color-primary); background: rgba(16, 185, 129, 0.1); }
+        .stat-error { color: var(--color-danger); background: rgba(239, 68, 68, 0.1); }
+
+        /* --- Tipografia da Questão --- */
+        .topic-badge {
+            display: inline-block;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--color-secondary);
+            font-weight: 700;
+            margin-bottom: 0.5rem;
         }
 
-        .feedback-box li {
-            font-size: 0.95rem;
-            padding: 3px 0;
-            color: var(--color-text);
+        .question-text {
+            font-size: 1.15rem;
+            font-weight: 500;
+            color: var(--color-text-main);
+            margin-bottom: 1.5rem;
+            line-height: 1.6;
         }
+
+        /* --- Lista de Opções (Cards Selecionáveis) --- */
+        .options-list {
+            list-style: none;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .option-item {
+            position: relative;
+        }
+
+        /* Esconde o input nativo, mas mantém acessível */
+        .option-input {
+            position: absolute;
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .option-label {
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+            padding: 1rem;
+            border: 1px solid var(--border-color);
+            border-radius: 0.5rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            background-color: var(--color-bg-card);
+        }
+
+        .option-label:hover {
+            border-color: var(--color-text-muted);
+            background-color: rgba(255,255,255, 0.02);
+        }
+
+        /* Estilo Marcado (Check) */
+        .option-input:checked + .option-label {
+            border-color: var(--color-secondary);
+            background-color: rgba(59, 130, 246, 0.05);
+            box-shadow: 0 0 0 1px var(--color-secondary);
+        }
+
+        /* O "Bolinha/Quadrado" visual customizado */
+        .option-indicator {
+            width: 20px;
+            height: 20px;
+            border: 2px solid var(--color-text-muted);
+            border-radius: 50%; /* Radio por padrão */
+            flex-shrink: 0;
+            margin-top: 2px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+        /* Se for Checkbox (Multipla escolha) */
+        .option-input[type="checkbox"] + .option-label .option-indicator {
+            border-radius: 4px;
+        }
+
+        .option-input:checked + .option-label .option-indicator {
+            border-color: var(--color-secondary);
+            background-color: var(--color-secondary);
+        }
+
+        /* Checkmark interno (pseudo-element) */
+        .option-indicator::after {
+            content: '';
+            width: 8px;
+            height: 8px;
+            background: white;
+            border-radius: 50%;
+            display: none;
+        }
+        .option-input[type="checkbox"] + .option-label .option-indicator::after {
+             border-radius: 1px; /* Quadrado para checkbox */
+        }
+
+        .option-input:checked + .option-label .option-indicator::after {
+            display: block;
+        }
+
+        /* --- Botões de Ação --- */
+        .action-bar {
+            margin-top: 2rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .btn-check {
+            background-color: var(--color-primary);
+            color: #0F172A;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            font-weight: 700;
+            cursor: pointer;
+            flex: 1;
+        }
+        .btn-check:hover { background-color: var(--color-primary-hover); }
+
+        .btn-skip {
+            background-color: transparent;
+            color: var(--color-text-muted);
+            border: 1px solid var(--border-color);
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            text-decoration: none;
+        }
+        .btn-skip:hover { border-color: var(--color-text-main); color: var(--color-text-main); }
+
+        /* --- Feedback Section --- */
+        .feedback-container {
+            margin-top: 2rem;
+            animation: slideDown 0.3s ease-out;
+        }
+
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .feedback-header {
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .feedback-correct .feedback-header { color: var(--color-primary); }
+        .feedback-wrong .feedback-header { color: var(--color-danger); }
+
+        .answer-reveal {
+            background-color: var(--color-bg-body);
+            border-left: 4px solid var(--color-primary);
+            padding: 1rem;
+            border-radius: 0 0.5rem 0.5rem 0;
+        }
+
+        /* Erro de Validação (Toast) */
+        .validation-toast {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: var(--color-danger);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 50px;
+            font-weight: 600;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            display: none;
+            z-index: 100;
+            animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        @keyframes popIn { from {transform: translate(-50%, 20px); opacity: 0;} to {transform: translate(-50%, 0); opacity: 1;} }
+
     </style>
 </th:block>
 
 <th:block th:fragment="content">
-    <div class="card">
-        <h2 th:text="${certification.displayName}">Certification Name</h2>
+
+    <div class="question-card" th:if="${question == null}" style="text-align: center; padding: 4rem 2rem;">
+        <div style="font-size: 3rem; margin-bottom: 1rem;">🎉</div>
+        <h2 style="color: var(--color-text-main); margin-bottom: 1rem;">Você completou todas as questões!</h2>
+        <p style="color: var(--color-text-muted); margin-bottom: 2rem;">Não há mais perguntas disponíveis para esta certificação no momento.</p>
+
+        <a th:href="@{/questions/new(certId=${certification.id})}" class="btn btn-primary">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+            Contribuir com uma Questão
+        </a>
     </div>
 
-    <div class="card">
-        <div th:if="${question == null}">
-            <p>The certification has no more questions available.</p>
-            <p>
-                How about contributing by creating a new one?
-                <a th:href="@{/questions/new(certId=${certification.id})}" class="btn-next">Create question</a>
-            </p>
-        </div>
+    <div class="question-card" th:if="${question != null}">
 
-        <div th:if="${question != null}">
-
-            <div style="margin-bottom: 25px; padding: 10px; border: 1px solid var(--color-secondary); border-radius: 5px;">
-                <label for="testIdentifier" style="font-weight: bold; display: block; margin-bottom: 5px;">
-                    Identificação da Sessão (Opcional): Defina uma identificação para o test, use a mesma identificação
-                    para continuar ele mais tarde
-                </label>
+        <div class="session-toolbar">
+            <div class="session-input-group">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--color-text-muted)" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
                 <input type="text"
                        id="testIdentifier"
-                       name="testIdentifier"
-                       placeholder="Ex: aws-test-janeiro"
-                       maxlength="50"
-                       style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 3px; box-sizing: border-box;"
-                       oninput="this.value = this.value.replace(/[^a-zA-Z0-9_-]/g, '')"
-                       th:value="${testSession != null} ? ${testSession.identifier} : ''">
-                <small style="color: var(--color-text-secondary);">Apenas letras, números, hífen (-) e underscore
-                    (_).</small>
-
-                <div th:if="${testSession != null}"
-                     style="margin-top: 15px; padding-top: 10px; border-top: 1px solid #eee;">
-                    <p style="margin: 5px 0; font-size: 0.9em;">
-                        Statistics:
-                        <strong style="color: var(--color-primary); margin-left: 15px;">% of correct:
-                            <span th:text="${testSession.percentageCorrect}">0</span>
-                        </strong>
-                        <strong style="color: var(--color-success); margin-left: 10px;">✅:
-                            <span th:text="${testSession.totalCorrect}">0</span>
-                        </strong>
-                        <strong style="color: var(--color-danger); margin-left: 15px;">❌:
-                            <span th:text="${testSession.totalError}">0</span>
-                        </strong>
-
-                    </p>
-                </div>
+                       class="session-input"
+                       placeholder="ID da Sessão (Opcional)"
+                       th:value="${testSession != null} ? ${testSession.identifier} : ''"
+                       title="Use um ID para salvar seu progresso">
             </div>
-            <p>
-                <strong>Topic</strong>: <span th:text="${question.topic}"></span>
-            </p>
-            <p>
-                <strong>Description</strong>: <span th:text="${question.description}"></span>
-            </p>
-            <p>
-                <strong>Type</strong>: <span
-                    th:text="${question.isMultipleChoice ? 'Multiple choice' : 'Single choice'}"></span>
-            </p>
 
-            <form id="questionForm"
-                  th:action="@{/questions/{id}/check(id=${certification.id})}"
-                  method="post">
-                <input type="hidden" name="questionId" th:value="${question.id}"/>
-
-                <input type="hidden" id="hiddenTestIdentifier" name="testIdentifier"
-                       th:value="${testSession != null ? testSession.identifier : ''}"/>
-
-                <ul class="question-list">
-                    <li th:each="resp, iterStat : ${answers}">
-                        <label style="width: 100%; display: block;">
-                            <input th:type="${question.isMultipleChoice} ? 'checkbox' : 'radio'"
-                                   th:name="selectedOptions"
-                                   th:value="${resp.text}"
-                                   style="margin-right: 10px;"
-                                   th:disabled="${isCorrect != null}">
-                            <span th:text="${resp.text}"></span>
-                        </label>
-                    </li>
-                </ul>
-
-                <div style="margin-top: 30px;">
-
-                    <div th:if="${isCorrect == null}">
-                        <button type="submit" id="checkButton" class="btn-submit">Check answer</button>
-                        <a th:href="@{/questions/{id}
-                            (
-                            id=${certification.id},
-                            testIdentifier=${testSession != null ? testSession.identifier : ''}
-                            )}" class="btn-skip"> Skip question
-                        </a>
-                    </div>
-
-                    <div th:if="${isCorrect != null}">
-                        <a th:href="@{/questions/{id}
-                            (
-                            id=${certification.id},
-                            testIdentifier=${testSession != null ? testSession.identifier : ''}
-                            )}" class="btn-next"> Next question
-                        </a>
-                    </div>
-
+            <div class="stats-group" th:if="${testSession != null}">
+                <div class="stat-badge stat-success" title="Acertos">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                    <span th:text="${testSession.totalCorrect}">0</span>
                 </div>
-            </form>
-
-            <div th:if="${isCorrect != null}" style="margin-top: 25px;">
-
-                <p th:text="${isCorrect ? '✅ Correct answer!' : '❌ Wrong answer.'}"
-                   style="font-size: 1.2rem; font-weight: bold; margin-bottom: 10px;"></p>
-
-                <div th:if="${!isCorrect}" class="feedback-box">
-
-                    <h4><span style="font-size: 1.5rem;">💡</span> The answer correct isé:</h4>
-
-                    <ul th:if="${!correctAnswers.isEmpty()}">
-                        <li th:each="answer : ${correctAnswers}" th:text="${answer}"></li>
-                    </ul>
-
-                    <p th:if="${correctAnswers.isEmpty()}" style="font-style: italic; color: var(--color-text-secondary);">
-                        A resposta correta não foi especificada para esta questão.
-                    </p>
+                <div class="stat-badge stat-error" title="Erros">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                    <span th:text="${testSession.totalError}">0</span>
+                </div>
+                <div class="stat-badge" style="background: var(--color-bg-body); color: var(--color-text-muted);">
+                    <span th:text="${testSession.percentageCorrect}">0%</span>
                 </div>
             </div>
         </div>
+
+        <span class="topic-badge" th:text="${question.topic}">TOPIC</span>
+        <h3 class="question-text" th:text="${question.description}">Descrição da questão...</h3>
+
+        <form id="questionForm" th:action="@{/questions/{id}/check(id=${certification.id})}" method="post">
+            <input type="hidden" name="questionId" th:value="${question.id}"/>
+            <input type="hidden" id="hiddenTestIdentifier" name="testIdentifier" th:value="${testSession != null ? testSession.identifier : ''}"/>
+
+            <ul class="options-list">
+                <li th:each="resp, iterStat : ${answers}" class="option-item">
+                    <input th:type="${question.isMultipleChoice} ? 'checkbox' : 'radio'"
+                           th:name="selectedOptions"
+                           th:id="${'opt-' + iterStat.index}"
+                           th:value="${resp.text}"
+                           class="option-input"
+                           th:disabled="${isCorrect != null}">
+
+                    <label th:for="${'opt-' + iterStat.index}" class="option-label">
+                        <div class="option-indicator"></div>
+                        <span th:text="${resp.text}">Opção de Texto</span>
+                    </label>
+                </li>
+            </ul>
+
+            <div class="action-bar">
+                <th:block th:if="${isCorrect == null}">
+                    <button type="submit" id="checkButton" class="btn-check">Verificar Resposta</button>
+
+                    <a th:href="@{/questions/{id}(id=${certification.id}, testIdentifier=${testSession != null ? testSession.identifier : ''})}"
+                       class="btn-skip">
+                        Pular
+                    </a>
+                </th:block>
+
+                <th:block th:if="${isCorrect != null}">
+                    <a th:href="@{/questions/{id}(id=${certification.id}, testIdentifier=${testSession != null ? testSession.identifier : ''})}"
+                       class="btn-check" style="text-decoration:none; text-align:center;">
+                        Próxima Questão →
+                    </a>
+                </th:block>
+            </div>
+        </form>
+
+        <div th:if="${isCorrect != null}" class="feedback-container" th:classappend="${isCorrect} ? 'feedback-correct' : 'feedback-wrong'">
+
+            <div class="feedback-header">
+                <span th:if="${isCorrect}">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                    Correto!
+                </span>
+                <span th:if="${!isCorrect}">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                    Incorreto.
+                </span>
+            </div>
+
+            <div th:if="${!isCorrect}" class="answer-reveal">
+                <p style="font-weight: 600; color: var(--color-text-main); margin-bottom: 0.5rem;">A resposta correta é:</p>
+                <ul style="list-style: none; padding: 0;">
+                    <li th:each="answer : ${correctAnswers}"
+                        th:text="${answer}"
+                        style="color: var(--color-text-muted); margin-bottom: 4px; display:flex; align-items:center; gap:8px;">
+                        • Texto da resposta
+                    </li>
+                </ul>
+                <p th:if="${correctAnswers.isEmpty()}" style="font-style: italic; color: var(--color-text-muted);">
+                    Gabarito não disponível.
+                </p>
+            </div>
+        </div>
+
     </div>
+
+    <div id="validationToast" class="validation-toast">
+        ⚠️ Selecione uma opção para continuar
+    </div>
+
 </th:block>
 
 <th:block th:fragment="scripts">
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            // --- Lógica de Sincronização do Identificador ---
+            // 1. Sincronia do ID da Sessão
             const visibleInput = document.getElementById('testIdentifier');
             const hiddenInput = document.getElementById('hiddenTestIdentifier');
 
             if (visibleInput && hiddenInput) {
+                // Formatar input para aceitar apenas caracteres válidos
                 visibleInput.addEventListener('input', function() {
+                    this.value = this.value.replace(/[^a-zA-Z0-9_-]/g, '');
                     hiddenInput.value = this.value;
                 });
             }
-        });
 
-        document.addEventListener('DOMContentLoaded', function() {
+            // 2. Validação do Formulário
             const form = document.getElementById('questionForm');
             const checkButton = document.getElementById('checkButton');
+            const toast = document.getElementById('validationToast');
 
-            // --- Lógica de Bloqueio do Botão (UX Imediata) ---
             if (form && checkButton) {
-                form.addEventListener('submit', function() {
-                    // Desabilita o botão imediatamente e muda o texto
-                    checkButton.disabled = true;
-                    checkButton.textContent = 'Checando...';
+                form.addEventListener('submit', function(e) {
+                    // Verifica se algo foi marcado
+                    const checked = form.querySelectorAll('input[name="selectedOptions"]:checked');
 
-                    // Desabilita os inputs no clique
-                    const inputs = document.querySelectorAll('.question-list input');
+                    if (checked.length === 0) {
+                        e.preventDefault(); // Bloqueia envio
+
+                        // Mostra Toast
+                        toast.style.display = 'block';
+                        setTimeout(() => { toast.style.display = 'none'; }, 3000);
+                        return;
+                    }
+
+                    // Se válido, prossegue com UX de carregamento
+                    checkButton.disabled = true;
+                    checkButton.textContent = 'Verificando...';
+                    checkButton.style.opacity = '0.7';
+
+                    // Pequeno delay para bloquear inputs visualmente
                     setTimeout(() => {
+                        const inputs = document.querySelectorAll('.option-input');
                         inputs.forEach(input => input.disabled = true);
                     }, 10);
                 });

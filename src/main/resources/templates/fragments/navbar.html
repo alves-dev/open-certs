@@ -1,23 +1,38 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <header th:fragment="navbar" class="navbar">
-    <div class="menu-toggle" id="menu-toggle">
-        &#9776;
-    </div>
 
-    <div class="app-name">OpenCerts</div>
+    <div class="navbar-left">
+        <div class="menu-toggle" id="menu-toggle" title="Toggle Menu">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                 stroke-linecap="round" stroke-linejoin="round">
+                <line x1="3" y1="12" x2="21" y2="12"></line>
+                <line x1="3" y1="6" x2="21" y2="6"></line>
+                <line x1="3" y1="18" x2="21" y2="18"></line>
+            </svg>
+        </div>
 
-    <div class="theme-toggle-container">
-        <label class="theme-toggle-switch">
-            <input type="checkbox" id="theme-toggle">
-            <span class="slider"></span>
-        </label>
+        <a href="/" class="app-brand">
+            <span>Open<span style="color: var(--color-primary)">Certs</span></span>
+        </a>
     </div>
 
     <div class="navbar-right">
-        <img th:src="${user.profileImage}" alt="User" class="user-photo">
-        <span th:text="${user.name}" class="user-name">Usuário</span>
-        <a href="/logout" class="logout-action">Exit</a>
+
+        <div class="theme-switch-wrapper">
+            <label class="theme-switch">
+                <input type="checkbox" id="theme-toggle"/>
+                <span class="slider round"></span>
+            </label>
+        </div>
+
+        <div class="user-profile">
+            <img th:src="${user.profileImage}" alt="User" class="user-photo">
+            <div class="user-info">
+                <span th:text="${user.name}" class="user-name">Usuário</span>
+                <a href="/logout" class="logout-action logout-link">Sair</a>
+            </div>
+        </div>
     </div>
 </header>
 </html>

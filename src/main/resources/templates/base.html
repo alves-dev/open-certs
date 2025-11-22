@@ -3,25 +3,57 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title th:text="${title}">Base Template</title>
+    <title th:text="${title}">OpenCerts</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
     <link rel="stylesheet" th:href="@{/css/styles.css}">
+
     <th:block th:replace="${styles} ?: _"></th:block>
+
+    <script defer src="https://web-analytics.alves-dev.com/script.js" data-website-id="28224a83-26b4-45fe-9c60-b8bc37463efc"></script>
 </head>
 <body>
-<div class="wrapper">
-    <div th:replace="fragments/navbar :: navbar"></div>
 
+<div th:replace="fragments/navbar :: navbar"></div>
+
+<div class="wrapper">
     <div th:replace="fragments/sidebar :: sidebar"></div>
 
     <main id="main-content" class="main-content">
-        <h1 th:text="${pageHeader}">Título da Página</h1>
-        <div th:replace="${content}">
-            <p>O conteúdo da página será carregado aqui.</p>
+        <div class="page-header" th:if="${!#strings.isEmpty(pageHeader)}">
+            <h1 th:text="${pageHeader}">Título</h1>
         </div>
+
+        <div th:replace="${content}"></div>
     </main>
 </div>
 
 <script th:src="@{/js/scripts.js}"></script>
+
+<script>
+    // Lógica simples para o menu
+    document.addEventListener("DOMContentLoaded", function() {
+        const toggle = document.getElementById('menu-toggle');
+        const body = document.body;
+        const sidebar = document.getElementById('sidebar');
+
+        if(toggle) {
+            toggle.addEventListener('click', () => {
+                if (window.innerWidth > 768) {
+                    // Desktop: Toggle classe no body para empurrar conteudo
+                    body.classList.toggle('sidebar-closed');
+                } else {
+                    // Mobile: Toggle classe na sidebar direto
+                    sidebar.classList.toggle('mobile-open');
+                }
+            });
+        }
+    });
+</script>
+
 <th:block th:replace="${scripts} ?: _"></th:block>
 
 </body>

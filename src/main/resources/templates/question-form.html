@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="pt-br" xmlns:th="http://www.thymeleaf.org"
       th:replace="~{base :: layout(
-          title='New Question | OpenCerts',
-          pageHeader='New Question',
+          title='Nova Questão | OpenCerts',
+          pageHeader='',
           content=~{::content},
           styles=~{::styles},
           scripts=~{::scripts}
@@ -10,152 +10,326 @@
 
 <th:block th:fragment="styles">
     <style>
+        /* Container do Formulário */
         .form-card {
-            max-width: 700px;
+            background-color: var(--color-bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 1rem;
+            padding: 2.5rem;
+            max-width: 800px;
             margin: 0 auto;
-            background: #fff;
-            padding: 32px;
-            border-radius: 12px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            box-shadow: var(--shadow-card);
         }
 
-        header h1 {
-            text-align: center;
-            color: #1c2541;
+        /* Grid para Topic e Certificação ficarem lado a lado */
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
         }
+        @media (max-width: 768px) { .form-row { grid-template-columns: 1fr; } }
 
-        label {
-            font-weight: 600;
-            margin-top: 16px;
+        /* Labels */
+        .form-label {
             display: block;
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: var(--color-text-muted);
+            margin-bottom: 0.5rem;
         }
 
-        select, input[type="text"], textarea {
+        /* Inputs Gerais */
+        .form-control, .form-select {
             width: 100%;
-            padding: 10px;
-            margin-top: 6px;
-            border-radius: 6px;
-            border: 1px solid #ccc;
+            padding: 0.75rem 1rem;
+            background-color: var(--color-bg-body); /* Mais escuro que o card */
+            border: 1px solid var(--border-color);
+            border-radius: 0.5rem;
+            color: var(--color-text-main);
+            font-family: var(--font-family);
             font-size: 1rem;
+            transition: all 0.2s;
         }
 
-        textarea {
+        .form-control:focus, .form-select:focus {
+            outline: none;
+            border-color: var(--color-secondary);
+            box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+        }
+
+        .form-control::placeholder { color: #475569; }
+
+        /* Textarea */
+        textarea.form-control {
             resize: vertical;
+            min-height: 120px;
+            line-height: 1.6;
         }
 
-        .multi-option {
-            margin: 16px 0;
-        }
-
-        .responses {
+        /* Toggle Switch (Multipla Escolha) */
+        .toggle-wrapper {
             display: flex;
-            flex-direction: column;
-            gap: 10px;
+            align-items: center;
+            gap: 0.75rem;
+            margin: 2rem 0 1rem 0;
+            padding: 1rem;
+            background-color: rgba(59, 130, 246, 0.05);
+            border-radius: 0.5rem;
+            border: 1px dashed var(--border-color);
+        }
+        .toggle-label {
+            font-size: 0.9rem;
+            color: var(--color-text-main);
+            font-weight: 500;
+            cursor: pointer;
         }
 
+        /* Área das Respostas */
+        .answers-section {
+            margin-top: 1.5rem;
+        }
+        .answers-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+        .badge-info {
+            font-size: 0.75rem;
+            color: var(--color-text-muted);
+            background: var(--color-bg-body);
+            padding: 2px 8px;
+            border-radius: 4px;
+        }
+
+        /* Linha da Resposta (Input + Radio/Check) */
         .response-item {
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 1rem;
+            margin-bottom: 0.75rem;
+            background-color: var(--color-bg-body);
+            padding: 0.5rem;
+            border-radius: 0.5rem;
+            border: 1px solid transparent;
+            transition: border-color 0.2s;
         }
 
+        /* Quando a linha está "focada" ou selecionada como correta */
+        .response-item:focus-within {
+            border-color: var(--border-color);
+        }
+
+        .response-item.is-correct {
+            border-color: var(--color-primary);
+            background-color: rgba(16, 185, 129, 0.05); /* Verde bem suave */
+        }
+
+        /* Input de texto da resposta */
         .response-item input[type="text"] {
             flex: 1;
-        }
-
-        button {
-            margin-top: 24px;
-            background-color: #1c2541;
-            color: #fff;
+            background: transparent;
             border: none;
-            padding: 12px 20px;
-            border-radius: 6px;
-            cursor: pointer;
-            width: 100%;
-            font-size: 1rem;
+            color: var(--color-text-main);
+            padding: 0.5rem;
+            font-size: 0.95rem;
+        }
+        .response-item input[type="text"]:focus {
+            outline: none;
         }
 
-        button:hover {
-            background-color: #3a506b;
+        /* O Radio/Checkbox customizado */
+        .correct-check {
+            width: 1.25rem;
+            height: 1.25rem;
+            cursor: pointer;
+            accent-color: var(--color-primary); /* Verde Spring */
+        }
+
+        /* Botão Salvar */
+        .btn-save {
+            margin-top: 2rem;
+            width: 100%;
+            background-color: var(--color-primary);
+            color: #0F172A;
+            font-weight: 700;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            border: none;
+            cursor: pointer;
+            transition: background 0.2s;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .btn-save:hover {
+            background-color: var(--color-primary-hover);
+        }
+
+        /* Mensagem de Erro (Validação) */
+        .error-msg {
+            color: var(--color-danger);
+            font-size: 0.875rem;
+            margin-top: 0.5rem;
+            display: none; /* Escondido por padrão */
+            text-align: center;
         }
     </style>
 </th:block>
 
 <th:block th:fragment="content">
-    <div class="card">
-        <form th:action="@{/questions}" method="post" class="form-card">
-            <label>Certification:</label>
-            <select id="certification-select" name="certification" required>
-                <option th:each="cert : ${certifications}"
-                        th:value="${cert.id}"
-                        th:text="${cert.displayName}"></option>
-            </select>
+    <div class="form-card">
+        <form th:action="@{/questions}" method="post" id="questionForm">
 
-            <label>Topic:</label>
-            <input type="text" name="topic" placeholder="Tópico">
+            <div class="form-row">
+                <div>
+                    <label for="certification-select" class="form-label">Certificação</label>
+                    <select id="certification-select" name="certification" class="form-select" required>
+                        <option value="" disabled selected>Selecione...</option>
+                        <option th:each="cert : ${certifications}"
+                                th:value="${cert.id}"
+                                th:text="${cert.name}"></option> </select>
+                </div>
+                <div>
+                    <label for="topic-input" class="form-label">Tópico / Domínio</label>
+                    <input type="text" id="topic-input" name="topic" class="form-control" placeholder="Ex: EC2, S3, Security..." required>
+                </div>
+            </div>
 
-            <label>Description question:</label>
-            <textarea name="description" rows="4" placeholder="Digite o enunciado da questão..." required></textarea>
+            <div>
+                <label class="form-label">Enunciado da Questão</label>
+                <textarea name="description" class="form-control" rows="5" placeholder="Digite o cenário da questão aqui..." required></textarea>
+            </div>
 
-            <div class="multi-option">
-                <input type="checkbox" id="multiCorrect" name="multiCorrect" onchange="toggleSelectionMode()">
-                <label for="multiCorrect">Contains multiple correct answers
+            <div class="toggle-wrapper">
+                <label class="theme-switch" style="transform: scale(0.8); margin-right: 10px;">
+                    <input type="checkbox" id="multiCorrect" name="multiCorrect" onchange="toggleSelectionMode()">
+                    <span class="slider round"></span>
+                </label>
+                <label for="multiCorrect" class="toggle-label">
+                    Esta questão possui múltiplas respostas corretas?
                 </label>
             </div>
 
-            <label>Responses:</label>
-            <div id="responses" class="responses">
-                <div class="response-item">
-                    <input type="radio" name="correctIndexes" value="0" class="correct-check">
-                    <input type="text" name="responses" placeholder="Opção A" required>
+            <div class="answers-section">
+                <div class="answers-header">
+                    <label class="form-label" style="margin:0">Alternativas</label>
+                    <span class="badge-info">Marque a(s) correta(s)</span>
                 </div>
-                <div class="response-item">
-                    <input type="radio" name="correctIndexes" value="1" class="correct-check">
-                    <input type="text" name="responses" placeholder="Opção B" required>
-                </div>
-                <div class="response-item">
-                    <input type="radio" name="correctIndexes" value="2" class="correct-check">
-                    <input type="text" name="responses" placeholder="Opção C">
-                </div>
-                <div class="response-item">
-                    <input type="radio" name="correctIndexes" value="3" class="correct-check">
-                    <input type="text" name="responses" placeholder="Opção D">
-                </div>
-                <div class="response-item">
-                    <input type="radio" name="correctIndexes" value="4" class="correct-check">
-                    <input type="text" name="responses" placeholder="Opção E">
+
+                <div id="responses" class="responses">
+                    <div class="response-item" onclick="selectRow(this)">
+                        <div style="display:flex; align-items:center; justify-content:center; width: 30px; color: var(--color-text-muted); font-weight:bold;">A</div>
+                        <input type="text" name="responses" placeholder="Digite a alternativa A" required autocomplete="off">
+                        <input type="radio" name="correctIndexes" value="0" class="correct-check" title="Marcar como correta">
+                    </div>
+
+                    <div class="response-item" onclick="selectRow(this)">
+                        <div style="display:flex; align-items:center; justify-content:center; width: 30px; color: var(--color-text-muted); font-weight:bold;">B</div>
+                        <input type="text" name="responses" placeholder="Digite a alternativa B" required autocomplete="off">
+                        <input type="radio" name="correctIndexes" value="1" class="correct-check" title="Marcar como correta">
+                    </div>
+
+                    <div class="response-item" onclick="selectRow(this)">
+                        <div style="display:flex; align-items:center; justify-content:center; width: 30px; color: var(--color-text-muted); font-weight:bold;">C</div>
+                        <input type="text" name="responses" placeholder="Digite a alternativa C" autocomplete="off">
+                        <input type="radio" name="correctIndexes" value="2" class="correct-check" title="Marcar como correta">
+                    </div>
+
+                    <div class="response-item" onclick="selectRow(this)">
+                        <div style="display:flex; align-items:center; justify-content:center; width: 30px; color: var(--color-text-muted); font-weight:bold;">D</div>
+                        <input type="text" name="responses" placeholder="Digite a alternativa D" autocomplete="off">
+                        <input type="radio" name="correctIndexes" value="3" class="correct-check" title="Marcar como correta">
+                    </div>
+
+                    <div class="response-item" onclick="selectRow(this)">
+                        <div style="display:flex; align-items:center; justify-content:center; width: 30px; color: var(--color-text-muted); font-weight:bold;">E</div>
+                        <input type="text" name="responses" placeholder="Digite a alternativa E" autocomplete="off">
+                        <input type="radio" name="correctIndexes" value="4" class="correct-check" title="Marcar como correta">
+                    </div>
                 </div>
             </div>
 
-            <button type="submit">Save Question</button>
+            <div id="validationError" class="error-msg">
+                ⚠️ Por favor, marque pelo menos uma resposta como correta antes de salvar.
+            </div>
+
+            <button type="submit" class="btn-save">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline points="7 3 7 8 15 8"></polyline></svg>
+                Salvar Questão
+            </button>
         </form>
     </div>
 </th:block>
 
 <th:block th:fragment="scripts">
     <script>
+        // 1. Toggle Radio vs Checkbox
         function toggleSelectionMode() {
             const multi = document.getElementById('multiCorrect').checked;
             const checks = document.querySelectorAll('.correct-check');
+
+            // Se mudar o modo, limpamos as seleções anteriores para evitar conflito visual
+            // checks.forEach(c => c.checked = false);
+            // updateVisuals();
 
             checks.forEach(c => {
                 c.type = multi ? 'checkbox' : 'radio';
             });
         }
 
+        // 2. Lógica Visual (Highlight na linha selecionada)
+        function updateVisuals() {
+            const items = document.querySelectorAll('.response-item');
+            items.forEach(item => {
+                const input = item.querySelector('.correct-check');
+                if (input.checked) {
+                    item.classList.add('is-correct');
+                } else {
+                    item.classList.remove('is-correct');
+                }
+            });
+        }
+
+        // Adiciona listener em todos os inputs de check/radio
+        document.querySelectorAll('.correct-check').forEach(input => {
+            input.addEventListener('change', updateVisuals);
+        });
+
+        // Auxiliar: Clicar na linha foca no input de texto, mas não marca o check (para evitar acidentes)
+        function selectRow(div) {
+             // Opcional: Focar no input de texto ao clicar na div
+             const textInput = div.querySelector('input[type="text"]');
+             // textInput.focus();
+        }
+
+        // 3. Validação no Submit
+        document.getElementById('questionForm').addEventListener('submit', function(event) {
+            const checked = document.querySelectorAll('input[name="correctIndexes"]:checked');
+            const errorMsg = document.getElementById('validationError');
+
+            if (checked.length === 0) {
+                event.preventDefault(); // Impede o envio
+                errorMsg.style.display = 'block';
+                // Scroll suave até o erro
+                errorMsg.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            } else {
+                errorMsg.style.display = 'none';
+            }
+        });
+
+        // 4. Carregar última certificação selecionada
         document.addEventListener('DOMContentLoaded', function() {
             const selectElement = document.getElementById('certification-select');
             const storageKey = 'opencerts.lastSelectedCertification';
 
             if (selectElement) {
-                // 1. 🔄 CARREGAR O VALOR SALVO
                 const savedValue = localStorage.getItem(storageKey);
                 if (savedValue) {
-                    // Tenta selecionar a opção correspondente ao valor salvo
                     selectElement.value = savedValue;
                 }
-
-                // 2. 💾 SALVAR NOVO VALOR AO MUDAR
                 selectElement.addEventListener('change', function() {
                     localStorage.setItem(storageKey, this.value);
                 });

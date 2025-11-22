@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="pt-br" xmlns:th="http://www.thymeleaf.org"
       th:replace="~{base :: layout(
-          title='Home | OpenCerts',
+          title='Dashboard | OpenCerts',
           pageHeader='',
           content=~{::content},
           styles=~{::styles},
@@ -10,122 +10,168 @@
 
 <th:block th:fragment="styles">
     <style>
-        /* --- Card Básico: Mantenha este estilo global para todos os cards --- */
-        .card {
-            background-color: var(--color-surface);
-            padding: 25px;
-            border-radius: var(--border-radius);
-            box-shadow: var(--shadow-base);
-            margin-bottom: 25px;
-        }
-
-        .card h2 {
-            color: var(--color-text);
-            margin-top: 0;
-            margin-bottom: 20px; /* Mais espaço */
-            font-size: 1.5rem;
-            border-bottom: 1px solid var(--color-background);
-            padding-bottom: 10px;
-        }
-
-        /* 🎯 NOVO: Estilos para o Grid de Certificações */
+        /* Grid Responsivo */
         .cert-grid {
             display: grid;
-            /* 3 colunas em telas grandes, 2 em médias, 1 em pequenas */
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            gap: 20px; /* Espaçamento entre os cards */
-            padding: 0;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
             list-style: none;
+            padding: 0;
         }
 
-        /* 🎯 NOVO: Estilo para o Mini-Card de Certificação */
+        /* Card de Certificação */
         .cert-item {
-            background-color: var(--color-background); /* Fundo sutil para destaque */
-            border-radius: var(--border-radius);
-            overflow: hidden; /* Garante que o conteúdo não saia */
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-            transition: transform 0.2s, box-shadow 0.2s;
-            border: 1px solid var(--color-background);
+            background-color: var(--color-bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 1rem;
+            overflow: hidden;
+            transition: transform 0.2s, border-color 0.2s, box-shadow 0.2s;
+            position: relative;
+            display: flex;
+            flex-direction: column;
         }
 
         .cert-item:hover {
-            transform: translateY(-5px); /* Efeito de elevação */
-            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
-            border-color: var(--color-primary); /* Destaque no hover */
+            transform: translateY(-4px);
+            border-color: var(--color-secondary); /* Azul no hover */
+            box-shadow: var(--shadow-card);
         }
 
-        /* Estilo do Link Clicável (Cobre todo o card) */
         .cert-link {
-            display: block;
-            padding: 15px;
             text-decoration: none;
-            color: var(--color-text);
+            color: inherit;
+            padding: 1.5rem;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
         }
 
-        /* Título Principal */
-        .cert-name {
-            font-size: 1.1rem;
-            font-weight: bold;
-            color: var(--color-primary);
-            margin-bottom: 5px;
+        /* Header do Card */
+        .cert-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 1rem;
         }
 
-        /* Provedor */
         .cert-provider {
-            font-size: 0.8rem;
-            color: var(--color-text-secondary);
-            margin-bottom: 10px;
-            text-transform: uppercase;
-        }
-
-        /* Nível */
-        .cert-level {
-            display: inline-block;
-            padding: 4px 8px;
-            border-radius: 4px;
             font-size: 0.75rem;
-            font-weight: bold;
-            background-color: #3f51b5; /* Azul Padrão */
-            color: white;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            font-weight: 700;
+            color: var(--color-text-muted);
         }
 
-        /* Ajustes de Tema Dark */
-        .theme-dark .cert-item {
-            background-color: #1f1f1f;
-            border-color: #333;
+        .cert-icon {
+            /* Placeholder para icone AWS/Azure se tiver no futuro */
+            width: 40px;
+            height: 40px;
+            background: rgba(59, 130, 246, 0.1);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--color-secondary);
         }
-        .theme-dark .cert-level {
-            background-color: #536dfe; /* Azul mais claro no dark mode */
+
+        /* Título */
+        .cert-name {
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: var(--color-text-main);
+            margin-bottom: auto; /* Empurra o badge pra baixo */
+            line-height: 1.4;
+        }
+
+        /* Badge de Nível */
+        .cert-footer {
+            margin-top: 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .cert-level {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.25rem 0.75rem;
+            border-radius: 999px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            background-color: rgba(16, 185, 129, 0.1); /* Verde suave */
+            color: var(--color-primary);
+            border: 1px solid rgba(16, 185, 129, 0.2);
+        }
+
+        /* Variação de cor por nível (Opcional - CSS puro) */
+        /* Se o texto conter 'Professional', fica roxo, etc. */
+
+        /* Welcome Section */
+        .welcome-section {
+            margin-bottom: 2.5rem;
+            padding: 2rem;
+            background: linear-gradient(to right, var(--color-bg-card), transparent);
+            border-left: 4px solid var(--color-primary);
+            border-radius: 0.5rem;
+        }
+        .welcome-title {
+            font-size: 1.75rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            color: var(--color-text-main);
+        }
+        .welcome-text {
+            color: var(--color-text-muted);
+            max-width: 700px;
         }
     </style>
 </th:block>
 
 <th:block th:fragment="content">
-    <div class="card">
-        <h2>Bem-vindo(a) ao OpenCerts! 🚀</h2>
-        <p>Este é um ambiente colaborativo para testes de certificações. Clique em qualquer card abaixo para iniciar um teste e desafiar seu conhecimento.</p>
+
+    <div class="welcome-section">
+        <h2 class="welcome-title">Bem-vindo ao OpenCerts! 🚀</h2>
+        <p class="welcome-text">
+            Este é o seu hub de preparação. Selecione uma das certificações abaixo para iniciar um simulado e validar seus conhecimentos na nuvem.
+        </p>
     </div>
 
-    <div class="card">
-        <h2>Certificações Disponíveis</h2>
+    <div>
+        <h3 style="margin-bottom: 1.5rem; color: var(--color-text-main);">Certificações Disponíveis</h3>
 
         <ul class="cert-grid">
             <li th:each="cert : ${certifications}" class="cert-item">
                 <a th:href="@{/questions/{id}(id=${cert.identifier})}" class="cert-link">
-                    <div class="cert-provider" th:text="${cert.provider}">Provider</div>
-                    <div class="cert-name" th:text="${cert.name}">Certification Name</div>
 
-                    <span class="cert-level" th:text="${cert.level}">Level</span>
+                    <div class="cert-header">
+                        <span class="cert-provider" th:text="${cert.provider}">AWS</span>
+                        <div class="cert-icon">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z"></path>
+                            </svg>
+                        </div>
+                    </div>
+
+                    <div class="cert-name" th:text="${cert.name}">Solutions Architect Associate</div>
+
+                    <div class="cert-footer">
+                        <span class="cert-level" th:text="${cert.level}">ASSOCIATE</span>
+
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--color-text-muted)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="5" y1="12" x2="19" y2="12"></line>
+                            <polyline points="12 5 19 12 12 19"></polyline>
+                        </svg>
+                    </div>
                 </a>
             </li>
         </ul>
-
     </div>
+
 </th:block>
 
 <th:block th:fragment="scripts">
     <script>
-        console.log("Página Dashboard carregada com sucesso.");
+        console.log("Dashboard carregado.");
     </script>
 </th:block>
 </html>

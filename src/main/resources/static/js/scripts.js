@@ -1,77 +1,39 @@
-document.addEventListener('DOMContentLoaded', () => {
-    const body = document.body;
-    const themeToggle = document.getElementById('theme-toggle');
-//    const sidebar = document.getElementById('sidebar');
-//    const mainContent = document.getElementById('main-content');
-//    const menuToggle = document.getElementById('menu-toggle');
+document.addEventListener("DOMContentLoaded", function() {
+    const menuToggle = document.getElementById('menu-toggle');
+    const sidebar = document.getElementById('sidebar');
 
-    // --- 🌙 Ação do Tema (Esta lógica deve rodar em todas as páginas) ---
-
-    // 1. Carregar tema salvo ou usar o padrão do sistema
-    const savedTheme = localStorage.getItem('opencerts.theme');
-    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-
-    if (savedTheme === 'dark' || (!savedTheme && prefersDark)) {
-        body.classList.add('theme-dark');
-        // Apenas marca o checkbox se ele existir na página (não existe no login)
-        if (themeToggle) {
-            themeToggle.checked = true;
-        }
-    }
-
-    // Listener para o Toggle (apenas se ele existir)
-    if (themeToggle) {
-        themeToggle.addEventListener('change', () => {
-            if (themeToggle.checked) {
-                body.classList.add('theme-dark');
-                localStorage.setItem('opencerts.theme', 'dark');
+    if(menuToggle && sidebar) {
+        menuToggle.addEventListener('click', function() {
+            // Alterna a classe que controla a visibilidade
+            // Sugestão: No mobile a sidebar começa oculta, então usamos 'open'
+            // No desktop ela começa visível, podemos usar 'closed' para esconder
+            if (window.innerWidth <= 768) {
+                sidebar.classList.toggle('open');
             } else {
-                body.classList.remove('theme-dark');
-                localStorage.setItem('opencerts.theme', 'light');
+                sidebar.classList.toggle('closed');
             }
         });
     }
+});
 
-    // --- 🧭 Ação da Sidebar (para Mobile) ---
-    // --- 🧭 Ação da Sidebar (Apenas se o elemento principal existir) ---
+document.addEventListener("DOMContentLoaded", () => {
+    const STORAGE_KEY = "opencerts.theme";
+    const themeToggle = document.getElementById("theme-toggle");
 
-    const sidebar = document.getElementById('sidebar');
-    const mainContent = document.getElementById('main-content');
-    const menuToggle = document.getElementById('menu-toggle');
+    // Recupera tema salvo
+    const savedTheme = localStorage.getItem(STORAGE_KEY);
+    if (savedTheme === "light") {
+        document.body.classList.add("light-theme");
+        themeToggle.checked = true;
+    }
 
-    // O restante do código da Sidebar só deve rodar se estivermos na área logada
-        if (sidebar && mainContent && menuToggle) {
-            // 1. Listener para o botão Hambúrguer
-            menuToggle.addEventListener('click', () => {
-                sidebar.classList.toggle('expanded');
-                mainContent.classList.toggle('sidebar-expanded');
-            });
+    // Listener do toggle
+    themeToggle.addEventListener("change", () => {
+        const isLight = themeToggle.checked;
 
-            // 2. Listener para fechar a sidebar ao clicar no conteúdo
-            mainContent.addEventListener('click', () => {
-                if (window.innerWidth <= 768 && sidebar.classList.contains('expanded')) {
-                    sidebar.classList.remove('expanded');
-                    mainContent.classList.remove('sidebar-expanded');
-                }
-            });
-        }
+        document.body.classList.toggle("light-theme", isLight);
 
-    // 1. Listener para o novo botão Hambúrguer
-//    if (menuToggle) {
-//        menuToggle.addEventListener('click', () => {
-//            // A lógica de expandir/recolher deve ser a mesma para sidebar e main-content
-//            sidebar.classList.toggle('expanded');
-//            mainContent.classList.toggle('sidebar-expanded');
-//        });
-//    }
-//
-//    // 2. Listener para fechar a sidebar ao clicar no conteúdo (melhora a usabilidade mobile)
-//    mainContent.addEventListener('click', () => {
-//        // Verifica se a sidebar está expandida e fecha
-//        if (window.innerWidth <= 768 && sidebar.classList.contains('expanded')) {
-//            sidebar.classList.remove('expanded');
-//            mainContent.classList.remove('sidebar-expanded');
-//        }
-//    });
-
+        // Salva no localStorage
+        localStorage.setItem(STORAGE_KEY, isLight ? "light" : "dark");
+    });
 });
