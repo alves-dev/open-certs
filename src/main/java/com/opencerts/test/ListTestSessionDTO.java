@@ -4,7 +4,8 @@ import java.time.LocalDateTime;
 
 public record ListTestSessionDTO(
         String identifier,
-        String certification,
+        String certificationId,
+        String certificationName,
         int totalCorrect,
         int totalError,
         int percentageCorrect,
@@ -13,6 +14,7 @@ public record ListTestSessionDTO(
 
     public ListTestSessionDTO(TestSession test) {
         this(test.identifier(),
+                test.certificationId(),
                 test.certificationId().replace("-", " ").toUpperCase(), //TODO: colocar o nome da certificação
                 test.totalCorrect(),
                 test.totalError(),
