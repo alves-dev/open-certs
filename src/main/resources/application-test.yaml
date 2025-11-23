@@ -15,3 +15,7 @@ spring:
 
 server:
   forward-headers-strategy: framework
+
+application:
+  import:
+    api-key: key-for-test
