@@ -17,7 +17,10 @@ public class SecurityConfig {
                                 "/oauth2/**",
                                 "/css/**",
                                 "/js/**",
-                                "/images/**"
+                                "/images/**",
+                                "/questions/import",   // Validada por API key
+                                "privacy",
+                                "terms"
                         ).permitAll()
                         .anyRequest().authenticated()
                 )

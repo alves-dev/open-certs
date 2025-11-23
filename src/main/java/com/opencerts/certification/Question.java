@@ -35,6 +35,16 @@ public class Question {
         this.createBy = user.id();
     }
 
+    public Question(String certification, String description, String topic, List<Response> responses, List<Response> correctAnswers) {
+        this.id = UUID.randomUUID();
+        this.certification = certification;
+        this.description = description;
+        this.topic = topic;
+        this.responses = responses;
+        this.correctAnswers = correctAnswers;
+        this.createdAt = LocalDateTime.now();
+    }
+
     public Question() {
     }
 
@@ -55,7 +65,7 @@ public class Question {
         return responses;
     }
 
-    public List<String> correctAnswers(){
+    public List<String> correctAnswers() {
         return correctAnswers.stream().map(Response::text).toList();
     }
 

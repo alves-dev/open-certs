@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="pt-br" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Privacy Policy | OpenCerts</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+          rel="stylesheet">
+
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+
+    <style>
+        /* Layout Simplificado */
+        body {
+            background-color: var(--color-bg-body, #0F172A);
+            color: var(--color-text-main, #F1F5F9);
+            font-family: var(--font-family, 'Inter', sans-serif);
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        /* Header Minimalista */
+        .simple-header {
+            padding: 1.5rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 900px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        .btn-back {
+            text-decoration: none;
+            color: var(--color-text-muted, #94A3B8);
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: color 0.2s;
+        }
+        .btn-back:hover {
+            color: var(--color-secondary, #3B82F6);
+        }
+
+        /* Container do Conteúdo */
+        .policy-container {
+            max-width: 800px;
+            margin: 2rem auto 4rem auto;
+            padding: 0 1.5rem;
+            width: 100%;
+        }
+
+        .policy-card {
+            background-color: var(--color-bg-card, #1E293B);
+            border: 1px solid var(--border-color, #334155);
+            border-radius: 1rem;
+            padding: 3rem;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Tipografia do Documento */
+        h1 {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+            color: var(--color-text-main, #fff);
+        }
+
+        .last-update {
+            color: var(--color-text-muted, #94A3B8);
+            font-size: 0.9rem;
+            margin-bottom: 2.5rem;
+            display: block;
+            padding-bottom: 1.5rem;
+            border-bottom: 1px solid var(--border-color, #334155);
+        }
+
+        h2 {
+            font-size: 1.25rem;
+            margin-top: 2rem;
+            margin-bottom: 1rem;
+            color: var(--color-text-main, #fff);
+        }
+
+        p {
+            line-height: 1.7;
+            color: var(--color-text-muted, #94A3B8);
+            margin-bottom: 1rem;
+        }
+
+        ul {
+            margin-bottom: 1rem;
+            padding-left: 1.5rem;
+            color: var(--color-text-muted, #94A3B8);
+        }
+        ul li {
+            margin-bottom: 0.5rem;
+            line-height: 1.6;
+        }
+        ul li::marker {
+            color: var(--color-primary, #10B981);
+        }
+
+        a {
+            color: var(--color-secondary, #3B82F6);
+            text-decoration: none;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+
+        /* Footer Simples */
+        .simple-footer {
+            margin-top: auto;
+            text-align: center;
+            padding: 2rem;
+            color: var(--color-text-muted, #64748B);
+            font-size: 0.8rem;
+            border-top: 1px solid var(--border-color, #334155);
+        }
+
+        @media (max-width: 600px) {
+            .policy-card { padding: 1.5rem; }
+            h1 { font-size: 1.5rem; }
+        }
+    </style>
+</head>
+<body>
+
+<header class="simple-header">
+    <a href="/" class="app-brand">
+        <span>Open<span style="color: var(--color-primary)">Certs</span></span>
+    </a>
+    <a href="/" class="btn-back">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+             stroke-linecap="round" stroke-linejoin="round">
+            <line x1="19" y1="12" x2="5" y2="12"></line>
+            <polyline points="12 19 5 12 12 5"></polyline>
+        </svg>
+        Voltar para Home
+    </a>
+</header>
+
+<main class="policy-container">
+    <article class="policy-card">
+        <h1>📄 Privacy Policy — OpenCerts</h1>
+        <span class="last-update">Última atualização: 23/11/2025</span>
+
+        <p>O <strong>OpenCerts</strong> é uma plataforma colaborativa e open-source focada em auxiliar desenvolvedores a
+            estudarem para certificações de nuvem. Esta Política de Privacidade descreve quais dados coletamos, como
+            usamos e como protegemos essas informações.</p>
+
+        <h2>1. Informações que Coletamos</h2>
+        <p>O OpenCerts coleta apenas os dados necessários para o funcionamento da plataforma:</p>
+        <ul>
+            <li><strong>E-mail:</strong> Fornecido pela conta Google</li>
+            <li><strong>Informações fornecidas pelo usuário:</strong> nomes de sessão (identifiers) criados por você
+                para salvar seu progresso.
+            </li>
+            <li><strong>Dados de uso:</strong> métricas simples de navegação, erros, desempenho e estatísticas gerais
+                (sem dados pessoais).
+            </li>
+            <li><strong>Contribuições:</strong> questões, textos e conteúdos enviados pelos usuários para o banco de
+                questões.
+            </li>
+        </ul>
+        <p>Não coletamos informações sensíveis, dados pessoais identificáveis (como CPF) ou localização precisa.</p>
+
+        <h2>2. Como Usamos os Dados</h2>
+        <p>Utilizamos os dados apenas para:</p>
+        <ul>
+            <li>Salvar o progresso dos estudos dos usuários.</li>
+            <li>Manter e melhorar a plataforma.</li>
+            <li>Validar questões enviadas pela comunidade.</li>
+            <li>Prover funcionalidades como histórico, estatísticas e simulados.</li>
+        </ul>
+        <p>Não vendemos, alugamos ou compartilhamos dados com terceiros.</p>
+
+        <h2>3. Cookies e Tecnologias Semelhantes</h2>
+        <p>Podemos utilizar cookies simples para:</p>
+        <ul>
+            <li>Lembrar preferências (tema, idioma ou configurações).</li>
+            <li>Manter sessões de uso na plataforma.</li>
+        </ul>
+        <p>Nenhum cookie é usado para rastreamento publicitário.</p>
+
+        <h2>4. Compartilhamento de Informações</h2>
+        <p>Não compartilhamos seus dados com terceiros, exceto quando exigido por lei ou para o funcionamento essencial
+            da plataforma (ex: hospedagem e banco de dados).</p>
+
+        <h2>5. Segurança</h2>
+        <p>Adotamos boas práticas de segurança para proteger dados armazenados.</p>
+        <p>Mesmo assim, nenhum sistema é 100% seguro, e não garantimos proteção absoluta.</p>
+
+        <h2>6. Seus Direitos</h2>
+        <p>Você pode:</p>
+        <ul>
+            <li>Apagar sua sessão ou identificadores criados.</li>
+            <li>Solicitar remoção de dados enviados por você (questões, contribuições).</li>
+        </ul>
+
+        <h2>7. Contato</h2>
+        <p>Para dúvidas sobre privacidade, entre em contato:</p>
+        <p>
+            <a href="mailto:alvesmoreiraigor+opencerts@gmail.com">alvesmoreiraigor+opencerts@gmail.com</a>
+        </p>
+    </article>
+</main>
+
+<footer class="simple-footer">
+    &copy; 2025 OpenCerts. Desenvolvido por <strong style="color: var(--color-primary)">alves-dev</strong>.
+</footer>
+
+</body>
+</html>

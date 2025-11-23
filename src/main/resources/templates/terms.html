@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="pt-br" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Terms of Service | OpenCerts</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+          rel="stylesheet">
+
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+
+    <style>
+        body {
+            background-color: var(--color-bg-body, #0F172A);
+            color: var(--color-text-main, #F1F5F9);
+            font-family: var(--font-family, 'Inter', sans-serif);
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        /* Header Minimalista */
+        .simple-header {
+            padding: 1.5rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 900px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        .btn-back {
+            text-decoration: none;
+            color: var(--color-text-muted, #94A3B8);
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: color 0.2s;
+        }
+        .btn-back:hover {
+            color: var(--color-secondary, #3B82F6);
+        }
+
+        /* Container do Conteúdo */
+        .policy-container {
+            max-width: 800px;
+            margin: 2rem auto 4rem auto;
+            padding: 0 1.5rem;
+            width: 100%;
+        }
+
+        .policy-card {
+            background-color: var(--color-bg-card, #1E293B);
+            border: 1px solid var(--border-color, #334155);
+            border-radius: 1rem;
+            padding: 3rem;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
+        }
+
+        h1 {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+            color: var(--color-text-main, #fff);
+        }
+
+        .last-update {
+            color: var(--color-text-muted, #94A3B8);
+            font-size: 0.9rem;
+            margin-bottom: 2.5rem;
+            display: block;
+            padding-bottom: 1.5rem;
+            border-bottom: 1px solid var(--border-color, #334155);
+        }
+
+        h2 {
+            font-size: 1.25rem;
+            margin-top: 2rem;
+            margin-bottom: 1rem;
+            color: var(--color-text-main, #fff);
+        }
+
+        p {
+            line-height: 1.7;
+            color: var(--color-text-muted, #94A3B8);
+            margin-bottom: 1rem;
+        }
+
+        ul {
+            margin-bottom: 1rem;
+            padding-left: 1.5rem;
+            color: var(--color-text-muted, #94A3B8);
+        }
+        ul li {
+            margin-bottom: 0.5rem;
+            line-height: 1.6;
+        }
+        ul li::marker {
+            color: var(--color-primary, #10B981);
+        }
+
+        a {
+            color: var(--color-secondary, #3B82F6);
+            text-decoration: none;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+
+        .simple-footer {
+            margin-top: auto;
+            text-align: center;
+            padding: 2rem;
+            color: var(--color-text-muted, #64748B);
+            font-size: 0.8rem;
+            border-top: 1px solid var(--border-color, #334155);
+        }
+
+        @media (max-width: 600px) {
+            .policy-card { padding: 1.5rem; }
+            h1 { font-size: 1.5rem; }
+        }
+    </style>
+</head>
+<body>
+
+<header class="simple-header">
+    <a href="/" class="app-brand">
+        <span>Open<span style="color: var(--color-primary)">Certs</span></span>
+    </a>
+    <a href="/" class="btn-back">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+             stroke-linecap="round" stroke-linejoin="round">
+            <line x1="19" y1="12" x2="5" y2="12"></line>
+            <polyline points="12 19 5 12 12 5"></polyline>
+        </svg>
+        Voltar para Home
+    </a>
+</header>
+
+<main class="policy-container">
+    <article class="policy-card">
+        <h1>📄 Terms of Service — OpenCerts</h1>
+        <span class="last-update">Última atualização: 23/11/2025</span>
+
+        <p>Bem-vindo ao <strong>OpenCerts</strong>! Ao usar a plataforma, você concorda com estes Termos de Serviço.</p>
+
+        <h2>1. Uso da Plataforma</h2>
+        <p>O OpenCerts oferece recursos gratuitos e colaborativos para estudo de certificações (quizzes, simulados,
+            histórico e contribuições da comunidade).</p>
+        <p>Ao usar a plataforma, você concorda em:</p>
+        <ul>
+            <li>Utilizá-la apenas para fins legais.</li>
+            <li>Não tentar burlar, invadir ou comprometer o sistema.</li>
+            <li>Não enviar conteúdo ofensivo, ilegal ou protegido por direitos autorais sem permissão.</li>
+        </ul>
+
+        <h2>2. Conteúdo Enviado pelos Usuários</h2>
+        <p>Ao enviar questões, textos ou qualquer contribuição, você:</p>
+        <ul>
+            <li>Garante que possui direitos sobre o conteúdo.</li>
+            <li>Concede permissão para que o conteúdo seja exibido publicamente na plataforma.</li>
+            <li>Concorda que o conteúdo pode ser revisado, alterado ou removido para manter qualidade e segurança.</li>
+        </ul>
+
+        <h2>3. Disponibilidade do Serviço</h2>
+        <p>O OpenCerts é uma plataforma open-source em constante evolução. Serviços podem sofrer alterações,
+            interrupções ou atualizações sem aviso prévio.</p>
+        <p>Não garantimos:</p>
+        <ul>
+            <li>100% de disponibilidade.</li>
+            <li>Que os conteúdos, questões ou respostas sejam livres de erros.</li>
+        </ul>
+
+        <h2>4. Isenção de Responsabilidade</h2>
+        <p>O OpenCerts não garante aprovação em certificações oficiais. Os conteúdos têm caráter educativo e são
+            produzidos pela comunidade.</p>
+
+        <h2>5. Limitação de Responsabilidade</h2>
+        <p>Não somos responsáveis por:</p>
+        <ul>
+            <li>Perda de dados causada por mau uso ou falhas externas.</li>
+            <li>Informações incorretas, incompletas ou desatualizadas enviadas pelos usuários.</li>
+            <li>Decisões tomadas com base no conteúdo da plataforma.</li>
+        </ul>
+
+        <h2>6. Modificações nos Termos</h2>
+        <p>Podemos atualizar estes termos a qualquer momento. O uso contínuo da plataforma após mudanças significa que
+            você aceita os novos termos.</p>
+
+        <h2>7. Contato</h2>
+        <p>Para questões relacionadas aos Termos de Serviço, entre em contato:</p>
+        <p>
+            <a href="mailto:alvesmoreiraigor+opencerts@gmail.com">alvesmoreiraigor+opencerts@gmail.com</a>
+        </p>
+    </article>
+</main>
+
+<footer class="simple-footer">
+    &copy; 2025 OpenCerts. Desenvolvido por <strong style="color: var(--color-primary)">alves-dev</strong>.
+</footer>
+
+</body>
+</html>

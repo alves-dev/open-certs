@@ -1,0 +1,15 @@
+[
+  {
+    "certification": "aws-foundational",
+    "topic": "",
+    "description": "A Developer is making changes to a custom application that is currently using AWS Elastic Beanstalk. After the Developer completes the changes, what solutions will update the Elastic Beanstalk environment with the new application version? (Choose TWO)",
+    "responses": [
+      "Package the application code into a `.zip` ...",
+      "Package the application code into a `.tar` ...",
+      "Package the application code into a `.tar` ...",
+      "Package the application code into a `.zip` ...",
+      "Package the application code into a `.zip` ..."
+    ],
+    "correctIndexes": [0,3]
+  }
+]
