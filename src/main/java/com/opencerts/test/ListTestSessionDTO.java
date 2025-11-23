@@ -12,6 +12,12 @@ public record ListTestSessionDTO(
 ) {
 
     public ListTestSessionDTO(TestSession test) {
-        this(test.identifier(), test.certificationId(), test.totalCorrect(), test.totalError(), test.percentageCorrect(), test.startedAt());
+        this(test.identifier(),
+                test.certificationId().replace("-", " ").toUpperCase(), //TODO: colocar o nome da certificação
+                test.totalCorrect(),
+                test.totalError(),
+                test.percentageCorrect(),
+                test.startedAt()
+        );
     }
 }
