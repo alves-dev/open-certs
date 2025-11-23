@@ -1,7 +1,8 @@
 import json
 import re
 
-CERTIFICATION = "aws-developer-associate"
+FILENAME = ""
+CERTIFICATION = ""
 TOPIC = ""
 
 def parse_md(md_text: str):
@@ -45,14 +46,12 @@ def parse_md(md_text: str):
 
 
 if __name__ == "__main__":
-    filename = "Amazon-Web-Services-AWS-Developer-Associate-DVA-C02-Practice-Tests-Exams-Questions-Answers"
-
-    with open(f"{filename}.md", "r", encoding="utf-8") as f:
+    with open(f"{FILENAME}.md", "r", encoding="utf-8") as f:
         md_content = f.read()
 
     result = parse_md(md_content)
 
-    with open(f"{filename}.json", "w", encoding="utf-8") as f:
+    with open(f"{FILENAME}.json", "w", encoding="utf-8") as f:
         json.dump(result, f, ensure_ascii=False, indent=2)
 
-    print(f"Gerado {filename}.json!")
+    print(f"Gerado {FILENAME}.json!")
