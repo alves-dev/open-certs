@@ -1,5 +1,6 @@
 package com.opencerts.certification;
 
+import com.opencerts.util.Page;
 import com.opencerts.certification.request.AnswerFormDTO;
 import com.opencerts.test.TestSessionDTO;
 import com.opencerts.test.TestSessionService;
@@ -31,7 +32,7 @@ public class QuestionController {
     public String showForm(Model model) {
         model.addAttribute("certifications", certificationService.listAll());
 
-        return "question-form";
+        return Page.QUESTION_FORM;
     }
 
     @PostMapping
@@ -70,10 +71,10 @@ public class QuestionController {
         var question = questionService.findRandomByCertification(certificationId, testIdentifier);
 
         Optional<Certification> optionalCertification = certificationService.getById(certificationId);
-        if (optionalCertification.isEmpty()){
+        if (optionalCertification.isEmpty()) {
             model.addAttribute("errorMessage", "Certification not found");
             model.addAttribute("status", "400");
-            return "error";
+            return Page.ERROR;
         }
 
         model.addAttribute("certification", optionalCertification.get());
@@ -88,7 +89,7 @@ public class QuestionController {
 
         model.addAttribute("testSession", testSession);
 
-        return "question";
+        return Page.QUESTION;
     }
 
     @PostMapping("/{certificationId}/check")
@@ -113,6 +114,6 @@ public class QuestionController {
         model.addAttribute("testSession", testSession);
         model.addAttribute("correctAnswers", question.correctAnswers());
 
-        return "question";
+        return Page.QUESTION;
     }
 }

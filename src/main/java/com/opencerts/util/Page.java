@@ -1,0 +1,18 @@
+package com.opencerts.util;
+
+public class Page {
+
+    public static final String HOME = "index";
+
+    public static final String QUESTION = "question";
+    public static final String QUESTION_FORM = "question-form";
+    public static final String TESTS = "tests";
+
+
+    public static final String DOCUMENTATION = "docs";
+    public static final String ERROR = "error";
+
+    public static final String PRIVACY = "privacy";
+    public static final String TERMS = "terms";
+
+}

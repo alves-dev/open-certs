@@ -1,10 +1,9 @@
-package com.opencerts;
+package com.opencerts.util;
 
 import com.opencerts.certification.Certification;
 import com.opencerts.certification.CertificationService;
 import jakarta.annotation.PostConstruct;
 import org.springframework.context.annotation.Profile;
-import org.springframework.stereotype.Component;
 
 //@Component
 @Profile("!test")

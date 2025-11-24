@@ -1,5 +1,6 @@
 package com.opencerts.test;
 
+import com.opencerts.util.Page;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -18,6 +19,6 @@ public class TestController {
     @GetMapping
     public String showQuestion(Model model) {
         model.addAttribute("testSessions", testSessionService.listByUser());
-        return "tests";
+        return Page.TESTS;
     }
 }
