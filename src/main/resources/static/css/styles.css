@@ -335,7 +335,7 @@ a:hover {
     border-radius: 50%;
 }
 input:checked + .slider {
-    background-color: var(--color-secondary);
+    background-color: var(--color-primary);
 }
 input:checked + .slider:before {
     transform: translateX(19px);
