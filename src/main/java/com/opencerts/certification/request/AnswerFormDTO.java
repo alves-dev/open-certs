@@ -1,4 +1,4 @@
-package com.opencerts.certification;
+package com.opencerts.certification.request;
 
 import java.util.List;
 import java.util.UUID;

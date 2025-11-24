@@ -141,7 +141,7 @@
 
         <ul class="cert-grid">
             <li th:each="cert : ${certifications}" class="cert-item">
-                <a th:href="@{/questions/{id}(id=${cert.identifier})}" class="cert-link">
+                <a th:href="@{/questions/{id}(id=${cert.id})}" class="cert-link">
 
                     <div class="cert-header">
                         <span class="cert-provider" th:text="${cert.provider}">AWS</span>

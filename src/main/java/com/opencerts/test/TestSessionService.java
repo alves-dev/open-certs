@@ -1,5 +1,6 @@
 package com.opencerts.test;
 
+import com.opencerts.certification.CertificationService;
 import com.opencerts.user.UserService;
 import org.springframework.stereotype.Service;
 
@@ -12,15 +13,17 @@ public class TestSessionService {
 
     private final TestSessionRepository repository;
     private final UserService userService;
+    private final CertificationService certificationService;
 
-    public TestSessionService(TestSessionRepository repository, UserService userService) {
+    public TestSessionService(TestSessionRepository repository, UserService userService, CertificationService certificationService) {
         this.repository = repository;
         this.userService = userService;
+        this.certificationService = certificationService;
     }
 
     public List<ListTestSessionDTO> listByUser() {
         var userId = userService.getUser().id();
-        return repository.findByUserId(userId).stream().map(ListTestSessionDTO::new).toList();
+        return repository.findByUserId(userId).stream().map(t -> new ListTestSessionDTO(t, certificationService)).toList();
     }
 
     public Optional<TestSession> findByIdentifier(String identifier) {

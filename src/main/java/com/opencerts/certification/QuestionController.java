@@ -1,5 +1,6 @@
 package com.opencerts.certification;
 
+import com.opencerts.certification.request.AnswerFormDTO;
 import com.opencerts.test.TestSessionDTO;
 import com.opencerts.test.TestSessionService;
 import com.opencerts.user.User;
@@ -10,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Controller
 @RequestMapping("/questions")
@@ -67,7 +69,14 @@ public class QuestionController {
     ) {
         var question = questionService.findRandomByCertification(certificationId, testIdentifier);
 
-        model.addAttribute("certification", certificationService.getById(certificationId));
+        Optional<Certification> optionalCertification = certificationService.getById(certificationId);
+        if (optionalCertification.isEmpty()){
+            model.addAttribute("errorMessage", "Certification not found");
+            model.addAttribute("status", "400");
+            return "error";
+        }
+
+        model.addAttribute("certification", optionalCertification.get());
         model.addAttribute("question", question);
 
         if (question != null)
@@ -97,7 +106,7 @@ public class QuestionController {
             );
 
 
-        model.addAttribute("certification", certificationService.getById(certificationId));
+        model.addAttribute("certification", certificationService.getById(certificationId).get());
         model.addAttribute("question", question);
         model.addAttribute("answers", question.responses());
         model.addAttribute("isCorrect", isCorrect);

@@ -7,7 +7,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 public class Certification {
 
     @Id
-    private String identifier;
+    private String id;
     private String provider;
     private String name;
     private String level;
@@ -16,7 +16,7 @@ public class Certification {
     }
 
     public Certification(String provider, String name, String level) {
-        this.identifier = provider
+        this.id = provider
                 .concat("-").concat(name)
                 .concat("-").concat(level)
                 .toLowerCase().replace(" ", "-");
@@ -27,11 +27,7 @@ public class Certification {
 
     // Getters //
     public String id() {
-        return identifier;
-    }
-
-    public String identifier() {
-        return identifier;
+        return id;
     }
 
     public String provider() {
@@ -44,10 +40,6 @@ public class Certification {
 
     public String level() {
         return level;
-    }
-
-    public String displayName() {
-        return provider.concat(" - ").concat(name).concat(" | ").concat(level);
     }
 
     // Modificadores //

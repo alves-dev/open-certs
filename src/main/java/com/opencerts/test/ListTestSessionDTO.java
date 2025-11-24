@@ -1,21 +1,22 @@
 package com.opencerts.test;
 
+import com.opencerts.certification.CertificationService;
+import com.opencerts.certification.response.CertificationDTO;
+
 import java.time.LocalDateTime;
 
 public record ListTestSessionDTO(
         String identifier,
-        String certificationId,
-        String certificationName,
+        CertificationDTO certification,
         int totalCorrect,
         int totalError,
         int percentageCorrect,
         LocalDateTime startedAt
 ) {
 
-    public ListTestSessionDTO(TestSession test) {
+    public ListTestSessionDTO(TestSession test, CertificationService certificationService) {
         this(test.identifier(),
-                test.certificationId(),
-                test.certificationId().replace("-", " ").toUpperCase(), //TODO: colocar o nome da certificação
+                CertificationDTO.of(certificationService.getById(test.certificationId())),
                 test.totalCorrect(),
                 test.totalError(),
                 test.percentageCorrect(),
