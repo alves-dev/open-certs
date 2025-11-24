@@ -15,6 +15,9 @@ spring:
 
 server:
   forward-headers-strategy: framework
+  servlet:
+    session:
+      timeout: 3h
 
 application:
   import:
