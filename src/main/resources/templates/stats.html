@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="pt-br" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{base :: layout(
+          title='Estatísticas | OpenCerts',
+          pageHeader='Estatísticas da Plataforma',
+          content=~{::content},
+          styles=~{::styles},
+          scripts=~{::scripts}
+      )}">
+
+<th:block th:fragment="styles">
+    <style>
+        /* --- Seção de KPIs (Números Grandes) --- */
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 3rem;
+        }
+
+        .kpi-card {
+            background-color: var(--color-bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 1rem;
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            position: relative;
+            overflow: hidden;
+            box-shadow: var(--shadow-card);
+        }
+
+        /* Efeito decorativo de fundo */
+        .kpi-card::after {
+            content: '';
+            position: absolute;
+            top: -10%; right: -10%;
+            width: 100px; height: 100px;
+            background: radial-gradient(circle, rgba(59, 130, 246, 0.1) 0%, transparent 70%);
+            border-radius: 50%;
+            pointer-events: none;
+        }
+
+        .kpi-icon {
+            color: var(--color-primary);
+            margin-bottom: 1rem;
+            background: rgba(16, 185, 129, 0.1);
+            padding: 10px;
+            border-radius: 8px;
+        }
+
+        .kpi-value {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: var(--color-text-main);
+            line-height: 1;
+            margin-bottom: 0.5rem;
+            /* Gradiente sutil no texto */
+            background: linear-gradient(135deg, var(--color-text-main), var(--color-text-muted));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .kpi-label {
+            font-size: 0.9rem;
+            color: var(--color-text-muted);
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        /* --- Lista Detalhada (Questões por Cert) --- */
+        .breakdown-section {
+            background-color: var(--color-bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 1rem;
+            padding: 2rem;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .section-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--color-text-main);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        /* Linha da Certificação */
+        .cert-stat-row {
+            display: grid;
+            grid-template-columns: 2fr 3fr 1fr; /* Nome | Barra | Valor */
+            align-items: center;
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
+            padding: 0.5rem;
+            border-radius: 0.5rem;
+            transition: background 0.2s;
+        }
+        .cert-stat-row:hover {
+            background-color: var(--color-bg-body);
+        }
+
+        @media (max-width: 768px) {
+            .cert-stat-row { grid-template-columns: 1fr; gap: 0.5rem; }
+        }
+
+        /* Informação da Certificação */
+        .cert-info {
+            display: flex;
+            flex-direction: column;
+        }
+        .cert-name {
+            font-weight: 600;
+            color: var(--color-text-main);
+        }
+        .cert-provider {
+            font-size: 0.75rem;
+            color: var(--color-text-muted);
+            text-transform: uppercase;
+        }
+
+        /* Barra de Volume */
+        .volume-bar-track {
+            width: 100%;
+            height: 8px;
+            background-color: var(--color-bg-body);
+            border-radius: 4px;
+            overflow: hidden;
+            border: 1px solid var(--border-color);
+        }
+
+        .volume-bar-fill {
+            height: 100%;
+            background-color: var(--color-secondary);
+            border-radius: 4px;
+            min-width: 4px; /* Para sempre aparecer algo mesmo se for pouco */
+            transition: width 1s ease-out;
+        }
+
+        /* Badge de Contagem */
+        .count-badge {
+            justify-self: end;
+            font-family: 'JetBrains Mono', monospace;
+            background-color: rgba(59, 130, 246, 0.1);
+            color: var(--color-secondary);
+            padding: 4px 12px;
+            border-radius: 6px;
+            font-weight: 700;
+            font-size: 0.9rem;
+        }
+        @media (max-width: 768px) { .count-badge { justify-self: start; } }
+
+    </style>
+</th:block>
+
+<th:block th:fragment="content">
+
+    <div class="kpi-grid">
+
+        <div class="kpi-card">
+            <div class="kpi-icon">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path></svg>
+            </div>
+            <div class="kpi-value" th:text="${totalCertifications}">5</div>
+            <div class="kpi-label">Certificações Cadastradas</div>
+        </div>
+
+        <div class="kpi-card">
+            <div class="kpi-icon" style="color: var(--color-secondary); background: rgba(59, 130, 246, 0.1);">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+            </div>
+            <div class="kpi-value" th:text="${totalQuestions}">124</div>
+            <div class="kpi-label">Questões no Banco</div>
+        </div>
+
+        <div class="kpi-card" style="opacity: 0.6; border-style: dashed;">
+            <div class="kpi-icon" style="color: var(--color-text-muted); background: var(--color-bg-body);">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+            </div>
+            <div class="kpi-value">--</div>
+            <div class="kpi-label">Em breve</div>
+        </div>
+
+    </div>
+
+    <div class="breakdown-section">
+        <div class="section-header">
+            <h2 class="section-title">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>
+                Quantidade de Questões
+            </h2>
+            <small style="color: var(--color-text-muted)">Atualizado quase que em tempo real</small>
+        </div>
+
+        <div class="stats-list">
+
+            <div th:each="stat : ${certificationStats}" class="cert-stat-row">
+
+                <div class="cert-info">
+                    <span class="cert-provider" th:text="${stat.provider}">AWS</span>
+                    <span class="cert-name" th:text="${stat.certificationName}">Solutions Architect Associate</span>
+                </div>
+
+                <div class="volume-bar-track">
+                    <div class="volume-bar-fill"
+                         th:style="'width: ' + ${stat.percentageOfTotal} + '%'"
+                         th:title="${stat.questionCount} + ' questões'">
+                    </div>
+                </div>
+
+                <div class="count-badge">
+                    <span th:text="${stat.questionCount}">45</span> <span style="font-size:0.7em; opacity:0.7;">qts</span>
+                </div>
+
+            </div>
+
+            <div th:if="${certificationStats == null or certificationStats.isEmpty()}" style="text-align:center; padding: 2rem; color: var(--color-text-muted);">
+                Ainda não há dados suficientes para exibir estatísticas detalhadas.
+            </div>
+
+        </div>
+    </div>
+
+</th:block>
+
+<th:block th:fragment="scripts">
+    <script>
+        console.log("Página de Estatísticas carregada.");
+    </script>
+</th:block>
+</html>

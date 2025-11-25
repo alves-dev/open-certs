@@ -1,7 +1,11 @@
 package com.opencerts.certification;
 
+import com.opencerts.certification.response.CertificationDTO;
+import com.opencerts.certification.response.CertificationQuestionCount;
 import com.opencerts.test.TestSession;
 import com.opencerts.test.TestSessionService;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.aggregation.Aggregation;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -12,10 +16,17 @@ public class QuestionService {
 
     private final QuestionRepository repository;
     private final TestSessionService testSessionService;
+    private final MongoTemplate mongoTemplate;
+    private final CertificationService certificationService;
 
-    public QuestionService(QuestionRepository repository, TestSessionService testSessionService) {
+    private List<CertificationQuestionCount> questionCountCache = null;
+
+    public QuestionService(QuestionRepository repository, TestSessionService testSessionService,
+                           MongoTemplate mongoTemplate, CertificationService certificationService) {
         this.repository = repository;
         this.testSessionService = testSessionService;
+        this.mongoTemplate = mongoTemplate;
+        this.certificationService = certificationService;
     }
 
     public Question save(Question question) {
@@ -50,5 +61,34 @@ public class QuestionService {
 
     public List<Question> findAllById(List<UUID> uuids) {
         return uuids.stream().map(q -> repository.findById(q).get()).toList();
+    }
+
+    public List<CertificationQuestionCount> countByCertification() {
+        if (questionCountCache != null) {
+            return questionCountCache;
+        }
+
+        Aggregation agg = Aggregation.newAggregation(
+                Aggregation.group("certification").count().as("total"),
+                Aggregation.project("total").and("_id").as("certificationId")
+        );
+
+        List<CertificationQuestionCount> questionCount = mongoTemplate.aggregate(agg, "questions", CertificationQuestionCount.class).getMappedResults();
+
+        List<CertificationDTO> certificationDTOList = certificationService.listAll();
+        questionCountCache = new ArrayList<>();
+
+        for (var qc : questionCount) {
+            var cert = certificationDTOList.stream()
+                    .filter(c -> c.id().equals(qc.certificationId()))
+                    .findFirst().get();
+            questionCountCache.add(new CertificationQuestionCount(qc.certificationId(), cert.provider(), cert.displayNameWithoutProvider(), qc.total()));
+        }
+
+        certificationDTOList.stream()
+                .filter(cert -> questionCount.stream().noneMatch(qc -> qc.certificationId().equals(cert.id())))
+                .forEach(cert -> questionCountCache.add(new CertificationQuestionCount(cert.id(), cert.provider(), cert.displayNameWithoutProvider(), 0)));
+
+        return questionCountCache;
     }
 }

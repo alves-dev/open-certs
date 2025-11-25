@@ -15,6 +15,10 @@ public record CertificationDTO(
         return provider.concat(" - ").concat(name).concat(" | ").concat(level);
     }
 
+    public String displayNameWithoutProvider() {
+        return name.concat(" - ").concat(level);
+    }
+
     public CertificationDTO(Certification certification) {
         this(
                 certification.id(),
@@ -26,7 +30,6 @@ public record CertificationDTO(
 
     public static CertificationDTO of(Optional<Certification> optCertification) {
         return optCertification.map(CertificationDTO::new).orElseGet(CertificationDTO::new);
-
     }
 
     private CertificationDTO() {
