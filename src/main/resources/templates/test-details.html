@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="pt-br" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{base :: layout(
+          title='Detalhes do Teste | OpenCerts',
+          pageHeader='',
+          content=~{::content},
+          styles=~{::styles},
+          scripts=~{::scripts}
+      )}">
+
+<th:block th:fragment="styles">
+    <style>
+        /* --- Layout do Header --- */
+        .details-header {
+            margin-bottom: 2rem;
+        }
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--color-text-muted);
+            text-decoration: none;
+            margin-bottom: 1rem;
+            font-size: 0.9rem;
+            transition: color 0.2s;
+        }
+        .back-link:hover { color: var(--color-secondary); }
+
+        .cert-highlight {
+            background-color: var(--color-bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 1rem;
+            padding: 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1.5rem;
+            box-shadow: var(--shadow-card);
+        }
+
+        .cert-info h1 {
+            font-size: 1.75rem;
+            color: var(--color-text-main);
+            margin-bottom: 0.5rem;
+        }
+
+        .badges-row {
+            display: flex;
+            gap: 0.75rem;
+            align-items: center;
+        }
+
+        .badge {
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        .badge-provider { background: rgba(59, 130, 246, 0.1); color: var(--color-secondary); }
+        .badge-level { background: var(--color-bg-body); color: var(--color-text-muted); border: 1px solid var(--border-color); }
+        .badge-id { font-family: 'JetBrains Mono', monospace; color: var(--color-text-muted); opacity: 0.8; }
+
+        /* --- Stats Grid (Gráfico e Números) --- */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        .stat-card {
+            background-color: var(--color-bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 1rem;
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+        }
+
+        /* Donut Chart com CSS Puro (Conic Gradient) */
+        .chart-container {
+            position: relative;
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            /* O Thymeleaf vai injetar o valor correto no style inline */
+            background: conic-gradient(var(--color-primary) 0%, var(--color-bg-body) 0%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 0.5rem;
+        }
+
+        .chart-inner {
+            width: 80px;
+            height: 80px;
+            background-color: var(--color-bg-card);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 1.25rem;
+            color: var(--color-text-main);
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: 700;
+            line-height: 1;
+            margin-bottom: 0.25rem;
+        }
+        .stat-label { font-size: 0.875rem; color: var(--color-text-muted); font-weight: 600; }
+
+        .color-success { color: var(--color-primary); }
+        .color-danger { color: var(--color-danger); }
+
+        /* --- Listas de Questões --- */
+        .lists-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+        @media (max-width: 900px) { .lists-container { grid-template-columns: 1fr; } }
+
+        .list-column h3 {
+            font-size: 1.25rem;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid transparent;
+        }
+
+        .col-wrong h3 { color: var(--color-danger); border-color: var(--color-danger); }
+        .col-correct h3 { color: var(--color-primary); border-color: var(--color-primary); }
+
+        .question-item {
+            background-color: var(--color-bg-card);
+            border: 1px solid var(--border-color);
+            border-left-width: 4px; /* Borda lateral colorida */
+            border-radius: 0.5rem;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            transition: transform 0.2s;
+        }
+        .question-item:hover { transform: translateX(4px); }
+
+        .item-wrong { border-left-color: var(--color-danger); }
+        .item-correct { border-left-color: var(--color-primary); }
+
+        .q-topic {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--color-text-muted);
+            margin-bottom: 0.5rem;
+            display: block;
+        }
+
+        .q-desc {
+            font-size: 0.95rem;
+            color: var(--color-text-main);
+            line-height: 1.5;
+            /* Limita a 3 linhas com ... */
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .empty-list-msg {
+            color: var(--color-text-muted);
+            font-style: italic;
+            font-size: 0.9rem;
+            padding: 1rem;
+            background: rgba(255,255,255,0.03);
+            border-radius: 0.5rem;
+        }
+
+    </style>
+</th:block>
+
+<th:block th:fragment="content">
+
+    <div class="details-header">
+        <a href="/tests" class="back-link">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                 stroke-linecap="round" stroke-linejoin="round">
+                <line x1="19" y1="12" x2="5" y2="12"></line>
+                <polyline points="12 19 5 12 12 5"></polyline>
+            </svg>
+            Voltar para Meus Testes
+        </a>
+
+        <div class="cert-highlight">
+            <div class="cert-info">
+                <h1 th:text="${testSession.certification.name}">AWS Solutions Architect</h1>
+                <div class="badges-row">
+                    <span class="badge badge-provider" th:text="${testSession.certification.provider}">AWS</span>
+                    <span class="badge badge-level" th:text="${testSession.certification.level}">ASSOCIATE</span>
+                    <span class="badge badge-id">#<span th:text="${testSession.identifier}">ID-123</span></span>
+                </div>
+            </div>
+
+            <a th:href="@{/questions/{id}(id=${testSession.certification.id}, testIdentifier=${testSession.identifier})}"
+               class="btn btn-primary">
+                Continuar Teste
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                </svg>
+            </a>
+        </div>
+    </div>
+
+    <div class="stats-grid">
+
+        <div class="stat-card">
+            <div class="chart-container"
+                 th:style="'background: conic-gradient(var(--color-primary) ' + ${testSession.percentageCorrect} + '%, var(--color-bg-body) 0%);'">
+                <div class="chart-inner">
+                    <span th:text="${testSession.percentageCorrect} + '%'">80%</span>
+                </div>
+            </div>
+            <span class="stat-label">Aproveitamento</span>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-number color-success" th:text="${testSession.totalCorrect}">12</div>
+            <span class="stat-label">Questões Corretas</span>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-number color-danger" th:text="${testSession.totalError}">3</div>
+            <span class="stat-label">Questões Erradas</span>
+        </div>
+    </div>
+
+    <div class="lists-container">
+
+        <div class="list-column col-wrong">
+            <h3>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
+                Erros (Pontos de Atenção)
+            </h3>
+
+            <div th:if="${testSession.wrongQuestions.isEmpty()}" class="empty-list-msg">
+                Nenhum erro registrado. Parabéns! 🎉
+            </div>
+
+            <div th:each="q : ${testSession.wrongQuestions}" class="question-item item-wrong">
+                <span class="q-topic" th:text="${q.topic}">TOPIC</span>
+                <p class="q-desc" th:text="${q.description}">Descrição da questão...</p>
+            </div>
+        </div>
+
+        <div class="list-column col-correct">
+            <h3>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="20 6 9 17 4 12"></polyline>
+                </svg>
+                Acertos (Conhecimento Consolidado)
+            </h3>
+
+            <div th:if="${testSession.correctQuestions.isEmpty()}" class="empty-list-msg">
+                Ainda não há acertos registrados. Continue tentando!
+            </div>
+
+            <div th:each="q : ${testSession.correctQuestions}" class="question-item item-correct">
+                <span class="q-topic" th:text="${q.topic}">TOPIC</span>
+                <p class="q-desc" th:text="${q.description}">Descrição da questão...</p>
+            </div>
+        </div>
+
+    </div>
+
+</th:block>
+
+<th:block th:fragment="scripts">
+    <script>
+        console.log("Detalhes carregados.");
+    </script>
+</th:block>
+</html>

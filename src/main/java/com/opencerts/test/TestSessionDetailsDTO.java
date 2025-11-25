@@ -1,26 +1,30 @@
 package com.opencerts.test;
 
 import com.opencerts.certification.CertificationService;
+import com.opencerts.certification.Question;
+import com.opencerts.certification.QuestionService;
 import com.opencerts.certification.response.CertificationDTO;
 
-import java.time.LocalDateTime;
+import java.util.List;
 
-record ListTestSessionDTO(
+record TestSessionDetailsDTO(
         String identifier,
         CertificationDTO certification,
         int totalCorrect,
         int totalError,
         int percentageCorrect,
-        LocalDateTime startedAt
+        List<Question> correctQuestions,
+        List<Question> wrongQuestions
 ) {
 
-    ListTestSessionDTO(TestSession test, CertificationService certificationService) {
+    TestSessionDetailsDTO(TestSession test, CertificationService certificationService, QuestionService questionService) {
         this(test.identifier(),
                 CertificationDTO.of(certificationService.getById(test.certificationId())),
                 test.totalCorrect(),
                 test.totalError(),
                 test.percentageCorrect(),
-                test.startedAt()
+                questionService.findAllById(test.questionsCorrectIds()),
+                questionService.findAllById(test.questionsIncorrectIds())
         );
     }
 }

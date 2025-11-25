@@ -1,4 +1,6 @@
-package com.opencerts.test;
+package com.opencerts.shared;
+
+import com.opencerts.test.TestSession;
 
 public record TestSessionDTO(
         String identifier,

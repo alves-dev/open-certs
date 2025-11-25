@@ -25,9 +25,8 @@ public class QuestionService {
     public Question findRandomByCertification(String certificationId, String testIdentifier) {
         Optional<TestSession> test = testSessionService.findByIdentifier(testIdentifier);
 
-        // obtém IDs já respondidos; ajuste o nome do método conforme sua classe TestSession
         Set<UUID> answeredIds = test
-                .map(TestSession::answeredQuestionIds) // -> Set<UUID>
+                .map(TestSession::answeredQuestionIds)
                 .orElse(Collections.emptySet());
 
         var all = repository.findByCertification(certificationId);
@@ -47,5 +46,9 @@ public class QuestionService {
 
     public Question getQuestionById(UUID questionId) {
         return repository.findById(questionId).get();
+    }
+
+    public List<Question> findAllById(List<UUID> uuids) {
+        return uuids.stream().map(q -> repository.findById(q).get()).toList();
     }
 }

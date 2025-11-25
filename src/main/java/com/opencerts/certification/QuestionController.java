@@ -2,7 +2,7 @@ package com.opencerts.certification;
 
 import com.opencerts.util.Page;
 import com.opencerts.certification.request.AnswerFormDTO;
-import com.opencerts.test.TestSessionDTO;
+import com.opencerts.shared.TestSessionDTO;
 import com.opencerts.test.TestSessionService;
 import com.opencerts.user.User;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;

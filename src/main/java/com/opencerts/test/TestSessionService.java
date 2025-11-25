@@ -1,6 +1,7 @@
 package com.opencerts.test;
 
 import com.opencerts.certification.CertificationService;
+import com.opencerts.shared.TestSessionDTO;
 import com.opencerts.user.UserService;
 import org.springframework.stereotype.Service;
 
@@ -23,7 +24,11 @@ public class TestSessionService {
 
     public List<ListTestSessionDTO> listByUser() {
         var userId = userService.getUser().id();
-        return repository.findByUserId(userId).stream().map(t -> new ListTestSessionDTO(t, certificationService)).toList();
+        return repository.findByUserId(userId)
+                .stream()
+                .map(t -> new ListTestSessionDTO(t, certificationService))
+                .sorted((a, b) -> b.startedAt().compareTo(a.startedAt()))
+                .toList();
     }
 
     public Optional<TestSession> findByIdentifier(String identifier) {

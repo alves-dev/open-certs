@@ -27,17 +27,17 @@ public class TestSession {
     private List<UUID> questionsCorrect = new ArrayList<>();
     private List<UUID> questionsIncorrect = new ArrayList<>();
 
-    public enum Status {
-        IN_PROGRESS,
-        COMPLETED
-    }
-
     public TestSession(UUID userId, String certificationId, String identifier) {
         this.userId = userId;
         this.certificationId = certificationId;
         this.identifier = identifier;
         this.startedAt = LocalDateTime.now();
         this.status = Status.IN_PROGRESS;
+    }
+
+    enum Status {
+        IN_PROGRESS,
+        COMPLETED
     }
 
     // --- Getters ---
@@ -59,6 +59,14 @@ public class TestSession {
 
     public int totalError() {
         return totalError;
+    }
+
+    List<UUID> questionsCorrectIds() {
+        return questionsCorrect;
+    }
+
+    List<UUID> questionsIncorrectIds() {
+        return questionsIncorrect;
     }
 
     // --- Métodos de negócio ---
