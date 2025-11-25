@@ -42,6 +42,6 @@ public class TestController {
         }
 
         model.addAttribute("testSession", new TestSessionDetailsDTO(optTest.get(), certificationService, questionService));
-        return "test-details";
+        return Page.TESTS_DETAILS;
     }
 }

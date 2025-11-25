@@ -1,6 +1,6 @@
 package com.opencerts.security;
 
-
+import com.opencerts.util.Page;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 
@@ -9,6 +9,6 @@ public class AuthController {
 
     @GetMapping("/login")
     public String login() {
-        return "login";
+        return Page.LOGIN;
     }
 }
