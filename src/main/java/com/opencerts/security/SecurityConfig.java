@@ -20,6 +20,7 @@ public class SecurityConfig {
                                 "/images/**",
                                 "/admin/questions/import",   // Validada por API key
                                 "/admin/questions/export",   // Validada por API key
+                                "/challenges/invite/**",
                                 "privacy",
                                 "terms"
                         ).permitAll()

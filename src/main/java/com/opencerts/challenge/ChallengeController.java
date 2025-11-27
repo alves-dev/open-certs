@@ -2,8 +2,10 @@ package com.opencerts.challenge;
 
 import com.opencerts.certification.CertificationService;
 import com.opencerts.shared.UserDTO;
+import com.opencerts.user.User;
 import com.opencerts.user.UserService;
 import com.opencerts.util.Page;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -40,18 +42,24 @@ public class ChallengeController {
     public String createChallenge(@RequestParam String name,
                                   @RequestParam String certificationId,
                                   @RequestParam int numberOfQuestions) {
-        challengeService.create(name, certificationId, numberOfQuestions);
-        return "redirect:/" + Page.CHALLENGE;
+        Challenge challenge = challengeService.create(name, certificationId, numberOfQuestions);
+        return "redirect:/challenges/" + challenge.id();
     }
 
     @GetMapping("/invite/{challengeId}")
-    public String invite(Model model, @PathVariable String challengeId) {
+    public String invite(Model model, HttpServletRequest request, @PathVariable String challengeId) {
         ChallengeInviteDTO challengeInvite = challengeService.getChallengeInviteDTO(challengeId);
         model.addAttribute("challenge", challengeInvite);
 
+        String currentUrl = request.getRequestURL().toString();
+        model.addAttribute("shareUrl", currentUrl);
+
+        User user = userService.getCurrent();
+        if (user == null) return Page.CHALLENGE_INVITE;
+
         var contains = challengeInvite.participants()
                 .stream().map(UserDTO::id)
-                .toList().contains(userService.getCurrent().id());
+                .toList().contains(user.id());
         if (contains)
             return "redirect:/challenges/" + challengeId;
 

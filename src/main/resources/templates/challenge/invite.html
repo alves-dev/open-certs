@@ -1,30 +1,81 @@
 <!DOCTYPE html>
-<html lang="pt-br" xmlns:th="http://www.thymeleaf.org"
-      th:replace="~{base :: layout(
-          title='Convite de Desafio | OpenCerts',
-          pageHeader='',
-          content=~{::content},
-          styles=~{::styles},
-          scripts=~{::scripts}
-      )}">
+<html lang="pt-br" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<th:block th:fragment="styles">
+    <meta property="og:title" th:content="'Desafio: ' + ${challenge.name} + ' 🏆'">
+    <meta property="twitter:title" th:content="'Desafio: ' + ${challenge.name} + ' 🏆'">
+
+    <meta property="og:description" th:content="|${challenge.creatorName} te convidou para testar seus conhecimentos em ${challenge.certificationName}. São ${challenge.totalQuestions} questões. Topa?|">
+    <meta property="twitter:description" th:content="|${challenge.creatorName} te convidou para um desafio de certificação. Topa?|">
+
+    <meta property="og:image" content="https://seudominio.com/images/challenge-banner.png">
+    <meta property="twitter:image" content="https://seudominio.com/images/challenge-banner.png">
+
+    <meta property="og:url" th:content="${shareUrl}">
+
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="OpenCerts">
+    <meta name="theme-color" content="#8B5CF6">
+
+    <title th:text="'Convite: ' + ${challenge.name} + ' | OpenCerts'">Convite de Desafio</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+    <link rel="icon" type="image/svg+xml" th:href="@{/images/favicon.svg}">
+
     <style>
-        /* Centraliza o conteúdo na tela */
+        /* Layout Reset para Página Pública */
+        body {
+            background-color: var(--color-bg-body, #0F172A);
+            color: var(--color-text-main, #F1F5F9);
+            font-family: var(--font-family, 'Inter', sans-serif);
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+        }
+
+        /* Header Minimalista (Só a Logo) */
+        .public-header {
+            padding: 1.5rem 2rem;
+            display: flex;
+            justify-content: center;
+        }
+
+        .brand-logo {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--color-text-main);
+            text-decoration: none;
+        }
+
+        /* Centralizador do Conteúdo */
         .invite-wrapper {
+            flex: 1;
             display: flex;
             align-items: center;
             justify-content: center;
-            min-height: 80vh; /* Ocupa boa parte da altura */
+            padding: 1rem;
             position: relative;
         }
 
-        /* Efeito de Glow no fundo */
+        /* Glow de Fundo */
         .invite-glow {
             position: absolute;
-            width: 300px;
-            height: 300px;
-            background: radial-gradient(circle, rgba(139, 92, 246, 0.2) 0%, transparent 70%);
+            width: 60vw;
+            height: 60vw;
+            max-width: 500px;
+            max-height: 500px;
+            background: radial-gradient(circle, rgba(139, 92, 246, 0.15) 0%, transparent 70%);
             border-radius: 50%;
             z-index: 0;
             top: 50%;
@@ -33,26 +84,31 @@
             pointer-events: none;
         }
 
-        /* O Cartão de Convite */
+        /* Cartão Principal */
         .invite-card {
-            background-color: var(--color-bg-card);
-            border: 1px solid var(--border-color);
+            background-color: var(--color-bg-card, #1E293B);
+            border: 1px solid var(--border-color, #334155);
             border-radius: 1.5rem;
-            padding: 3rem 2rem;
+            padding: 2.5rem 2rem;
             width: 100%;
-            max-width: 480px;
+            max-width: 440px;
             text-align: center;
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
             position: relative;
             z-index: 1;
-            overflow: hidden;
-            border-top: 4px solid #8B5CF6; /* Topo Roxo */
+            border-top: 4px solid #8B5CF6;
+            animation: slideUp 0.5s ease-out;
         }
 
-        /* Ícone Animado */
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Ícone Hero */
         .hero-icon-container {
-            width: 80px;
-            height: 80px;
+            width: 72px;
+            height: 72px;
             background: rgba(139, 92, 246, 0.1);
             border-radius: 50%;
             display: flex;
@@ -60,36 +116,29 @@
             justify-content: center;
             margin: 0 auto 1.5rem auto;
             color: #8B5CF6;
-            animation: bounceIn 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        }
-
-        @keyframes bounceIn {
-            0% { transform: scale(0); opacity: 0; }
-            60% { transform: scale(1.1); opacity: 1; }
-            100% { transform: scale(1); }
         }
 
         .invite-title {
-            font-size: 1.75rem;
+            font-size: 1.5rem;
             font-weight: 800;
-            color: var(--color-text-main);
             margin-bottom: 0.5rem;
+            line-height: 1.2;
         }
 
         .invite-subtitle {
-            color: var(--color-text-muted);
+            color: var(--color-text-muted, #94A3B8);
             margin-bottom: 2rem;
-            font-size: 1rem;
+            line-height: 1.5;
         }
 
-        /* Caixa de Detalhes do Desafio */
+        /* Detalhes */
         .challenge-details-box {
-            background-color: var(--color-bg-body);
+            background-color: var(--color-bg-body, #0F172A);
+            border: 1px solid var(--border-color, #334155);
             border-radius: 1rem;
-            padding: 1.5rem;
+            padding: 1.25rem;
             margin-bottom: 2rem;
             text-align: left;
-            border: 1px solid var(--border-color);
         }
 
         .detail-row {
@@ -102,17 +151,18 @@
 
         .detail-icon {
             color: var(--color-text-muted);
-            width: 20px;
+            width: 24px;
             display: flex;
             justify-content: center;
         }
 
         .detail-content h4 {
-            font-size: 0.85rem;
+            font-size: 0.75rem;
             color: var(--color-text-muted);
             margin: 0;
-            font-weight: 500;
             text-transform: uppercase;
+            letter-spacing: 0.05em;
+            font-weight: 600;
         }
         .detail-content p {
             font-size: 1rem;
@@ -121,38 +171,7 @@
             font-weight: 600;
         }
 
-        /* Prova Social (Avatares) */
-        .participants-preview {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            margin-bottom: 2rem;
-            gap: 0.5rem;
-        }
-        .avatar-group {
-            display: flex;
-            padding-left: 10px;
-        }
-        .mini-avatar {
-            width: 32px;
-            height: 32px;
-            border-radius: 50%;
-            border: 2px solid var(--color-bg-card);
-            background-color: #334155;
-            color: white;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 0.7rem;
-            font-weight: 700;
-            margin-left: -10px; /* Sobreposição */
-        }
-        .social-text {
-            font-size: 0.85rem;
-            color: var(--color-text-muted);
-        }
-
-        /* Botão de Ação Principal */
+        /* Botão */
         .btn-accept {
             width: 100%;
             background: linear-gradient(135deg, #8B5CF6, #7C3AED);
@@ -163,105 +182,113 @@
             font-size: 1.1rem;
             font-weight: 700;
             cursor: pointer;
-            transition: transform 0.2s, box-shadow 0.2s;
+            transition: all 0.2s;
             display: flex;
             align-items: center;
             justify-content: center;
             gap: 0.5rem;
-            box-shadow: 0 4px 12px rgba(139, 92, 246, 0.4);
+            text-decoration: none; /* Caso seja um link */
         }
         .btn-accept:hover {
             transform: translateY(-2px);
-            box-shadow: 0 8px 16px rgba(139, 92, 246, 0.5);
+            box-shadow: 0 10px 15px -3px rgba(139, 92, 246, 0.4);
+        }
+
+        /* Footer */
+        .simple-footer {
+            padding: 1.5rem;
+            text-align: center;
+            color: var(--color-text-muted);
+            font-size: 0.8rem;
         }
 
     </style>
-</th:block>
+</head>
+<body>
 
-<th:block th:fragment="content">
+<header class="public-header">
+    <a href="/" class="brand-logo">
+        <svg width="300" height="60" viewBox="0 0 300 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M30 10L50 20V40L30 50L10 40V20L30 10Z" fill="#1E293B" stroke="#10B981" stroke-width="3"/>
+            <path d="M22 30L30 38L40 22" stroke="#3B82F6" stroke-width="4" stroke-linecap="round"
+                  stroke-linejoin="round"/>
 
-    <div class="invite-wrapper">
-        <div class="invite-glow"></div>
+            <text x="70" y="42" font-family="Arial, sans-serif" font-weight="bold" font-size="32" fill="#F1F5F9">
+                Open
+            </text>
 
-        <div class="invite-card">
+            <text x="155" y="42" font-family="Arial, sans-serif" font-weight="normal" font-size="32" fill="#10B981">
+                Certs
+            </text>
 
-            <div class="hero-icon-container">
-                <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"></path><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"></path><path d="M4 22h16"></path><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"></path></svg>
-            </div>
+            <circle cx="240" cy="38" r="4" fill="#3B82F6"/>
+        </svg>
+    </a>
+</header>
 
-            <h1 class="invite-title">Você foi desafiado!</h1>
-            <p class="invite-subtitle">
-                <strong th:text="${challenge.creatorName}">Igor Alves</strong> convidou você para testar seus conhecimentos.
-            </p>
+<div class="invite-wrapper">
+    <div class="invite-glow"></div>
 
-            <div class="challenge-details-box">
-                <div class="detail-row">
-                    <div class="detail-icon">
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
-                    </div>
-                    <div class="detail-content">
-                        <h4>Desafio</h4>
-                        <p th:text="${challenge.name}">Maratona AWS Team</p>
-                    </div>
-                </div>
+    <div class="invite-card">
 
-                <div class="detail-row">
-                    <div class="detail-icon">
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path></svg>
-                    </div>
-                    <div class="detail-content">
-                        <h4>Certificação</h4>
-                        <p th:text="${challenge.certificationName}">AWS Solutions Architect</p>
-                    </div>
-                </div>
-
-                <div class="detail-row">
-                    <div class="detail-icon">
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
-                    </div>
-                    <div class="detail-content">
-                        <h4>Duração</h4>
-                        <p><span th:text="${challenge.totalQuestions}">10</span> Questões</p>
-                    </div>
-                </div>
-            </div>
-
-            <div class="participants-preview" th:if="${challenge.participants != null and !challenge.participants.isEmpty()}">
-                <div class="avatar-group">
-                    <div th:each="participant, iter : ${challenge.participants}"
-                         th:if="${iter.index < 3}"
-                         class="mini-avatar">
-                        <span th:text="${#strings.substring(participant.name,0,1)}">-</span>
-                    </div>
-                    <div th:if="${challenge.participants.size() > 3}" class="mini-avatar" style="background-color: var(--color-secondary);">
-                        <span th:text="'+' + (${challenge.participants.size() - 3})">3</span>
-                    </div>
-                </div>
-                <span class="social-text">
-                    <strong th:text="${challenge.participants.size()}">5</strong> pessoas já entraram.
-                </span>
-            </div>
-
-            <form th:action="@{/challenges/{id}/join(id=${challenge.id})}" method="post">
-                <button type="submit" class="btn-accept">
-                    Aceitar Desafio
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
-                </button>
-            </form>
-
-            <a href="/challenges" style="display:block; margin-top:1.5rem; color:var(--color-text-muted); font-size:0.9rem; text-decoration:none;">
-                Não, obrigado. Voltar para a lista.
-            </a>
-
+        <div class="hero-icon-container">
+            <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"></path><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"></path><path d="M4 22h16"></path><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"></path></svg>
         </div>
+
+        <h1 class="invite-title">Desafio de Conhecimento</h1>
+        <p class="invite-subtitle">
+            <strong style="color: #F1F5F9" th:text="${challenge.creatorName}">Igor Alves</strong> te convidou para uma batalha. Você consegue chegar ao topo do ranking?
+        </p>
+
+        <div class="challenge-details-box">
+            <div class="detail-row">
+                <div class="detail-icon">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+                </div>
+                <div class="detail-content">
+                    <h4>Desafio</h4>
+                    <p th:text="${challenge.name}">Maratona AWS Team</p>
+                </div>
+            </div>
+
+            <div class="detail-row">
+                <div class="detail-icon">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path></svg>
+                </div>
+                <div class="detail-content">
+                    <h4>Certificação</h4>
+                    <p th:text="${challenge.certificationName}">AWS Solutions Architect</p>
+                </div>
+            </div>
+
+            <div class="detail-row">
+                <div class="detail-icon">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+                </div>
+                <div class="detail-content">
+                    <h4>Questões</h4>
+                    <p><span th:text="${challenge.totalQuestions}">10</span> Perguntas</p>
+                </div>
+            </div>
+        </div>
+
+        <form th:action="@{/challenges/{id}/join(id=${challenge.id})}" method="post">
+            <button type="submit" class="btn-accept">
+                Aceitar e Começar
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+            </button>
+        </form>
+
+        <div style="margin-top: 1.5rem;">
+            <a href="/" style="color: var(--color-text-muted); font-size: 0.85rem; text-decoration: none;">Apenas visitar a Home</a>
+        </div>
+
     </div>
+</div>
 
-</th:block>
+<footer class="simple-footer">
+    &copy; 2025 OpenCerts.
+</footer>
 
-<th:block th:fragment="scripts">
-    <script>
-        // Opcional: Efeito de confete ao aceitar (se quiser adicionar depois)
-        console.log("Invite page loaded.");
-    </script>
-</th:block>
+</body>
 </html>
