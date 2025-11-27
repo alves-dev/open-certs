@@ -61,6 +61,10 @@ public class Question {
         return topic;
     }
 
+    public String certification(){
+        return certification;
+    }
+
     public List<Response> responses() {
         return responses;
     }
@@ -89,6 +93,13 @@ public class Question {
         }
 
         return true;
+    }
+
+    public boolean checkOneAnswer(String answer) {
+        if (this.correctAnswers.contains(new Response(answer)))
+                return true;
+
+        return false;
     }
 
     // Modificadores //

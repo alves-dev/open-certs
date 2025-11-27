@@ -18,7 +18,8 @@ public class SecurityConfig {
                                 "/css/**",
                                 "/js/**",
                                 "/images/**",
-                                "/questions/import",   // Validada por API key
+                                "/admin/questions/import",   // Validada por API key
+                                "/admin/questions/export",   // Validada por API key
                                 "privacy",
                                 "terms"
                         ).permitAll()

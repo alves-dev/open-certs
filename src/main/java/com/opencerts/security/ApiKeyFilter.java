@@ -26,8 +26,10 @@ public class ApiKeyFilter extends OncePerRequestFilter {
 
         String path = request.getRequestURI();
 
-        // só valida a rota de import
-        if (path.startsWith("/questions/import")) {
+        // só valida as rotas de admin
+        if (path.startsWith("/admin/questions/import")
+                || path.startsWith("/admin/questions/export")
+        ) {
             String header = request.getHeader(HEADER_NAME);
 
             if (header == null || !header.equals(apiKey)) {
