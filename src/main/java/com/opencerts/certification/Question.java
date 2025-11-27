@@ -2,6 +2,8 @@ package com.opencerts.certification;
 
 import com.opencerts.user.User;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.Indexed;
+import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.LocalDateTime;
@@ -12,44 +14,42 @@ import java.util.UUID;
 public class Question {
 
     @Id
-    private UUID id;
-    private String certification;
+    private String id;
+
+    @DBRef
+    @Indexed
+    private Certification certification;
+
     private String description;
     private String topic;
-
-    private List<Response> responses;
-    private List<Response> correctAnswers;
-
+    private List<Answer> answers;
     private LocalDateTime createdAt;
-    private UUID createBy;
 
-    public Question(String certification, String description, String topic, List<Response> responses,
-                    List<Response> correctAnswers, User user) {
-        this.id = UUID.randomUUID();
-        this.certification = certification;
-        this.description = description;
-        this.topic = topic;
-        this.responses = responses;
-        this.correctAnswers = correctAnswers;
-        this.createdAt = LocalDateTime.now();
-        this.createBy = user.id();
+    @DBRef
+    private User createBy;
+
+    public record Answer(
+            String text,
+            boolean correct
+    ) {
     }
 
-    public Question(String certification, String description, String topic, List<Response> responses, List<Response> correctAnswers) {
-        this.id = UUID.randomUUID();
+    public Question(Certification certification, String description, String topic, List<Answer> answers,
+                    User createBy) {
+        this.id = UUID.randomUUID().toString();
         this.certification = certification;
         this.description = description;
         this.topic = topic;
-        this.responses = responses;
-        this.correctAnswers = correctAnswers;
+        this.answers = answers;
         this.createdAt = LocalDateTime.now();
+        this.createBy = createBy;
     }
 
     public Question() {
     }
 
     // Getters //
-    public UUID id() {
+    public String id() {
         return id;
     }
 
@@ -61,45 +61,23 @@ public class Question {
         return topic;
     }
 
-    public String certification(){
+    public Certification certification() {
         return certification;
     }
 
-    public List<Response> responses() {
-        return responses;
+    public List<Answer> answers(){
+        return answers;
+    }
+
+    public List<String> answersText() {
+        return this.answers.stream().map(Answer::text).toList();
     }
 
     public List<String> correctAnswers() {
-        return correctAnswers.stream().map(Response::text).toList();
-    }
-
-    public boolean isMultipleChoice() {
-        return this.correctAnswers.size() > 1;
-    }
-
-    public boolean checkAnswerByString(List<String> answers) {
-        return checkAnswer(
-                answers.stream().map(Response::of).toList()
-        );
-    }
-
-    public boolean checkAnswer(List<Response> answers) {
-        if (this.correctAnswers.size() != answers.size())
-            return false;
-
-        for (Response answer : answers) {
-            if (!this.correctAnswers.contains(answer))
-                return false;
-        }
-
-        return true;
-    }
-
-    public boolean checkOneAnswer(String answer) {
-        if (this.correctAnswers.contains(new Response(answer)))
-                return true;
-
-        return false;
+        return this.answers.stream()
+                .filter(a -> a.correct)
+                .map(a -> a.text)
+                .toList();
     }
 
     // Modificadores //
@@ -107,4 +85,18 @@ public class Question {
 
     // Outros //
 
+    public boolean isMultipleChoice() {
+        return this.answers.stream()
+                .filter(a -> a.correct)
+                .count() > 1;
+    }
+
+    public boolean checkAnswers(List<String> answers) {
+        for (Answer answer : this.answers) {
+            if (answer.correct && !answers.contains(answer.text))
+                return false;
+        }
+
+        return true;
+    }
 }

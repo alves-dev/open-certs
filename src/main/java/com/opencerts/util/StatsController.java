@@ -29,12 +29,12 @@ public class StatsController {
 
     @GetMapping("/stats")
     public String stats(Model model) {
-        List<CertificationQuestionCount> certificationQuestionCountList = questionService.countByCertification();
+        List<CertificationQuestionCount.DTO> certificationQuestionCountList = questionService.countByCertification();
 
         long totalQuestions = 0;
         long maxQuestionsInSingleCert = 0;
 
-        for (CertificationQuestionCount c : certificationQuestionCountList) {
+        for (CertificationQuestionCount.DTO c : certificationQuestionCountList) {
             long count = c.total();
             totalQuestions += count;
             if (count > maxQuestionsInSingleCert)
@@ -43,7 +43,7 @@ public class StatsController {
 
         // 2. Monta a lista com a porcentagem calculada
         List<CertificationStatDTO> statsList = new ArrayList<>();
-        for (CertificationQuestionCount c : certificationQuestionCountList) {
+        for (CertificationQuestionCount.DTO c : certificationQuestionCountList) {
             long count = c.total();
 
             // Regra de três simples para a largura da barra

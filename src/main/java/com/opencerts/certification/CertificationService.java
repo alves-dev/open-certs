@@ -18,7 +18,11 @@ public class CertificationService {
         loadCache();
     }
 
-    public List<CertificationDTO> listAll() {
+    public List<Certification> listAll() {
+        return localCache;
+    }
+
+    public List<CertificationDTO> listAllToDTO() {
         return localCache.stream().map(CertificationDTO::new).toList();
     }
 
@@ -35,8 +39,10 @@ public class CertificationService {
     }
 
     private void loadCache() {
-        if (localCache == null) {
+        if (localCache == null)
             localCache = repository.findAll();
-        }
+
+        if (localCache.isEmpty())
+            localCache = null;
     }
 }

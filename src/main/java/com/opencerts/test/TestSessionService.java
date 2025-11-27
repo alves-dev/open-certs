@@ -2,12 +2,12 @@ package com.opencerts.test;
 
 import com.opencerts.certification.CertificationService;
 import com.opencerts.shared.TestSessionDTO;
+import com.opencerts.user.User;
 import com.opencerts.user.UserService;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 
 @Service
 public class TestSessionService {
@@ -26,7 +26,7 @@ public class TestSessionService {
         var userId = userService.getUser().id();
         return repository.findByUserId(userId)
                 .stream()
-                .map(t -> new ListTestSessionDTO(t, certificationService))
+                .map(ListTestSessionDTO::new)
                 .sorted((a, b) -> b.startedAt().compareTo(a.startedAt()))
                 .toList();
     }
@@ -41,7 +41,7 @@ public class TestSessionService {
         return new TestSessionDTO(test);
     }
 
-    public TestSessionDTO addQuestionInTest(String testIdentifier, String certificationId, UUID questionId, boolean answerCorrect) {
+    public TestSessionDTO addQuestionInTest(String testIdentifier, String certificationId, String questionId, boolean answerCorrect) {
         TestSession test = createOrGetByIdentifier(testIdentifier, certificationId);
         test.markQuestionResult(questionId, answerCorrect);
         repository.save(test);
@@ -49,12 +49,12 @@ public class TestSessionService {
     }
 
     private TestSession createOrGetByIdentifier(String identifier, String certificationId) {
-        var userId = userService.getUser().id();
-        Optional<TestSession> optionalTestSession = repository.findByUserIdAndIdentifier(userId, identifier);
+        User user = userService.getUser();
+        Optional<TestSession> optionalTestSession = repository.findByUserIdAndIdentifier(user.id(), identifier);
         if (optionalTestSession.isPresent())
             return optionalTestSession.get();
 
-        var test = new TestSession(userId, certificationId, identifier);
+        var test = new TestSession(user, certificationService.getById(certificationId).get(), identifier);
         return repository.save(test);
     }
 }

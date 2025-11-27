@@ -1,6 +1,5 @@
 package com.opencerts.test;
 
-import com.opencerts.certification.CertificationService;
 import com.opencerts.certification.Question;
 import com.opencerts.certification.QuestionService;
 import com.opencerts.certification.response.CertificationDTO;
@@ -28,7 +27,7 @@ record TestSessionDetailsDTO(
             {list_questions}
             """;
 
-    TestSessionDetailsDTO(TestSession test, CertificationService certificationService, QuestionService questionService) {
+    TestSessionDetailsDTO(TestSession test, QuestionService questionService) {
         List<Question> incorrectQuestions = questionService.findAllById(test.questionsIncorrectIds());
 
         StringBuilder wrongQuestionsDescriptions = new StringBuilder();
@@ -40,7 +39,7 @@ record TestSessionDetailsDTO(
         }
 
         this(test.identifier(),
-                CertificationDTO.of(certificationService.getById(test.certificationId())),
+                new CertificationDTO(test.certification()),
                 test.totalCorrect(),
                 test.totalError(),
                 test.percentageCorrect(),

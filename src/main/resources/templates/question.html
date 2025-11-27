@@ -308,17 +308,17 @@
             <input type="hidden" id="hiddenTestIdentifier" name="testIdentifier" th:value="${testSession != null ? testSession.identifier : ''}"/>
 
             <ul class="options-list">
-                <li th:each="resp, iterStat : ${answers}" class="option-item">
+                <li th:each="answer, iterStat : ${answers}" class="option-item">
                     <input th:type="${question.isMultipleChoice} ? 'checkbox' : 'radio'"
                            th:name="selectedOptions"
                            th:id="${'opt-' + iterStat.index}"
-                           th:value="${resp.text}"
+                           th:value="${answer}"
                            class="option-input"
                            th:disabled="${isCorrect != null}">
 
                     <label th:for="${'opt-' + iterStat.index}" class="option-label">
                         <div class="option-indicator"></div>
-                        <span th:text="${resp.text}">Opção de Texto</span>
+                        <span th:text="${answer}">Opção de Texto</span>
                     </label>
                 </li>
             </ul>
@@ -388,7 +388,7 @@
             if (visibleInput && hiddenInput) {
                 // Formatar input para aceitar apenas caracteres válidos
                 visibleInput.addEventListener('input', function() {
-                    this.value = this.value.replace(/[^a-zA-Z0-9_-]/g, '');
+                    this.value = this.value.replace(/[^a-z0-9_-]/g, '');
                     hiddenInput.value = this.value;
                 });
             }

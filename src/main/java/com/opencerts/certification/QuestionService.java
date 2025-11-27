@@ -1,6 +1,5 @@
 package com.opencerts.certification;
 
-import com.opencerts.certification.response.CertificationDTO;
 import com.opencerts.certification.response.CertificationQuestionCount;
 import com.opencerts.test.TestSession;
 import com.opencerts.test.TestSessionService;
@@ -19,7 +18,7 @@ public class QuestionService {
     private final MongoTemplate mongoTemplate;
     private final CertificationService certificationService;
 
-    private List<CertificationQuestionCount> questionCountCache = null;
+    private List<CertificationQuestionCount.DTO> questionCountCache = null;
 
     public QuestionService(QuestionRepository repository, TestSessionService testSessionService,
                            MongoTemplate mongoTemplate, CertificationService certificationService) {
@@ -30,13 +29,14 @@ public class QuestionService {
     }
 
     public Question save(Question question) {
+        questionCountCache = null;
         return repository.save(question);
     }
 
     public Question findRandomByCertification(String certificationId, String testIdentifier) {
         Optional<TestSession> test = testSessionService.findByIdentifier(testIdentifier);
 
-        Set<UUID> answeredIds = test
+        Set<String> answeredIds = test
                 .map(TestSession::answeredQuestionIds)
                 .orElse(Collections.emptySet());
 
@@ -55,40 +55,46 @@ public class QuestionService {
         return available.get(ThreadLocalRandom.current().nextInt(available.size()));
     }
 
-    public Question getQuestionById(UUID questionId) {
+    public Question getQuestionById(String questionId) {
         return repository.findById(questionId).get();
     }
 
-    public List<Question> findAllById(List<UUID> uuids) {
-        return uuids.stream().map(q -> repository.findById(q).get()).toList();
+    public List<Question> findAllById(List<String> ids) {
+        return ids.stream().map(q -> repository.findById(q).get()).toList();
     }
 
-    public List<CertificationQuestionCount> countByCertification() {
+    public List<CertificationQuestionCount.DTO> countByCertification() {
         if (questionCountCache != null) {
             return questionCountCache;
         }
 
         Aggregation agg = Aggregation.newAggregation(
                 Aggregation.group("certification").count().as("total"),
-                Aggregation.project("total").and("_id").as("certificationId")
+                Aggregation.project("total").and("_id").as("certification")
         );
 
-        List<CertificationQuestionCount> questionCount = mongoTemplate.aggregate(agg, "questions", CertificationQuestionCount.class).getMappedResults();
+        List<CertificationQuestionCount> questionCount = mongoTemplate
+                .aggregate(agg, "questions", CertificationQuestionCount.class)
+                .getMappedResults();
 
-        List<CertificationDTO> certificationDTOList = certificationService.listAll();
         questionCountCache = new ArrayList<>();
 
-        for (var qc : questionCount) {
-            var cert = certificationDTOList.stream()
-                    .filter(c -> c.id().equals(qc.certificationId()))
-                    .findFirst().get();
-            questionCountCache.add(new CertificationQuestionCount(qc.certificationId(), cert.provider(), cert.displayNameWithoutProvider(), qc.total()));
-        }
+        for (var qc : questionCount)
+            questionCountCache.add(new CertificationQuestionCount(qc.certification(), qc.total()).toDTO());
 
-        certificationDTOList.stream()
-                .filter(cert -> questionCount.stream().noneMatch(qc -> qc.certificationId().equals(cert.id())))
-                .forEach(cert -> questionCountCache.add(new CertificationQuestionCount(cert.id(), cert.provider(), cert.displayNameWithoutProvider(), 0)));
+        certificationService.listAll().stream()
+                .filter(cert -> questionCount.stream().noneMatch(qc -> qc.certification().equals(cert)))
+                .forEach(cert -> questionCountCache.add(new CertificationQuestionCount(cert, 0).toDTO()));
 
         return questionCountCache;
+    }
+
+    public List<String> getRandomQuestionIdsForCertification(String certificationId, int numberOfQuestions) {
+        List<Question> questions = repository.findByCertification(certificationId);
+        Collections.shuffle(questions);
+        return questions.stream()
+                .limit(numberOfQuestions)
+                .map(Question::id)
+                .toList();
     }
 }

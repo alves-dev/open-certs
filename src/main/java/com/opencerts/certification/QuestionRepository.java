@@ -3,9 +3,8 @@ package com.opencerts.certification;
 import org.springframework.data.mongodb.repository.MongoRepository;
 
 import java.util.List;
-import java.util.UUID;
 
-public interface QuestionRepository extends MongoRepository<Question, UUID> {
+public interface QuestionRepository extends MongoRepository<Question, String> {
 
     List<Question> findByCertification(String certificationId);
 }

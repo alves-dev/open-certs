@@ -11,7 +11,7 @@ import java.util.UUID;
 public class User {
 
     @Id
-    private UUID id;
+    private String id;
     private String name;
     private String profileImage;
     private String email;
@@ -24,7 +24,7 @@ public class User {
     }
 
     private User(String name, String profileImage, String email, String providerId) {
-        this.id = UUID.randomUUID();
+        this.id = UUID.randomUUID().toString();
         this.name = name;
         this.profileImage = profileImage;
         this.email = email;
@@ -35,7 +35,7 @@ public class User {
 
     // Getters //
 
-    public UUID id() {
+    public String id() {
         return id;
     }
 

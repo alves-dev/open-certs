@@ -3,7 +3,9 @@ package com.opencerts.certification;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-@Document(collection = "certification")
+import java.util.Objects;
+
+@Document(collection = "certifications")
 public class Certification {
 
     @Id
@@ -42,9 +44,24 @@ public class Certification {
         return level;
     }
 
+    public String displayNameWithoutProvider() {
+        return name.concat(" - ").concat(level);
+    }
+
     // Modificadores //
 
 
     // Outros //
 
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+        Certification that = (Certification) o;
+        return Objects.equals(id, that.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(id);
+    }
 }

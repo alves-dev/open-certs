@@ -1,6 +1,10 @@
 package com.opencerts.test;
 
+import com.opencerts.certification.Certification;
+import com.opencerts.user.User;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.Indexed;
+import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.LocalDateTime;
@@ -12,37 +16,29 @@ public class TestSession {
     @Id
     private String id;
 
-    private UUID userId;
-    private String certificationId;
+    @DBRef
+    @Indexed
+    private User user;
+
+    @DBRef
+    private Certification certification;
+
     private String identifier;
-
     private LocalDateTime startedAt;
-    private LocalDateTime finishedAt;
+    private List<String> questionsCorrect = new ArrayList<>();
+    private List<String> questionsIncorrect = new ArrayList<>();
 
-    private Status status;
-
-    private int totalCorrect;
-    private int totalError;
-
-    private List<UUID> questionsCorrect = new ArrayList<>();
-    private List<UUID> questionsIncorrect = new ArrayList<>();
-
-    public TestSession(UUID userId, String certificationId, String identifier) {
-        this.userId = userId;
-        this.certificationId = certificationId;
+    public TestSession(User user, Certification certification, String identifier) {
+        this.id = UUID.randomUUID().toString();
+        this.user = user;
+        this.certification = certification;
         this.identifier = identifier;
         this.startedAt = LocalDateTime.now();
-        this.status = Status.IN_PROGRESS;
-    }
-
-    enum Status {
-        IN_PROGRESS,
-        COMPLETED
     }
 
     // --- Getters ---
-    public String certificationId() {
-        return certificationId;
+    public Certification certification() {
+        return certification;
     }
 
     public String identifier() {
@@ -54,48 +50,41 @@ public class TestSession {
     }
 
     public int totalCorrect() {
-        return totalCorrect;
+        return questionsCorrect.size();
     }
 
     public int totalError() {
-        return totalError;
+        return questionsIncorrect.size();
     }
 
-    List<UUID> questionsCorrectIds() {
+    List<String> questionsCorrectIds() {
         return questionsCorrect;
     }
 
-    List<UUID> questionsIncorrectIds() {
+    List<String> questionsIncorrectIds() {
         return questionsIncorrect;
     }
 
     // --- Métodos de negócio ---
 
-    public void markQuestionResult(UUID questionId, boolean isCorrect) {
+    public void markQuestionResult(String questionId, boolean isCorrect) {
         if (isCorrect) {
             questionsCorrect.add(questionId);
-            totalCorrect++;
         } else {
             questionsIncorrect.add(questionId);
-            totalError++;
         }
     }
 
     public int percentageCorrect() {
-        int total = totalCorrect + totalError;
-        return total == 0 ? 0 : (int) Math.round(totalCorrect * 100.0 / total);
+        int total = totalCorrect() + totalError();
+        return total == 0 ? 0 : (int) Math.round(totalCorrect() * 100.0 / total);
     }
 
-    public Set<UUID> answeredQuestionIds() {
-        Set<UUID> full = new HashSet<>();
+    public Set<String> answeredQuestionIds() {
+        Set<String> full = new HashSet<>();
         full.addAll(questionsIncorrect);
         full.addAll(questionsCorrect);
         return full;
     }
-
-//    public void finish() {
-//        this.finishedAt = LocalDateTime.now();
-//        this.status = Status.COMPLETED;
-//    }
 }
 

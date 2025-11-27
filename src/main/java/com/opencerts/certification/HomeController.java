@@ -16,7 +16,7 @@ public class HomeController {
 
     @GetMapping("/")
     public String home(Model model) {
-        model.addAttribute("certifications", certificationService.listAll());
+        model.addAttribute("certifications", certificationService.listAllToDTO());
         return Page.HOME;
     }
 }

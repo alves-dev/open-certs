@@ -1,11 +1,13 @@
 package com.opencerts.admin;
 
+import com.opencerts.certification.Certification;
+import com.opencerts.certification.CertificationService;
 import com.opencerts.certification.Question;
 import com.opencerts.certification.QuestionRepository;
-import com.opencerts.certification.Response;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -15,9 +17,11 @@ import java.util.stream.Collectors;
 public class AdminQuestionController {
 
     private final QuestionRepository questionRepository;
+    private final CertificationService certificationService;
 
-    public AdminQuestionController(QuestionRepository questionRepository) {
+    public AdminQuestionController(QuestionRepository questionRepository, CertificationService certificationService) {
         this.questionRepository = questionRepository;
+        this.certificationService = certificationService;
     }
 
     @GetMapping("/export")
@@ -25,15 +29,15 @@ public class AdminQuestionController {
         List<Question> questions = questionRepository.findAll();
 
         List<OutputQuestion> outputQuestions = questions.stream().map(q -> {
-            Map<String, Boolean> answers = q.responses().stream()
+            Map<String, Boolean> answers = q.answers().stream()
                     .collect(Collectors.toMap(
-                            Response::text,
-                            r -> q.checkOneAnswer(r.text()),
-                            (v1, v2) -> v1
+                            Question.Answer::text,
+                            Question.Answer::correct
                     ));
+
             return new OutputQuestion(
-                    q.id().toString(),
-                    q.certification(),
+                    q.id(),
+                    q.certification().id(),
                     q.topic(),
                     q.description(),
                     answers
@@ -44,17 +48,16 @@ public class AdminQuestionController {
     }
 
     @PostMapping("/import")
-    public ResponseEntity<String> importQuestions(@RequestBody List<InputQuestion> questions) {
+    public ResponseEntity<String> importQuestions(@RequestBody List<OutputQuestion> questions) {
         var list = questions.stream().map(q -> {
-            var responses = q.responses().stream().map(Response::new).toList();
-            var correctAnswers = q.correctIndexes().stream().map(responses::get).toList();
-            return new Question(
-                    q.certification(),
-                    q.description(),
-                    q.topic(),
-                    responses,
-                    correctAnswers
+            Certification certification = certificationService.getById(q.certificationId).get();
+
+            List<Question.Answer> answers = new ArrayList<>();
+            q.answers.forEach(
+                    (text, correct) -> answers.add(new Question.Answer(text, correct))
             );
+
+            return new Question(certification, q.description(), q.topic(), answers, null);
         }).toList();
 
         list.forEach(questionRepository::save);

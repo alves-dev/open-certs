@@ -1,10 +1,10 @@
 package com.opencerts.certification;
 
-import com.opencerts.util.Page;
 import com.opencerts.certification.request.AnswerFormDTO;
 import com.opencerts.shared.TestSessionDTO;
 import com.opencerts.test.TestSessionService;
 import com.opencerts.user.User;
+import com.opencerts.util.Page;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -22,7 +22,8 @@ public class QuestionController {
     private final CertificationService certificationService;
     private final TestSessionService testSessionService;
 
-    public QuestionController(QuestionService questionService, CertificationService certificationService, TestSessionService testSessionService) {
+    public QuestionController(QuestionService questionService, CertificationService certificationService,
+                              TestSessionService testSessionService) {
         this.questionService = questionService;
         this.certificationService = certificationService;
         this.testSessionService = testSessionService;
@@ -30,7 +31,7 @@ public class QuestionController {
 
     @GetMapping("/new")
     public String showForm(Model model) {
-        model.addAttribute("certifications", certificationService.listAll());
+        model.addAttribute("certifications", certificationService.listAllToDTO());
 
         return Page.QUESTION_FORM;
     }
@@ -42,22 +43,25 @@ public class QuestionController {
             @RequestParam String description,
             @RequestParam List<String> responses,
             @RequestParam List<Integer> correctIndexes,
-            @AuthenticationPrincipal User user
+            @AuthenticationPrincipal User user,
+            Model model
     ) {
-        if (topic.isEmpty())
-            topic = "not_defined";
-
-        List<Response> responseList = new ArrayList<>();
-        for (String response : responses) {
-            if (response.isEmpty()) continue;
-            Response r = new Response(response);
-            responseList.add(r);
+        Certification objectCertification = certificationService.getById(certification).orElse(null);
+        if (objectCertification == null) {
+            model.addAttribute("errorMessage", "Certification not found");
+            model.addAttribute("status", "400");
+            return Page.ERROR;
         }
 
-        List<Response> correctAnswers = new ArrayList<>();
-        correctIndexes.forEach(e -> correctAnswers.add(responseList.get(e)));
+        List<Question.Answer> answers = new ArrayList<>();
+        for (int i = 0; i < responses.size(); i++) {
+            if (responses.get(i).isEmpty()) continue;
+            boolean isCorrect = correctIndexes.contains(i);
+            Question.Answer answer = new Question.Answer(responses.get(i), isCorrect);
+            answers.add(answer);
+        }
 
-        Question question = new Question(certification, description, topic, responseList, correctAnswers, user);
+        Question question = new Question(objectCertification, description, topic, answers, user);
         questionService.save(question);
 
         return "redirect:/questions/new";
@@ -81,7 +85,7 @@ public class QuestionController {
         model.addAttribute("question", question);
 
         if (question != null)
-            model.addAttribute("answers", question.responses());
+            model.addAttribute("answers", question.answersText());
 
         TestSessionDTO testSession = null;
         if (!testIdentifier.isEmpty())
@@ -98,7 +102,7 @@ public class QuestionController {
                               Model model) {
 
         var question = questionService.getQuestionById(form.questionId());
-        var isCorrect = question.checkAnswerByString(form.selectedOptions());
+        var isCorrect = question.checkAnswers(form.selectedOptions());
 
         TestSessionDTO testSession = null;
         if (!form.testIdentifier().isEmpty())
@@ -109,7 +113,7 @@ public class QuestionController {
 
         model.addAttribute("certification", certificationService.getById(certificationId).get());
         model.addAttribute("question", question);
-        model.addAttribute("answers", question.responses());
+        model.addAttribute("answers", question.answersText());
         model.addAttribute("isCorrect", isCorrect);
         model.addAttribute("testSession", testSession);
         model.addAttribute("correctAnswers", question.correctAnswers());

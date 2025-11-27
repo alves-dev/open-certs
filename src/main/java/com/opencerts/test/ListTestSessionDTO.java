@@ -1,6 +1,5 @@
 package com.opencerts.test;
 
-import com.opencerts.certification.CertificationService;
 import com.opencerts.certification.response.CertificationDTO;
 
 import java.time.LocalDateTime;
@@ -14,9 +13,9 @@ record ListTestSessionDTO(
         LocalDateTime startedAt
 ) {
 
-    ListTestSessionDTO(TestSession test, CertificationService certificationService) {
+    ListTestSessionDTO(TestSession test) {
         this(test.identifier(),
-                CertificationDTO.of(certificationService.getById(test.certificationId())),
+                new CertificationDTO(test.certification()),
                 test.totalCorrect(),
                 test.totalError(),
                 test.percentageCorrect(),
