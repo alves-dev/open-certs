@@ -41,7 +41,7 @@ public class TestController {
             return Page.ERROR;
         }
 
-        model.addAttribute("testSession", new TestSessionDetailsDTO(optTest.get(), certificationService, questionService));
+        model.addAttribute("testSession", new TestSessionDetailsDTO(optTest.get(), questionService));
         return Page.TESTS_DETAILS;
     }
 }
