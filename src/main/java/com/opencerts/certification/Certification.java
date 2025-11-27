@@ -44,6 +44,10 @@ public class Certification {
         return level;
     }
 
+    public String displayName() {
+        return provider.concat(" - ").concat(name).concat(" - ").concat(level);
+    }
+
     public String displayNameWithoutProvider() {
         return name.concat(" - ").concat(level);
     }

@@ -14,6 +14,10 @@ public class Page {
     public static final String TESTS = "tests";
     public static final String TESTS_DETAILS = "test-details";
 
+    public static final String CHALLENGE = "challenge/list";
+    public static final String CHALLENGE_INVITE = "challenge/invite";
+    public static final String CHALLENGE_LEADERBOARD = "challenge/leaderboard";
+
     public static final String STATS = "stats";
 
     public static final String DOCUMENTATION = "docs";

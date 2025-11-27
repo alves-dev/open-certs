@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="pt-br" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{base :: layout(
+          title='Desafios | OpenCerts',
+          pageHeader='Desafios',
+          content=~{::content},
+          styles=~{::styles},
+          scripts=~{::scripts}
+      )}">
+
+<th:block th:fragment="styles">
+    <style>
+        /* --- Header com Ação --- */
+        .page-action-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .btn-create-challenge {
+            background: linear-gradient(135deg, #8B5CF6, #6D28D9); /* Roxo Competitivo */
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            box-shadow: 0 4px 6px -1px rgba(139, 92, 246, 0.3);
+        }
+        .btn-create-challenge:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 10px -1px rgba(139, 92, 246, 0.4);
+        }
+
+        /* --- Grid de Desafios --- */
+        .challenges-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .challenge-card {
+            background-color: var(--color-bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 1rem;
+            padding: 1.5rem;
+            position: relative;
+            transition: all 0.2s;
+            display: flex;
+            flex-direction: column;
+        }
+        .challenge-card:hover {
+            border-color: #8B5CF6; /* Roxo no hover */
+            transform: translateY(-4px);
+        }
+
+        /* Topo do Card */
+        .card-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 1rem;
+        }
+        .icon-box {
+            background: rgba(139, 92, 246, 0.1);
+            color: #8B5CF6;
+            padding: 8px;
+            border-radius: 8px;
+        }
+        .status-badge {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            font-weight: 700;
+            padding: 4px 8px;
+            border-radius: 4px;
+            background: var(--color-bg-body);
+            color: var(--color-text-muted);
+        }
+        .status-active { color: var(--color-primary); background: rgba(16, 185, 129, 0.1); }
+
+        /* Infos */
+        .challenge-name {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--color-text-main);
+            margin-bottom: 0.25rem;
+        }
+        .challenge-cert {
+            font-size: 0.85rem;
+            color: var(--color-text-muted);
+            margin-bottom: 1.5rem;
+        }
+
+        /* Social Stats */
+        .social-row {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-top: auto;
+            padding-top: 1rem;
+            border-top: 1px solid var(--border-color);
+        }
+        .participant-pill {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.85rem;
+            color: var(--color-text-muted);
+        }
+
+        /* --- MODAL DE CRIAÇÃO --- */
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(15, 23, 42, 0.8); /* Backdrop escuro */
+            backdrop-filter: blur(4px);
+            z-index: 1000;
+            display: none; /* Escondido por padrão */
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        .modal-overlay.open {
+            display: flex;
+            opacity: 1;
+        }
+
+        .modal-content {
+            background: var(--color-bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 1rem;
+            width: 100%;
+            max-width: 500px;
+            padding: 2rem;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
+            transform: scale(0.95);
+            transition: transform 0.3s ease;
+        }
+        .modal-overlay.open .modal-content { transform: scale(1); }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+        .modal-title { font-size: 1.5rem; font-weight: 700; color: var(--color-text-main); }
+        .btn-close {
+            background: none; border: none; color: var(--color-text-muted); cursor: pointer;
+        }
+        .btn-close:hover { color: var(--color-text-main); }
+
+        /* Form Elements do Modal */
+        .form-group { margin-bottom: 1.25rem; }
+        .form-label { display: block; margin-bottom: 0.5rem; color: var(--color-text-muted); font-size: 0.9rem; }
+        .form-input {
+            width: 100%;
+            padding: 0.75rem;
+            background: var(--color-bg-body);
+            border: 1px solid var(--border-color);
+            border-radius: 0.5rem;
+            color: var(--color-text-main);
+            font-size: 1rem;
+        }
+        .form-input:focus { outline: none; border-color: #8B5CF6; }
+
+        .modal-actions {
+            margin-top: 2rem;
+            display: flex;
+            justify-content: flex-end;
+            gap: 1rem;
+        }
+        .btn-cancel {
+            background: transparent; border: 1px solid var(--border-color); color: var(--color-text-main);
+            padding: 0.75rem 1.5rem; border-radius: 0.5rem; cursor: pointer;
+        }
+        .btn-submit {
+            background: #8B5CF6; color: white; border: none;
+            padding: 0.75rem 1.5rem; border-radius: 0.5rem; font-weight: 600; cursor: pointer;
+        }
+        .btn-submit:hover { background: #7C3AED; }
+
+    </style>
+</th:block>
+
+<th:block th:fragment="content">
+
+    <div class="page-action-header">
+        <div>
+            <p style="color: var(--color-text-muted);">Crie competições e desafie seus amigos.</p>
+        </div>
+
+        <button class="btn-create-challenge" onclick="openModal()">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M12 5v14M5 12h14"/>
+            </svg>
+            Novo Desafio
+        </button>
+    </div>
+
+    <div th:if="${challenges == null or challenges.isEmpty()}" class="empty-state"
+         style="text-align: center; padding: 4rem 2rem; border: 1px dashed var(--border-color); border-radius: 1rem;">
+        <div style="color: #8B5CF6; margin-bottom: 1rem;">
+            <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1">
+                <path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"></path>
+                <path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"></path>
+                <path d="M4 22h16"></path>
+                <path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"></path>
+                <path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"></path>
+                <path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"></path>
+            </svg>
+        </div>
+        <h3 style="color: var(--color-text-main); margin-bottom: 0.5rem;">Sem desafios ativos</h3>
+        <p style="color: var(--color-text-muted);">Você ainda não criou ou aceitou nenhum desafio.</p>
+    </div>
+
+    <div th:unless="${challenges == null or challenges.isEmpty()}" class="challenges-grid">
+
+        <div th:each="challenge : ${challenges}" class="challenge-card">
+            <div class="card-top">
+                <div class="icon-box">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"></path>
+                        <path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"></path>
+                        <path d="M4 22h16"></path>
+                        <path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"></path>
+                    </svg>
+                </div>
+                <span class="status-badge status-active">Em Andamento</span>
+            </div>
+
+            <h3 class="challenge-name" th:text="${challenge.name}">Desafio AWS Team</h3>
+            <p class="challenge-cert" th:text="${challenge.certificationName}">AWS Solutions Architect</p>
+
+            <div style="margin-bottom: 1rem;">
+                <div style="display:flex; justify-content:space-between; font-size:0.8rem; margin-bottom:4px; color:var(--color-text-muted);">
+                    <span>Seu Progresso</span>
+                    <span th:text="${challenge.answeredQuestions} + '/' + ${challenge.totalQuestions}">5/20</span>
+                </div>
+                <div style="height:6px; background:var(--color-bg-body); border-radius:3px; overflow:hidden;">
+                    <div style="height:100%; background:#8B5CF6; width: 25%;"></div>
+                </div>
+            </div>
+
+            <div class="social-row">
+                <div class="participant-pill" title="Participantes">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                        <circle cx="9" cy="7" r="4"></circle>
+                        <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                        <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                    </svg>
+                    <span th:text="${challenge.participantCount}">3</span> participantes
+                </div>
+
+                <a th:href="@{/challenges/{id}(id=${challenge.id})}"
+                   style="margin-left: auto; color: #8B5CF6; font-weight: 600; font-size: 0.9rem; text-decoration: none;">
+                    Ver Leaderboard →
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div id="createModal" class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Novo Desafio 🏆</h3>
+                <button class="btn-close" onclick="closeModal()">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                </button>
+            </div>
+
+            <form th:action="@{/challenges}" method="post">
+                <div class="form-group">
+                    <label class="form-label">Nome do Desafio</label>
+                    <input type="text" name="name" class="form-input" placeholder="Ex: Maratona AWS da Equipe" required>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Certificação</label>
+                    <select name="certificationId" class="form-input" required>
+                        <option value="" disabled selected>Selecione...</option>
+                        <option th:each="cert : ${certifications}"
+                                th:value="${cert.id}"
+                                th:text="${cert.provider + ' ' + cert.name}">AWS Cloud Practitioner
+                        </option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Número de Questões</label>
+                    <input type="number" name="numberOfQuestions" class="form-input" min="5" max="50" value="10"
+                           required>
+                    <small style="color:var(--color-text-muted); font-size:0.8rem;">Entre 5 e 50 questões.</small>
+                </div>
+
+                <div class="modal-actions">
+                    <button type="button" class="btn-cancel" onclick="closeModal()">Cancelar</button>
+                    <button type="submit" class="btn-submit">Criar Desafio</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+</th:block>
+
+<th:block th:fragment="scripts">
+    <script>
+        const modal = document.getElementById('createModal');
+
+        function openModal() {
+            modal.classList.add('open');
+            // Focar no primeiro input
+            setTimeout(() => modal.querySelector('input').focus(), 100);
+        }
+
+        function closeModal() {
+            modal.classList.remove('open');
+        }
+
+        // Fechar ao clicar fora
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) closeModal();
+        });
+
+        // Fechar com ESC
+        document.addEventListener('keydown', (e) => {
+            if (e.key === "Escape" && modal.classList.contains('open')) {
+                closeModal();
+            }
+        });
+    </script>
+</th:block>
+</html>

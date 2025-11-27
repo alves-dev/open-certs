@@ -1,6 +1,6 @@
 package com.opencerts.util;
 
-import com.opencerts.certification.QuestionService;
+import com.opencerts.challenge.ChallengeService;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.context.annotation.Profile;
 import org.springframework.http.ResponseEntity;
@@ -13,21 +13,20 @@ import java.util.Map;
 @RestController
 public class DeveloperController {
 
-    private final QuestionService questionService;
+    private final ChallengeService challengeService;
 
-    public DeveloperController(QuestionService questionService) {
-        this.questionService = questionService;
+    public DeveloperController(ChallengeService challengeService) {
+        this.challengeService = challengeService;
     }
 
     @GetMapping("/session-info")
     public ResponseEntity<Object> sessionInfo(HttpServletRequest request) {
+        challengeService.create("Dev Challenge", "aws-developer-associate", 5);
         return ResponseEntity.ok(
                 Map.of(
                         "timeout_seconds", request.getSession().getMaxInactiveInterval(),
                         "timeout_minutes", request.getSession().getMaxInactiveInterval() / 60,
-                        "timeout_hours", request.getSession().getMaxInactiveInterval() / 60 / 60,
-
-                        "certification_question_count", questionService.countByCertification()
+                        "timeout_hours", request.getSession().getMaxInactiveInterval() / 60 / 60
                 )
         );
     }

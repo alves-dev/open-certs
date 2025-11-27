@@ -23,7 +23,7 @@ public class TestSessionService {
     }
 
     public List<ListTestSessionDTO> listByUser() {
-        var userId = userService.getUser().id();
+        var userId = userService.getCurrent().id();
         return repository.findByUserId(userId)
                 .stream()
                 .map(ListTestSessionDTO::new)
@@ -32,7 +32,7 @@ public class TestSessionService {
     }
 
     public Optional<TestSession> findByIdentifier(String identifier) {
-        var userId = userService.getUser().id();
+        var userId = userService.getCurrent().id();
         return repository.findByUserIdAndIdentifier(userId, identifier);
     }
 
@@ -49,7 +49,7 @@ public class TestSessionService {
     }
 
     private TestSession createOrGetByIdentifier(String identifier, String certificationId) {
-        User user = userService.getUser();
+        User user = userService.getCurrent();
         Optional<TestSession> optionalTestSession = repository.findByUserIdAndIdentifier(user.id(), identifier);
         if (optionalTestSession.isPresent())
             return optionalTestSession.get();

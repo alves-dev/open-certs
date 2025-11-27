@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="pt-br" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{base :: layout(
+          title='Leaderboard | OpenCerts',
+          pageHeader='',
+          content=~{::content},
+          styles=~{::styles},
+          scripts=~{::scripts}
+      )}">
+
+<th:block th:fragment="styles">
+    <style>
+        /* --- Header do Desafio --- */
+        .lb-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 3rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .lb-title h2 {
+            font-size: 1.75rem;
+            font-weight: 800;
+            color: var(--color-text-main);
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .lb-subtitle {
+            color: var(--color-text-muted);
+            font-size: 0.9rem;
+            margin-top: 0.25rem;
+        }
+
+        .btn-share {
+            background-color: var(--color-bg-card);
+            border: 1px solid var(--border-color);
+            color: #8B5CF6;
+            padding: 0.75rem 1.25rem;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s;
+        }
+        .btn-share:hover {
+            border-color: #8B5CF6;
+            background-color: rgba(139, 92, 246, 0.05);
+        }
+
+        /* --- PODIUM SECTION (Top 3) --- */
+        .podium-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.5rem;
+            margin-bottom: 3rem;
+            align-items: end; /* Alinha pela base */
+        }
+        @media (max-width: 768px) {
+            .podium-grid { grid-template-columns: 1fr; gap: 1rem; }
+        }
+
+        .podium-card {
+            background-color: var(--color-bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 1rem;
+            padding: 1.5rem;
+            text-align: center;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            box-shadow: var(--shadow-card);
+        }
+
+        /* Estilos específicos por Rank */
+        .rank-1 {
+            border-color: #F59E0B; /* Gold */
+            background: linear-gradient(to bottom, rgba(245, 158, 11, 0.05), var(--color-bg-card));
+            transform: scale(1.1); /* Maior que os outros */
+            z-index: 2;
+        }
+        .rank-2 { border-color: #94A3B8; /* Silver */ }
+        .rank-3 { border-color: #D97706; /* Bronze */ }
+
+        .medal-icon {
+            width: 48px;
+            height: 48px;
+            margin-bottom: 0.5rem;
+        }
+        .rank-1 .medal-icon { color: #F59E0B; filter: drop-shadow(0 0 10px rgba(245, 158, 11, 0.4)); }
+        .rank-2 .medal-icon { color: #94A3B8; }
+        .rank-3 .medal-icon { color: #D97706; }
+
+        .player-avatar-large {
+            width: 64px;
+            height: 64px;
+            border-radius: 50%;
+            background-color: var(--color-bg-body);
+            border: 3px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 0.75rem;
+            color: var(--color-text-main);
+        }
+        .rank-1 .player-avatar-large { border-color: #F59E0B; }
+
+        .player-name-podium {
+            font-weight: 700;
+            color: var(--color-text-main);
+            margin-bottom: 0.25rem;
+        }
+        .player-score-podium {
+            font-size: 0.9rem;
+            color: var(--color-text-muted);
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        /* --- LISTA GERAL (Rank 4+) --- */
+        .ranking-list {
+            background-color: var(--color-bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 1rem;
+            overflow: hidden;
+        }
+
+        .ranking-row {
+            display: grid;
+            grid-template-columns: 50px 2fr 1fr 100px; /* Rank | User | Status | Score */
+            align-items: center;
+            padding: 1rem 1.5rem;
+            border-bottom: 1px solid var(--border-color);
+            transition: background 0.2s;
+        }
+        .ranking-row:last-child { border-bottom: none; }
+        .ranking-row:hover { background-color: var(--color-bg-body); }
+
+        @media (max-width: 600px) {
+            .ranking-row { grid-template-columns: 40px 1fr auto; gap: 10px; }
+            .hide-mobile { display: none; } /* Esconde status no mobile se apertado */
+        }
+
+        /* Destaque para o usuário logado */
+        .my-rank-row {
+            background-color: rgba(139, 92, 246, 0.05); /* Roxo sutil */
+            border-left: 4px solid #8B5CF6;
+        }
+        .my-rank-row:hover { background-color: rgba(139, 92, 246, 0.1); }
+
+        .rank-number {
+            font-weight: 700;
+            color: var(--color-text-muted);
+            font-size: 1.1rem;
+        }
+
+        .player-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        .player-avatar-small {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background-color: var(--color-bg-body);
+            color: var(--color-text-muted);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 0.85rem;
+        }
+        .player-name {
+            font-weight: 600;
+            color: var(--color-text-main);
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+        .st-finished { color: #10B981; background: rgba(16, 185, 129, 0.1); }
+        .st-progress { color: #3B82F6; background: rgba(59, 130, 246, 0.1); }
+
+        .score-display {
+            font-family: 'JetBrains Mono', monospace;
+            font-weight: 700;
+            color: var(--color-text-main);
+            text-align: right;
+        }
+        .score-sub { font-size: 0.75rem; color: var(--color-text-muted); font-weight: 400; }
+
+    </style>
+</th:block>
+
+<th:block th:fragment="content">
+
+    <div class="lb-header">
+        <div class="lb-title">
+            <h2>
+                <span style="color: #F59E0B;">🏆</span>
+                <span th:text="${challenge.name}">Maratona AWS Team</span>
+            </h2>
+            <div class="lb-subtitle">
+                Certificação: <strong th:text="${challenge.certificationName}">AWS Solutions Architect</strong>
+            </div>
+        </div>
+
+        <button class="btn-share" onclick="copyInviteLink()">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"></path>
+                <polyline points="16 6 12 2 8 6"></polyline>
+                <line x1="12" y1="2" x2="12" y2="15"></line>
+            </svg>
+            <span id="shareBtnText">Convidar Amigos</span>
+        </button>
+        <input type="hidden" id="inviteLink" th:value="@{/challenges/invite/{uuid}(uuid=${challenge.id})}">
+    </div>
+
+    <div th:if="${leaderboard == null or leaderboard.isEmpty()}" style="text-align: center; padding: 3rem;">
+        <p style="color: var(--color-text-muted);">Ainda não há participantes classificados.</p>
+    </div>
+
+    <div th:unless="${leaderboard == null or leaderboard.isEmpty()}">
+
+        <div class="podium-grid">
+
+            <div class="podium-card rank-2" th:if="${leaderboard.size() >= 2}">
+                <div class="medal-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="8" r="7"></circle>
+                        <polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"></polyline>
+                    </svg>
+                </div>
+                <div class="player-avatar-large">
+                    <span th:text="${#strings.substring(leaderboard[1].userName,0,1)}">B</span>
+                </div>
+                <div class="player-name-podium" th:text="${leaderboard[1].userName}">Bob</div>
+                <div class="player-score-podium">
+                    <span th:text="${leaderboard[1].score}">85</span>%
+                </div>
+            </div>
+
+            <div class="podium-card rank-1" th:if="${leaderboard.size() >= 1}">
+                <div class="medal-icon">
+                    <svg viewBox="0 0 24 24" fill="currentColor" stroke="none">
+                        <path d="M12 17l-5.878 3.59 1.598-6.7-5.23-4.48 6.865-.55L12 2.5l2.645 6.36 6.866.55-5.231 4.48 1.598 6.7z"/>
+                    </svg>
+                </div>
+                <div class="player-avatar-large">
+                    <span th:text="${#strings.substring(leaderboard[0].userName,0,1)}">A</span>
+                </div>
+                <div class="player-name-podium" th:text="${leaderboard[0].userName}">Alice</div>
+                <div class="player-score-podium" style="color: #F59E0B; font-weight:bold;">
+                    <span th:text="${leaderboard[0].score}">98</span>%
+                </div>
+            </div>
+
+            <div class="podium-card rank-3" th:if="${leaderboard.size() >= 3}">
+                <div class="medal-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="8" r="7"></circle>
+                        <polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"></polyline>
+                    </svg>
+                </div>
+                <div class="player-avatar-large">
+                    <span th:text="${#strings.substring(leaderboard[2].userName,0,1)}">C</span>
+                </div>
+                <div class="player-name-podium" th:text="${leaderboard[2].userName}">Charlie</div>
+                <div class="player-score-podium">
+                    <span th:text="${leaderboard[2].score}">70</span>%
+                </div>
+            </div>
+
+        </div>
+
+        <div class="ranking-list">
+            <div th:each="entry, iter : ${leaderboard}"
+                 class="ranking-row"
+                 th:classappend="${entry.isCurrentUser} ? 'my-rank-row' : ''">
+
+                <div class="rank-number" th:text="'#' + ${iter.count}">#1</div>
+
+                <div class="player-info">
+                    <div class="player-avatar-small">
+                        <span th:text="${#strings.substring(entry.userName,0,1)}">U</span>
+                    </div>
+                    <div>
+                        <div class="player-name">
+                            <span th:text="${entry.userName}">User Name</span>
+                            <span th:if="${entry.isCurrentUser}"
+                                  style="font-size:0.75rem; color:#8B5CF6; margin-left:4px;">(Você)</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="hide-mobile">
+                    <span th:if="${entry.finished}" class="status-badge st-finished">Finalizado</span>
+                    <span th:unless="${entry.finished}" class="status-badge st-progress">Em Progresso</span>
+                </div>
+
+                <div class="score-display">
+                    <div th:if="${entry.finished}">
+                        <span th:text="${entry.score}">90</span>%
+                    </div>
+                    <div th:unless="${entry.finished}" class="score-sub">
+                        <span th:text="${entry.questionsAnswered}">5</span>/<span th:text="${challenge.totalQuestions}">10</span>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+</th:block>
+
+<th:block th:fragment="scripts">
+    <script>
+        function copyInviteLink() {
+            const link = window.location.origin + document.getElementById('inviteLink').value;
+
+            navigator.clipboard.writeText(link).then(() => {
+                const btn = document.getElementById('shareBtnText');
+                const original = btn.innerText;
+                btn.innerText = "Link Copiado!";
+                setTimeout(() => btn.innerText = original, 2000);
+            });
+        }
+    </script>
+</th:block>
+</html>
