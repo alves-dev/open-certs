@@ -6,6 +6,7 @@ public record ChallengeDTO(
         String certificationName,
         int totalQuestions,
         int answeredQuestions,
-        int participantCount
+        int participantCount,
+        String status
 ) {
 }

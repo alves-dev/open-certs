@@ -62,6 +62,19 @@ public class Challenge {
         return questionIds;
     }
 
+    public String getNextQuestionIdForUser(String userId) {
+        ChallengeProgress progress = progressByUser.get(userId);
+
+        List<String> unansweredQuestions = questionIds.stream()
+                .filter(id -> !progress.questionsAnswered().contains(id))
+                .toList();
+
+        if (unansweredQuestions.isEmpty())
+            return null;
+
+        return unansweredQuestions.get(new Random().nextInt(unansweredQuestions.size()));
+    }
+
     public Map<String, ChallengeProgress> progressByUser() {
         return progressByUser;
     }
@@ -70,28 +83,67 @@ public class Challenge {
         progressByUser.put(currentUser.id(), ChallengeProgress.init());
     }
 
-    record ChallengeProgress(
-            List<String> questionsCorrect,
-            List<String> questionsIncorrect,
-            boolean finished
-    ) {
+    public void withAnsweredQuestion(String questionId, boolean isCorrect, String userId) {
+        ChallengeProgress progress = progressByUser.get(userId);
+        if (progress.finished) return;
+
+        progress.withAnsweredQuestion(questionId, isCorrect);
+        if (progress.questionsAnswered().size() == questionIds.size())
+            progress.finished();
+    }
+
+    public String status() {
+        boolean allFinished = progressByUser.values().stream()
+                .allMatch(ChallengeProgress::isFinished);
+        return allFinished ? "FINALIZADO" : "EM ANDAMENTO";
+    }
+
+    static class ChallengeProgress {
+        private List<String> questionsCorrect;
+        private List<String> questionsIncorrect;
+        private boolean finished;
+
+        public ChallengeProgress() {
+            this.questionsCorrect = new ArrayList<>();
+            this.questionsIncorrect = new ArrayList<>();
+            this.finished = false;
+        }
+
+        public List<String> questionsCorrect() {
+            return questionsCorrect;
+        }
+
+        public List<String> questionsIncorrect() {
+            return questionsIncorrect;
+        }
+
+        public boolean isFinished() {
+            return finished;
+        }
 
         public int score(int totalQuestions) {
             return questionsCorrect.size() * 100 / totalQuestions;
-        }
-
-        private static ChallengeProgress init() {
-            return new ChallengeProgress(
-                    new ArrayList<>(),
-                    new ArrayList<>(),
-                    false
-            );
         }
 
         public List<String> questionsAnswered() {
             List<String> answered = new ArrayList<>(questionsCorrect);
             answered.addAll(questionsIncorrect);
             return answered;
+        }
+
+        private static ChallengeProgress init() {
+            return new ChallengeProgress();
+        }
+
+        private void finished() {
+            this.finished = true;
+        }
+
+        private void withAnsweredQuestion(String questionId, boolean isCorrect) {
+            if (isCorrect)
+                questionsCorrect.add(questionId);
+            else
+                questionsIncorrect.add(questionId);
         }
     }
 }

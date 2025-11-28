@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="pt-br" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{base :: layout(
+          title='Desafio: ' + ${challenge.name},
+          pageHeader='',
+          content=~{::content},
+          styles=~{::styles},
+          scripts=~{::scripts}
+      )}">
+
+<th:block th:fragment="styles">
+    <style>
+        /* --- Container Principal --- */
+        .question-card {
+            background-color: var(--color-bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 1rem;
+            padding: 2rem;
+            box-shadow: var(--shadow-card);
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* --- Tipografia da Questão --- */
+        .topic-badge {
+            display: inline-block;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--color-secondary);
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .question-text {
+            font-size: 1.15rem;
+            font-weight: 500;
+            color: var(--color-text-main);
+            margin-bottom: 1.5rem;
+            line-height: 1.6;
+        }
+
+        /* --- Lista de Opções (Cards Selecionáveis) --- */
+        .options-list {
+            list-style: none;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+        .option-item { position: relative; }
+        .option-input { position: absolute; opacity: 0; width: 0; height: 0; }
+        .option-label {
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+            padding: 1rem;
+            border: 1px solid var(--border-color);
+            border-radius: 0.5rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            background-color: var(--color-bg-card);
+        }
+        .option-label:hover { border-color: var(--color-text-muted); background-color: rgba(255,255,255, 0.02); }
+        .option-input:checked + .option-label {
+            border-color: var(--color-secondary);
+            background-color: rgba(59, 130, 246, 0.05);
+            box-shadow: 0 0 0 1px var(--color-secondary);
+        }
+        .option-indicator {
+            width: 20px;
+            height: 20px;
+            border: 2px solid var(--color-text-muted);
+            border-radius: 50%;
+            flex-shrink: 0;
+            margin-top: 2px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+        .option-input[type="checkbox"] + .option-label .option-indicator { border-radius: 4px; }
+        .option-input:checked + .option-label .option-indicator { border-color: var(--color-secondary); background-color: var(--color-secondary); }
+        .option-indicator::after {
+            content: '';
+            width: 8px;
+            height: 8px;
+            background: white;
+            border-radius: 50%;
+            display: none;
+        }
+        .option-input[type="checkbox"] + .option-label .option-indicator::after { border-radius: 1px; }
+        .option-input:checked + .option-label .option-indicator::after { display: block; }
+
+
+        /* --- Botões de Ação --- */
+        .action-bar {
+            margin-top: 2rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            justify-content: space-between;
+        }
+
+        .btn-check, .btn-next {
+            font-weight: 700;
+            flex: 1;
+            min-width: 150px;
+        }
+
+        .btn-skip {
+            background-color: transparent;
+            color: var(--color-text-muted);
+            border: 1px solid var(--border-color);
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            text-decoration: none;
+            min-width: 100px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .btn-skip:hover {
+            border-color: var(--color-secondary);
+            color: var(--color-secondary);
+        }
+
+        /* --- Layout de Duas Colunas (Desafio) --- */
+        .challenge-quiz-layout {
+            display: grid;
+            grid-template-columns: 3fr 1fr;
+            gap: 2rem;
+            align-items: flex-start;
+        }
+
+        /* --- Painel de Status do Desafio (REFACTOR) --- */
+        .status-panel {
+            position: sticky;
+            top: 20px;
+            background-color: var(--color-bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 1rem;
+            padding: 1.5rem;
+            height: fit-content;
+            box-shadow: var(--shadow-card);
+        }
+
+        .status-panel h3 {
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 0.75rem;
+            margin-bottom: 1rem;
+            color: var(--color-secondary);
+            font-size: 1.2rem;
+        }
+
+        /* Container de métricas */
+        .metrics-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .metric-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.75rem;
+            font-size: 0.95rem;
+        }
+
+        .metric-value {
+            font-weight: 700;
+            font-family: 'JetBrains Mono', monospace;
+        }
+        .correct-metric { color: var(--color-primary); }
+        .wrong-metric { color: var(--color-danger); }
+
+        /* Nova classe para o título do progresso */
+        .progress-title {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: 700;
+            color: var(--color-text-main);
+            margin-bottom: 0.25rem;
+        }
+
+        /* Barra de Progresso */
+        .progress-bar-container {
+             /* Removida a borda superior e margin-top aqui para limpar o layout */
+             margin-bottom: 1rem;
+        }
+        .progress-bar {
+            height: 8px;
+            background: var(--color-bg-body);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        .progress-fill {
+            height: 100%;
+            background-color: var(--color-secondary);
+            transition: width 0.3s;
+        }
+
+        .score-metrics {
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid var(--border-color); /* Separador visual */
+        }
+
+        .return-link-container {
+            margin-top: 2rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid var(--border-color);
+        }
+
+
+        /* Erro de Validação (Toast) */
+        .validation-toast {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: var(--color-danger);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 50px;
+            font-weight: 600;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            display: none;
+            z-index: 100;
+            animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        @keyframes popIn { from {transform: translate(-50%, 20px); opacity: 0;} to {transform: translate(-50%, 0); opacity: 1;} }
+
+        /* Responsividade */
+        @media (max-width: 992px) {
+            .challenge-quiz-layout {
+                grid-template-columns: 1fr;
+            }
+            .status-panel {
+                position: static;
+                order: -1;
+            }
+        }
+    </style>
+</th:block>
+
+<th:block th:fragment="content">
+
+    <div class="question-card" th:if="${question == null}" style="text-align: center; padding: 4rem 2rem;">
+        <div style="font-size: 3rem; margin-bottom: 1rem;">🎉</div>
+        <h2 style="color: var(--color-text-main); margin-bottom: 1rem;">Desafio Concluído!</h2>
+        <p style="color: var(--color-text-muted); margin-bottom: 2rem;">Seu resultado foi registrado no placar.</p>
+
+        <a th:href="@{/challenges/{id}/leaderboard(id=${challenge.id})}" class="btn btn-primary"
+           style="text-decoration:none; display:inline-flex; align-items:center; gap:8px;">
+            Ver Meu Placar Final
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"></path>
+                <line x1="4" y1="22" x2="20" y2="22"></line>
+            </svg>
+        </a>
+    </div>
+
+
+    <div class="challenge-quiz-layout" th:if="${question != null}">
+
+        <div class="question-content">
+            <div class="question-card">
+
+                <span class="topic-badge" th:text="${question.topic}">TOPIC</span>
+                <h3 class="question-text" th:text="${question.description}">Descrição da questão...</h3>
+
+                <form id="questionForm" th:action="@{/challenges/{id}/answer(id=${challenge.id})}" method="post">
+                    <input type="hidden" name="questionId" th:value="${question.id}"/>
+                    <ul class="options-list">
+                        <li th:each="answer, iterStat : ${answers}" class="option-item">
+                            <input th:type="${question.isMultipleChoice} ? 'checkbox' : 'radio'"
+                                   th:name="selectedOptions"
+                                   th:id="${'opt-' + iterStat.index}"
+                                   th:value="${answer}"
+                                   class="option-input">
+
+                            <label th:for="${'opt-' + iterStat.index}" class="option-label">
+                                <div class="option-indicator"></div>
+                                <span th:text="${answer}">Opção de Texto</span>
+                            </label>
+                        </li>
+                    </ul>
+
+                    <div class="action-bar">
+                        <button type="submit" id="checkButton" class="btn btn-primary btn-check">Responder</button>
+
+                        <button type="submit" name="action" value="skip" class="btn-skip">
+                            Pular
+                        </button>
+                    </div>
+                </form>
+
+            </div>
+        </div>
+
+        <div class="status-panel">
+            <h3>Progresso no Desafio</h3>
+
+            <div class="metrics-group">
+                <div class="progress-bar-container">
+                    <div class="progress-title">
+                        <span>Progresso:</span>
+                        <span class="metric-value" th:text="${challenge.percentageAnswered + '%'}">40%</span>
+                    </div>
+
+                    <div class="progress-bar">
+                        <div class="progress-fill"
+                             th:style="'width:' + ${challenge.percentageAnswered} + '%'">
+                        </div>
+                    </div>
+                    <small style="display:block; text-align:right; color:var(--color-text-muted); margin-top:0.25rem;">
+                        <span th:text="${challenge.answeredCount}">4</span>/<span th:text="${challenge.totalQuestions}">10</span>
+                        Concluídas
+                    </small>
+                </div>
+
+                <div class="score-metrics">
+                    <div class="metric-row">
+                        <span>Acertos:</span>
+                        <span class="metric-value correct-metric" th:text="${challenge.correctAnswers}">3</span>
+                    </div>
+                    <div class="metric-row">
+                        <span>Erros:</span>
+                        <span class="metric-value wrong-metric" th:text="${challenge.wrongAnswers}">1</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="return-link-container">
+                <a th:href="@{/challenges/{id}(id=${challenge.id})}"
+                   style="display: block; text-align: center; color: var(--color-secondary); font-weight: 600;">
+                    < Voltar para o Placar
+                </a>
+            </div>
+
+        </div>
+
+    </div>
+
+</th:block>
+
+<th:block th:fragment="scripts">
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // 1. Validação do Formulário
+            const form = document.getElementById('questionForm');
+            const checkButton = document.getElementById('checkButton');
+
+            // Cria ou encontra o elemento Toast
+            let toast = document.getElementById('validationToast');
+            if (!toast) {
+                toast = document.createElement('div');
+                toast.id = 'validationToast';
+                toast.className = 'validation-toast';
+                toast.textContent = '⚠️ Selecione uma opção para continuar';
+                document.body.appendChild(toast);
+            }
+
+            if (form) {
+                form.addEventListener('submit', function(e) {
+                    const submitter = e.submitter;
+
+                    // Ignora validação se for "Pular"
+                    if (submitter && submitter.getAttribute('name') === 'action' && submitter.value === 'skip') {
+                        return;
+                    }
+
+                    // Verifica se algo foi marcado (Ação Responder)
+                    const checked = form.querySelectorAll('input[name="selectedOptions"]:checked');
+
+                    if (checked.length === 0) {
+                        e.preventDefault(); // Bloqueia envio
+
+                        // Mostra Toast
+                        toast.style.display = 'block';
+                        setTimeout(() => { toast.style.display = 'none'; }, 3000);
+                        return;
+                    }
+
+                    // Se válido, prossegue com UX de carregamento
+                    if (checkButton) {
+                        checkButton.disabled = true;
+                        checkButton.textContent = 'Verificando...';
+                        checkButton.style.opacity = '0.7';
+                    }
+
+                    setTimeout(() => {
+                        const inputs = document.querySelectorAll('.option-input');
+                        inputs.forEach(input => input.disabled = true);
+                    }, 10);
+                });
+            }
+        });
+    </script>
+</th:block>
+</html>

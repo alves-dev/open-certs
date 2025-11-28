@@ -1,8 +1,10 @@
 package com.opencerts.challenge;
 
 import com.opencerts.certification.CertificationService;
+import com.opencerts.certification.Question;
 import com.opencerts.certification.QuestionService;
 import com.opencerts.shared.UserDTO;
+import com.opencerts.user.User;
 import com.opencerts.user.UserService;
 import org.springframework.stereotype.Service;
 
@@ -44,7 +46,8 @@ public class ChallengeService {
                         challenge.questionIds().size(),
                         challenge.progressByUser().get(currentUser.id()).questionsCorrect().size()
                                 + challenge.progressByUser().get(currentUser.id()).questionsIncorrect().size(),
-                        challenge.progressByUser().size()
+                        challenge.progressByUser().size(),
+                        challenge.status()
                 ))
                 .toList();
     }
@@ -64,6 +67,26 @@ public class ChallengeService {
         var challenge = challengeRepository.findById(challengeId).orElseThrow();
         var currentUser = userService.getCurrent();
         challenge.addParticipant(currentUser);
+        challengeRepository.save(challenge);
+    }
+
+    public Question getNextQuestion(String challengeId) {
+        User currentUser = userService.getCurrent();
+        Challenge challenge = findById(challengeId);
+        String questionId = challenge.getNextQuestionIdForUser(currentUser.id());
+        if (questionId == null)
+            return null;
+
+        return questionService.getById(questionId);
+    }
+
+    public void submitAnswer(String challengeId, String questionId, List<String> selectedOptions) {
+        User currentUser = userService.getCurrent();
+        Challenge challenge = findById(challengeId);
+        Question question = questionService.getById(questionId);
+
+        boolean isCorrect = question.checkAnswers(selectedOptions);
+        challenge.withAnsweredQuestion(questionId, isCorrect, currentUser.id());
         challengeRepository.save(challenge);
     }
 }

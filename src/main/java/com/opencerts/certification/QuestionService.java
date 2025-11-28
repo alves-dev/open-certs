@@ -55,7 +55,7 @@ public class QuestionService {
         return available.get(ThreadLocalRandom.current().nextInt(available.size()));
     }
 
-    public Question getQuestionById(String questionId) {
+    public Question getById(String questionId) {
         return repository.findById(questionId).get();
     }
 

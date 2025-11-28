@@ -101,7 +101,7 @@ public class QuestionController {
                               @ModelAttribute AnswerFormDTO form,
                               Model model) {
 
-        var question = questionService.getQuestionById(form.questionId());
+        var question = questionService.getById(form.questionId());
         var isCorrect = question.checkAnswers(form.selectedOptions());
 
         TestSessionDTO testSession = null;

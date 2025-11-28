@@ -1,6 +1,7 @@
 package com.opencerts.challenge;
 
 import com.opencerts.certification.CertificationService;
+import com.opencerts.certification.Question;
 import com.opencerts.shared.UserDTO;
 import com.opencerts.user.User;
 import com.opencerts.user.UserService;
@@ -74,21 +75,29 @@ public class ChallengeController {
 
     @GetMapping("/{challengeId}")
     public String leaderboars(Model model, @PathVariable String challengeId) {
+        var userCurrent = userService.getCurrent();
 
         Challenge challenge = challengeService.findById(challengeId);
-        ChallengeDTO dto = new ChallengeDTO(
+
+        boolean isParticipant = challenge.progressByUser().keySet().stream()
+                .anyMatch(userId -> userId.equals(userCurrent.id()));
+        if (!isParticipant) {
+            model.addAttribute("errorMessage", "Challenge not found or you are not a participant.");
+            model.addAttribute("status", "400");
+            return Page.ERROR;
+        }
+
+        ChallengeDTO challengeDTO = new ChallengeDTO(
                 challenge.id(),
                 challenge.name(),
                 challenge.certification().displayName(),
                 challenge.questionIds().size(),
-                0,
-                challenge.progressByUser().size()
+                challenge.progressByUser().get(userCurrent.id()).questionsAnswered().size(),
+                challenge.progressByUser().size(),
+                challenge.status()
         );
 
         List<LeaderboardEntryDTO> leaderboard = new ArrayList<>();
-
-        var userCurrent = userService.getCurrent();
-
         challenge.progressByUser().forEach(
                 (userId, progress) -> {
                     UserDTO user = userService.getDTOById(userId);
@@ -97,7 +106,7 @@ public class ChallengeController {
                             userId,
                             user.name(),
                             progress.score(challenge.questionIds().size()),
-                            progress.finished(),
+                            progress.isFinished(),
                             progress.questionsAnswered().size(),
                             userId.equals(userCurrent.id())
                     );
@@ -105,16 +114,64 @@ public class ChallengeController {
                 }
         );
 
-        boolean contains = leaderboard.stream().map(LeaderboardEntryDTO::userId).toList().contains(userCurrent.id());
-        if (!contains) {
-            model.addAttribute("errorMessage", "Challenge not found or you are not a participant.");
-            model.addAttribute("status", "400");
-            return Page.ERROR;
-        }
+        // Ordena o leaderboard por score (maior para menor) e depois por questionsAnswered (maior para menor)
+        leaderboard.sort((a, b) -> {
+            if (b.score() != a.score()) {
+                return Integer.compare(b.score(), a.score());
+            } else {
+                return Integer.compare(b.questionsAnswered(), a.questionsAnswered());
+            }
+        });
 
-        model.addAttribute("challenge", dto);
+        String challengeStatus = "ACCEPTED";
+        if (challenge.progressByUser().get(userCurrent.id()).isFinished())
+            challengeStatus = "FINISHED";
+        else if (!challenge.progressByUser().get(userCurrent.id()).questionsAnswered().isEmpty())
+            challengeStatus = "IN_PROGRESS";
+
+        model.addAttribute("challenge", challengeDTO);
         model.addAttribute("leaderboard", leaderboard);
+        model.addAttribute("challengeStatus", challengeStatus);
 
         return Page.CHALLENGE_LEADERBOARD;
+    }
+
+    @GetMapping("/{challengeId}/questions")
+    public String questions(Model model, @PathVariable String challengeId) {
+        Challenge challenge = challengeService.findById(challengeId);
+        Challenge.ChallengeProgress progress = challenge.progressByUser().get(userService.getCurrent().id());
+
+        model.addAttribute("challenge", new ChallengeQuestionStatusDTO(
+                challenge.id(),
+                challenge.name(),
+                challenge.questionIds().size(),
+                progress.questionsAnswered().size() + 1,
+                progress.questionsCorrect().size(),
+                progress.questionsIncorrect().size(),
+                progress.questionsAnswered().size(),
+                100 * progress.questionsAnswered().size() / challenge.questionIds().size()
+        ));
+
+        Question question = challengeService.getNextQuestion(challengeId);
+        if (question == null)
+            return "redirect:/challenges/" + challengeId;
+
+        model.addAttribute("question", question);
+        model.addAttribute("answers", question.answersText());
+
+        return Page.CHALLENGE_QUIZ;
+    }
+
+    @PostMapping("/{challengeId}/answer")
+    public String submitChallengeAnswer(@PathVariable String challengeId,
+                                        @RequestParam(required = false) List<String> selectedOptions,
+                                        @RequestParam(required = false) String questionId,
+                                        @RequestParam(required = false) String action
+    ) {
+        if ("skip".equals(action))
+            return "redirect:/challenges/" + challengeId + "/questions";
+
+        challengeService.submitAnswer(challengeId, questionId, selectedOptions);
+        return "redirect:/challenges/" + challengeId + "/questions";
     }
 }
