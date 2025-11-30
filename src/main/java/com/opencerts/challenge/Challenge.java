@@ -80,6 +80,8 @@ public class Challenge {
     }
 
     public void addParticipant(User currentUser) {
+        if (progressByUser.containsKey(currentUser.id()))
+            return;
         progressByUser.put(currentUser.id(), ChallengeProgress.init());
     }
 

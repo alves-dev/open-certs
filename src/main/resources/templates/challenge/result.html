@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="pt-br" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{base :: layout(
+          title='Resultado Desafio | ' + ${challengeResult.name},
+          pageHeader='',
+          content=~{::content},
+          styles=~{::styles},
+          scripts=~{::scripts}
+      )}">
+
+<th:block th:fragment="styles">
+    <style>
+        /* --- Layout do Header --- */
+        .details-header {
+            margin-bottom: 2rem;
+        }
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--color-text-muted);
+            text-decoration: none;
+            margin-bottom: 1rem;
+            font-size: 0.9rem;
+            transition: color 0.2s;
+        }
+        .back-link:hover { color: var(--color-secondary); }
+
+        .cert-highlight {
+            background-color: var(--color-bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 1rem;
+            padding: 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1.5rem;
+            box-shadow: var(--shadow-card);
+        }
+
+        .cert-info h1 {
+            font-size: 1.75rem;
+            color: var(--color-text-main);
+            margin-bottom: 0.5rem;
+        }
+
+        .badges-row {
+            display: flex;
+            gap: 0.75rem;
+            align-items: center;
+        }
+
+        .badge {
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            letter-spacing: 0.05em;
+        }
+        .badge-provider { background: rgba(59, 130, 246, 0.1); color: var(--color-secondary); }
+        .badge-level { background: var(--color-bg-body); color: var(--color-text-muted); border: 1px solid var(--border-color); }
+        /* Alterado: removido badge-id, adicionado badge de data */
+        .badge-date { font-family: 'Inter', sans-serif; color: var(--color-text-muted); opacity: 0.8; }
+
+
+        /* --- Stats Grid --- */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        .stat-card {
+            background-color: var(--color-bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 1rem;
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+        }
+
+        .chart-container {
+            position: relative;
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background: conic-gradient(var(--color-primary) 0%, var(--color-bg-body) 0%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 0.5rem;
+        }
+
+        .chart-inner {
+            width: 80px;
+            height: 80px;
+            background-color: var(--color-bg-card);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 1.25rem;
+            color: var(--color-text-main);
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: 700;
+            line-height: 1;
+            margin-bottom: 0.25rem;
+        }
+        .stat-label { font-size: 0.875rem; color: var(--color-text-muted); font-weight: 600; }
+        .color-success { color: var(--color-primary); }
+        .color-danger { color: var(--color-danger); }
+
+        /* --- Listas Expansíveis (Details/Summary) --- */
+        .lists-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+        @media (max-width: 900px) { .lists-container { grid-template-columns: 1fr; } }
+
+        /* Estilo do container <details> */
+        .list-column {
+            background-color: transparent;
+        }
+
+        /* Estilo do cabeçalho clicável <summary> */
+        summary.list-header {
+            list-style: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1rem 0;
+            margin-bottom: 0.5rem;
+            border-bottom: 2px solid transparent;
+            font-size: 1.25rem;
+            font-weight: 700;
+            transition: opacity 0.2s;
+        }
+        summary.list-header::-webkit-details-marker { display: none; }
+
+        summary.list-header:hover { opacity: 0.8; }
+
+        .col-wrong summary.list-header { color: var(--color-danger); border-color: var(--color-danger); }
+        .col-correct summary.list-header { color: var(--color-primary); border-color: var(--color-primary); }
+
+        /* Ícone de seta giratória */
+        .arrow-icon {
+            transition: transform 0.3s ease;
+        }
+        details[open] .arrow-icon {
+            transform: rotate(180deg);
+        }
+
+        /* Itens da lista */
+        .question-item {
+            background-color: var(--color-bg-card);
+            border: 1px solid var(--border-color);
+            border-left-width: 4px;
+            border-radius: 0.5rem;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            transition: transform 0.2s;
+        }
+        .question-item:hover { transform: translateX(4px); }
+        .item-wrong { border-left-color: var(--color-danger); }
+        .item-correct { border-left-color: var(--color-primary); }
+
+        .q-topic {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--color-text-muted);
+            margin-bottom: 0.5rem;
+            display: block;
+        }
+        .q-desc {
+            font-size: 0.95rem;
+            color: var(--color-text-main);
+            line-height: 1.5;
+            margin-bottom: 1rem;
+        }
+
+        /* Seção de Respostas Corretas */
+        .correct-answers-section {
+            padding-top: 0.75rem;
+            margin-top: 0.75rem;
+            border-top: 1px solid var(--border-color);
+        }
+        .correct-answers-section p {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--color-text-muted);
+            margin-bottom: 0.5rem;
+        }
+        .correct-answers-list {
+            list-style: none;
+            padding-left: 0;
+        }
+        .correct-answers-list li {
+            font-size: 0.9rem;
+            color: var(--color-text-main);
+            margin-bottom: 4px;
+            padding-left: 1rem;
+            position: relative;
+        }
+        .correct-answers-list li::before {
+            content: '✓';
+            color: var(--color-primary);
+            position: absolute;
+            left: 0;
+            font-weight: 700;
+        }
+
+        .empty-list-msg {
+            color: var(--color-text-muted);
+            font-style: italic;
+            font-size: 0.9rem;
+            padding: 1rem;
+            background: rgba(255,255,255,0.03);
+            border-radius: 0.5rem;
+        }
+
+        /* --- AI Prompt Section (Manter, mas adaptando o th:if) --- */
+        .ai-section {
+            margin-top: 4rem;
+            background-color: var(--color-bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 1rem;
+            padding: 2rem;
+            box-shadow: var(--shadow-card);
+            position: relative;
+        }
+        .ai-header { /* ... */ }
+        .ai-tag { /* ... */ }
+        .prompt-container { /* ... */ }
+        .prompt-textarea { /* ... */ }
+        .copy-btn { /* ... */ }
+
+/* --- AI Prompt Section --- */
+.ai-section {
+    margin-top: 4rem;
+    background-color: var(--color-bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 1rem;
+    padding: 2rem;
+    box-shadow: var(--shadow-card);
+    position: relative;
+}
+
+.ai-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 1.5rem;
+    color: var(--color-text-main);
+}
+.ai-header h3 { font-size: 1.25rem; margin: 0; }
+.ai-tag {
+    background: linear-gradient(135deg, #6366f1, #a855f7); /* Roxo AI */
+    color: white;
+    font-size: 0.7rem;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-weight: 700;
+    text-transform: uppercase;
+}
+
+.prompt-container {
+    position: relative;
+}
+
+.prompt-textarea {
+    width: 100%;
+    min-height: 200px;
+    background-color: #0F172A; /* Fundo bem escuro estilo terminal */
+    color: #E2E8F0;
+    border: 1px solid var(--border-color);
+    border-radius: 0.5rem;
+    padding: 1.5rem;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.9rem;
+    line-height: 1.6;
+    resize: vertical;
+}
+.prompt-textarea:focus {
+    outline: none;
+    border-color: var(--color-secondary);
+    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+}
+
+.copy-btn {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background-color: var(--color-bg-card);
+    border: 1px solid var(--border-color);
+    color: var(--color-text-main);
+    padding: 6px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.8rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    transition: all 0.2s;
+}
+.copy-btn:hover {
+    background-color: var(--color-bg-body);
+    border-color: var(--color-primary);
+    color: var(--color-primary);
+}
+    </style>
+</th:block>
+
+<th:block th:fragment="content">
+
+    <div class="details-header">
+        <a th:href="@{/challenges/{id}(id=${challengeResult.id})}" class="back-link">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+            Voltar para o Placar do Desafio
+        </a>
+
+        <div class="cert-highlight">
+            <div class="cert-info">
+                <h1>Resultado do: <span th:text="${challengeResult.name}">Nome do Desafio</span></h1>
+                <div class="badges-row">
+                    <span class="badge badge-provider" th:text="${challengeResult.certification.provider}">AWS</span>
+                    <span class="badge badge-level" th:text="${challengeResult.certification.name}">name</span>
+                    <span class="badge badge-level" th:text="${challengeResult.certification.level}">level</span>
+<!--                    <span class="badge badge-date" th:text="${#temporals.format(challengeResult.finishedAt, 'dd/MM/yyyy HH:mm')}">20/06/2025 15:30</span>-->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="chart-container"
+                 th:style="'background: conic-gradient(var(--color-primary) ' + ${challengeResult.percentageCorrect} + '%, var(--color-bg-body) 0%);'">
+                <div class="chart-inner">
+                    <span th:text="${challengeResult.percentageCorrect} + '%'">80%</span>
+                </div>
+            </div>
+            <span class="stat-label">Aproveitamento</span>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number color-success" th:text="${challengeResult.totalCorrect}">12</div>
+            <span class="stat-label">Questões Corretas</span>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number color-danger" th:text="${challengeResult.totalError}">3</div>
+            <span class="stat-label">Questões Erradas</span>
+        </div>
+    </div>
+
+    <div class="lists-container">
+
+        <details class="list-column col-wrong" open>
+            <summary class="list-header">
+                <div style="display:flex; align-items:center; gap:8px;">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                    Erros - <span th:text="${#lists.size(wrongQuestions)}">0</span>
+                </div>
+                <svg class="arrow-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+            </summary>
+
+            <div th:if="${wrongQuestions.isEmpty()}" class="empty-list-msg">
+                Nenhum erro registrado. Excelente! 🎉
+            </div>
+
+            <div th:each="q : ${wrongQuestions}" class="question-item item-wrong">
+                <span class="q-topic" th:text="${q.topic}">TOPIC</span>
+                <p class="q-desc" th:text="${q.description}">Descrição da questão...</p>
+
+                <div class="correct-answers-section">
+                    <p>Resposta(s) Correta(s):</p>
+                    <ul class="correct-answers-list">
+                        <li th:each="answer : ${q.correctAnswers}" th:text="${answer}">Resposta correta 1</li>
+                    </ul>
+                </div>
+            </div>
+        </details>
+
+        <details class="list-column col-correct">
+            <summary class="list-header">
+                <div style="display:flex; align-items:center; gap:8px;">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                    Acertos - <span th:text="${#lists.size(correctQuestions)}">0</span>
+                </div>
+                <svg class="arrow-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+            </summary>
+
+            <div th:if="${correctQuestions.isEmpty()}" class="empty-list-msg">
+                Ainda não há acertos registrados.
+            </div>
+
+            <div th:each="q : ${correctQuestions}" class="question-item item-correct">
+                <span class="q-topic" th:text="${q.topic}">TOPIC</span>
+                <p class="q-desc" th:text="${q.description}">Descrição da questão...</p>
+
+                <div class="correct-answers-section">
+                    <p>Resposta(s) Correta(s):</p>
+                    <ul class="correct-answers-list">
+                        <li th:each="answer : ${q.correctAnswers}" th:text="${answer}">Resposta correta 1</li>
+                    </ul>
+                </div>
+            </div>
+        </details>
+
+    </div>
+
+    <div class="ai-section" th:if="${challengeResult.wrongQuestionsPrompt != null and !challengeResult.wrongQuestionsPrompt.isEmpty()}">
+        <div class="ai-header">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+            <h3>Estudo Personalizado com IA</h3>
+            <span class="ai-tag">Prompt Gerado</span>
+        </div>
+
+        <p style="color:var(--color-text-muted); margin-bottom:1rem;">
+            Copie o prompt abaixo e cole no seu LLM favorito para receber um plano de estudo focado nos seus erros.
+        </p>
+
+        <div class="prompt-container">
+            <textarea id="aiPromptText" class="prompt-textarea" readonly th:text="${challengeResult.wrongQuestionsPrompt}"></textarea>
+
+            <button class="copy-btn" onclick="copyToClipboard()">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                <span id="copyBtnText">Copiar</span>
+            </button>
+        </div>
+    </div>
+
+</th:block>
+
+<th:block th:fragment="scripts">
+    <script>
+        function copyToClipboard() {
+            const copyText = document.getElementById("aiPromptText");
+
+            // Seleciona o texto
+            copyText.select();
+            copyText.setSelectionRange(0, 99999);
+
+            // Copia para o clipboard
+            navigator.clipboard.writeText(copyText.value).then(() => {
+                // Feedback visual
+                const btnText = document.getElementById("copyBtnText");
+                const originalText = btnText.innerText;
+
+                btnText.innerText = "Copiado!";
+
+                // Volta ao normal depois de 2 segundos
+                setTimeout(() => {
+                    btnText.innerText = originalText;
+                }, 2000);
+            }).catch(err => {
+                console.error('Falha ao copiar: ', err);
+            });
+        }
+    </script>
+</th:block>
+</html>

@@ -18,6 +18,7 @@ public class Page {
     public static final String CHALLENGE_INVITE = "challenge/invite";
     public static final String CHALLENGE_LEADERBOARD = "challenge/leaderboard";
     public static final String CHALLENGE_QUIZ = "challenge/quiz";
+    public static final String CHALLENGE_RESULT = "challenge/result";
 
     public static final String STATS = "stats";
 

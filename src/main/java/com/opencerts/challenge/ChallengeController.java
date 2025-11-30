@@ -2,6 +2,7 @@ package com.opencerts.challenge;
 
 import com.opencerts.certification.CertificationService;
 import com.opencerts.certification.Question;
+import com.opencerts.certification.QuestionService;
 import com.opencerts.shared.UserDTO;
 import com.opencerts.user.User;
 import com.opencerts.user.UserService;
@@ -21,12 +22,14 @@ public class ChallengeController {
     private final ChallengeService challengeService;
     private final CertificationService certificationService;
     private final UserService userService;
+    private final QuestionService questionService;
 
     public ChallengeController(ChallengeService challengeService, CertificationService certificationService,
-                               UserService userService) {
+                               UserService userService, QuestionService questionService) {
         this.challengeService = challengeService;
         this.certificationService = certificationService;
         this.userService = userService;
+        this.questionService = questionService;
     }
 
     @GetMapping
@@ -173,5 +176,22 @@ public class ChallengeController {
 
         challengeService.submitAnswer(challengeId, questionId, selectedOptions);
         return "redirect:/challenges/" + challengeId + "/questions";
+    }
+
+    @GetMapping("/{challengeId}/answers")
+    public String answers(@PathVariable String challengeId, Model model) {
+
+        ChallengeResultDTO challengeResult = challengeService.getChallengeResultDTO(challengeId);
+
+        Challenge.ChallengeProgress progress = challengeService.findById(challengeId).progressByUser().get(userService.getCurrent().id());
+
+        List<Question> correctQuestions = questionService.findAllById(progress.questionsCorrect());
+        List<Question> wrongQuestions = questionService.findAllById(progress.questionsIncorrect());
+
+        model.addAttribute("challengeResult", challengeResult);
+        model.addAttribute("correctQuestions", correctQuestions);
+        model.addAttribute("wrongQuestions", wrongQuestions);
+
+        return Page.CHALLENGE_RESULT;
     }
 }

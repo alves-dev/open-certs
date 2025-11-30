@@ -1,6 +1,5 @@
 package com.opencerts.test;
 
-import com.opencerts.certification.CertificationService;
 import com.opencerts.certification.QuestionService;
 import com.opencerts.util.Page;
 import org.springframework.stereotype.Controller;
@@ -17,13 +16,10 @@ public class TestController {
 
     private final TestSessionService testSessionService;
     private final QuestionService questionService;
-    private final CertificationService certificationService;
 
-    public TestController(TestSessionService testSessionService, QuestionService questionService,
-                          CertificationService certificationService) {
+    public TestController(TestSessionService testSessionService, QuestionService questionService) {
         this.testSessionService = testSessionService;
         this.questionService = questionService;
-        this.certificationService = certificationService;
     }
 
     @GetMapping

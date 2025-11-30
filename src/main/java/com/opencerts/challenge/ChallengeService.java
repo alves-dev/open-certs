@@ -3,9 +3,11 @@ package com.opencerts.challenge;
 import com.opencerts.certification.CertificationService;
 import com.opencerts.certification.Question;
 import com.opencerts.certification.QuestionService;
+import com.opencerts.certification.response.CertificationDTO;
 import com.opencerts.shared.UserDTO;
 import com.opencerts.user.User;
 import com.opencerts.user.UserService;
+import com.opencerts.util.PromptUtil;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -88,5 +90,26 @@ public class ChallengeService {
         boolean isCorrect = question.checkAnswers(selectedOptions);
         challenge.withAnsweredQuestion(questionId, isCorrect, currentUser.id());
         challengeRepository.save(challenge);
+    }
+
+    public ChallengeResultDTO getChallengeResultDTO(String challengeId) {
+        User currentUser = userService.getCurrent();
+        Challenge challenge = findById(challengeId);
+        var progress = challenge.progressByUser().get(currentUser.id());
+
+        int totalQuestions = challenge.questionIds().size();
+        int totalCorrect = progress.questionsCorrect().size();
+        int totalError = progress.questionsIncorrect().size();
+        int percentageCorrect = (int) ((totalCorrect / (double) totalQuestions) * 100);
+
+        return new ChallengeResultDTO(
+                challenge.id(),
+                challenge.name(),
+                new CertificationDTO(challenge.certification()),
+                percentageCorrect,
+                totalCorrect,
+                totalError,
+                PromptUtil.generateBy(questionService.findAllById(progress.questionsIncorrect()))
+        );
     }
 }
