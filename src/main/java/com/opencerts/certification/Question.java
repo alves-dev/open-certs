@@ -93,7 +93,7 @@ public class Question {
 
     public boolean checkAnswers(List<String> answers) {
         for (Answer answer : this.answers) {
-            if (answer.correct && !answers.contains(answer.text))
+            if (answer.correct && !answers.contains(answer.text.trim()))
                 return false;
         }
 
