@@ -25,9 +25,11 @@ repositories {
 dependencies {
     // Security
     implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
+    implementation 'org.springframework.session:spring-session-data-redis'
 
     // Database
     implementation 'org.springframework.boot:spring-boot-starter-data-mongodb'
+    implementation 'org.springframework.boot:spring-boot-starter-data-redis'
 
     // Web thymeleaf
     implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'

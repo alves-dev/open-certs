@@ -12,12 +12,18 @@ spring:
   data:
     mongodb:
       uri: mongodb://${MONGO_USER}:${MONGO_PASSWORD}@${MONGO_HOST}:27017/opencerts?authSource=admin
+    redis:
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
+  session:
+    store-type: redis
 
 server:
   forward-headers-strategy: framework
   servlet:
     session:
-      timeout: 3h
+      cookie:
+        max-age: 7d
 
 application:
   import:
