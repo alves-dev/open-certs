@@ -1,0 +1,27 @@
+schema: v1
+
+repository:
+  title: OpenCerts
+  description: Uma plataforma open-source e colaborativa para preparação de certificações Cloud.
+  license: GPL-3.0
+  type: code
+  topics:
+    - java
+    - spring
+    - thymeleaf
+    - redis
+    - mongodb
+  website: https://opencerts.alves-dev.com
+
+project:
+  status: development
+  stack:
+    language: java
+    framework: spring-boot
+    database: mongodb
+    protocols:
+    tools:
+      - redis
+      - docker
+      - thymeleaf
+      - gradle
