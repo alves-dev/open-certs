@@ -50,6 +50,7 @@
             display: flex;
             gap: 0.75rem;
             align-items: center;
+            flex-wrap: wrap;
         }
 
         .badge {
@@ -62,7 +63,44 @@
         }
         .badge-provider { background: rgba(59, 130, 246, 0.1); color: var(--color-secondary); }
         .badge-level { background: var(--color-bg-body); color: var(--color-text-muted); border: 1px solid var(--border-color); }
-        .badge-id { font-family: 'JetBrains Mono', monospace; color: var(--color-text-muted); opacity: 0.8; }
+
+        /* Novos Badges de Status e Tempo */
+        .badge-status-done { background: rgba(16, 185, 129, 0.1); color: var(--color-primary); }
+        .badge-status-pending { background: rgba(245, 158, 11, 0.1); color: #f59e0b; }
+        .badge-time { background: var(--color-bg-body); color: var(--color-text-muted); border: 1px solid var(--border-color); display: flex; align-items: center; gap: 4px; }
+
+        .badge-id {
+            font-family: 'JetBrains Mono', monospace;
+            color: var(--color-text-muted);
+            opacity: 0.8;
+            text-transform: lowercase;
+        }
+
+        /* --- Botão Finalizar e Ações --- */
+        .header-actions {
+            display: flex;
+            gap: 0.75rem;
+            align-items: center;
+        }
+
+        .btn-finish {
+            background-color: transparent;
+            color: var(--color-danger);
+            border: 1px solid var(--color-danger);
+            padding: 0.6rem 1.2rem;
+            border-radius: 0.5rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+        }
+        .btn-finish:hover {
+            background-color: var(--color-danger);
+            color: white;
+        }
 
         /* --- Stats Grid --- */
         .stats-grid {
@@ -119,7 +157,7 @@
         .color-success { color: var(--color-primary); }
         .color-danger { color: var(--color-danger); }
 
-        /* --- Listas Expansíveis (Details/Summary) --- */
+        /* --- Listas Expansíveis --- */
         .lists-container {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -128,14 +166,8 @@
         }
         @media (max-width: 900px) { .lists-container { grid-template-columns: 1fr; } }
 
-        /* Estilo do container <details> */
-        .list-column {
-            background-color: transparent;
-        }
-
-        /* Estilo do cabeçalho clicável <summary> */
         summary.list-header {
-            list-style: none; /* Remove seta padrão feia */
+            list-style: none;
             cursor: pointer;
             display: flex;
             align-items: center;
@@ -147,22 +179,14 @@
             font-weight: 700;
             transition: opacity 0.2s;
         }
-        summary.list-header::-webkit-details-marker { display: none; } /* Chrome fix */
-
+        summary.list-header::-webkit-details-marker { display: none; }
         summary.list-header:hover { opacity: 0.8; }
-
         .col-wrong summary.list-header { color: var(--color-danger); border-color: var(--color-danger); }
         .col-correct summary.list-header { color: var(--color-primary); border-color: var(--color-primary); }
 
-        /* Ícone de seta giratória */
-        .arrow-icon {
-            transition: transform 0.3s ease;
-        }
-        details[open] .arrow-icon {
-            transform: rotate(180deg);
-        }
+        .arrow-icon { transition: transform 0.3s ease; }
+        details[open] .arrow-icon { transform: rotate(180deg); }
 
-        /* Itens da lista */
         .question-item {
             background-color: var(--color-bg-card);
             border: 1px solid var(--border-color);
@@ -176,28 +200,9 @@
         .item-wrong { border-left-color: var(--color-danger); }
         .item-correct { border-left-color: var(--color-primary); }
 
-        .q-topic {
-            font-size: 0.7rem;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            color: var(--color-text-muted);
-            margin-bottom: 0.5rem;
-            display: block;
-        }
-        .q-desc {
-            font-size: 0.95rem;
-            color: var(--color-text-main);
-            line-height: 1.5;
-        }
-
-        .empty-list-msg {
-            color: var(--color-text-muted);
-            font-style: italic;
-            font-size: 0.9rem;
-            padding: 1rem;
-            background: rgba(255,255,255,0.03);
-            border-radius: 0.5rem;
-        }
+        .q-topic { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--color-text-muted); margin-bottom: 0.5rem; display: block; }
+        .q-desc { font-size: 0.95rem; color: var(--color-text-main); line-height: 1.5; }
+        .empty-list-msg { color: var(--color-text-muted); font-style: italic; font-size: 0.9rem; padding: 1rem; background: rgba(255,255,255,0.03); border-radius: 0.5rem; }
 
         /* --- AI Prompt Section --- */
         .ai-section {
@@ -209,71 +214,17 @@
             box-shadow: var(--shadow-card);
             position: relative;
         }
-
-        .ai-header {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            margin-bottom: 1.5rem;
-            color: var(--color-text-main);
-        }
+        .ai-header { display: flex; align-items: center; gap: 10px; margin-bottom: 1.5rem; color: var(--color-text-main); }
         .ai-header h3 { font-size: 1.25rem; margin: 0; }
-        .ai-tag {
-            background: linear-gradient(135deg, #6366f1, #a855f7); /* Roxo AI */
-            color: white;
-            font-size: 0.7rem;
-            padding: 2px 8px;
-            border-radius: 4px;
-            font-weight: 700;
-            text-transform: uppercase;
-        }
-
-        .prompt-container {
-            position: relative;
-        }
-
+        .ai-tag { background: linear-gradient(135deg, #6366f1, #a855f7); color: white; font-size: 0.7rem; padding: 2px 8px; border-radius: 4px; font-weight: 700; text-transform: uppercase; }
+        .prompt-container { position: relative; }
         .prompt-textarea {
-            width: 100%;
-            min-height: 200px;
-            background-color: #0F172A; /* Fundo bem escuro estilo terminal */
-            color: #E2E8F0;
-            border: 1px solid var(--border-color);
-            border-radius: 0.5rem;
-            padding: 1.5rem;
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 0.9rem;
-            line-height: 1.6;
-            resize: vertical;
+            width: 100%; min-height: 200px; background-color: #0F172A; color: #E2E8F0; border: 1px solid var(--border-color); border-radius: 0.5rem; padding: 1.5rem; font-family: 'JetBrains Mono', monospace; font-size: 0.9rem; line-height: 1.6; resize: vertical;
         }
-        .prompt-textarea:focus {
-            outline: none;
-            border-color: var(--color-secondary);
-            box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
-        }
-
         .copy-btn {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            background-color: var(--color-bg-card);
-            border: 1px solid var(--border-color);
-            color: var(--color-text-main);
-            padding: 6px 12px;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 0.8rem;
-            font-weight: 600;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            transition: all 0.2s;
+            position: absolute; top: 10px; right: 10px; background-color: var(--color-bg-card); border: 1px solid var(--border-color); color: var(--color-text-main); padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 0.8rem; font-weight: 600; display: flex; align-items: center; gap: 6px; transition: all 0.2s;
         }
-        .copy-btn:hover {
-            background-color: var(--color-bg-body);
-            border-color: var(--color-primary);
-            color: var(--color-primary);
-        }
-
+        .copy-btn:hover { background-color: var(--color-bg-body); border-color: var(--color-primary); color: var(--color-primary); }
     </style>
 </th:block>
 
@@ -281,7 +232,10 @@
 
     <div class="details-header">
         <a href="/tests" class="back-link">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="19" y1="12" x2="5" y2="12"></line>
+                <polyline points="12 19 5 12 12 5"></polyline>
+            </svg>
             Voltar para Meus Testes
         </a>
 
@@ -291,15 +245,36 @@
                 <div class="badges-row">
                     <span class="badge badge-provider" th:text="${testSession.certification.provider}">AWS</span>
                     <span class="badge badge-level" th:text="${testSession.certification.level}">ASSOCIATE</span>
+
+                    <span th:if="${testSession.finished}" class="badge badge-status-done">Finalizado</span>
+                    <span th:if="${!testSession.finished}" class="badge badge-status-pending">Em andamento</span>
+
+                    <span class="badge badge-time" title="Tempo total gasto">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                        <span th:text="${T(java.lang.String).format('%02d:%02d:%02d', testSession.timeSpentSeconds / 3600, (testSession.timeSpentSeconds % 3600) / 60, testSession.timeSpentSeconds % 60)}">00:00:00</span>
+                    </span>
+
                     <span class="badge badge-id">#<span th:text="${testSession.identifier}">ID-123</span></span>
                 </div>
             </div>
 
-            <a th:href="@{/questions/{id}(id=${testSession.certification.id}, testIdentifier=${testSession.identifier})}"
-               class="btn btn-primary">
-                Continuar Teste
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
-            </a>
+            <div class="header-actions">
+                <form th:if="${!testSession.finished}" th:action="@{/tests/finish/{id}(id=${testSession.identifier})}" method="post" style="margin:0;">
+                    <input type="hidden" name="testIdentifier" th:value="${testSession.identifier}">
+                    <button type="submit" class="btn-finish" onclick="return confirm('Deseja realmente finalizar este teste?')">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18.36 6.64a9 9 0 1 1-12.73 0"></path><line x1="12" y1="2" x2="12" y2="12"></line></svg>
+                        Finalizar Teste
+                    </button>
+                </form>
+
+                <a th:if="${!testSession.finished}" th:href="@{/questions/{id}(id=${testSession.certification.id}, testIdentifier=${testSession.identifier})}"
+                   class="btn btn-primary">
+                    Continuar Teste
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                    </svg>
+                </a>
+            </div>
         </div>
     </div>
 
@@ -324,20 +299,20 @@
     </div>
 
     <div class="lists-container">
-
         <details class="list-column col-wrong" open>
             <summary class="list-header">
                 <div style="display:flex; align-items:center; gap:8px;">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
                     Erros (Pontos de Atenção)
                 </div>
-                <svg class="arrow-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                <svg class="arrow-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="6 9 12 15 18 9"></polyline>
+                </svg>
             </summary>
-
-            <div th:if="${testSession.wrongQuestions.isEmpty()}" class="empty-list-msg">
-                Nenhum erro registrado. Parabéns! 🎉
-            </div>
-
+            <div th:if="${testSession.wrongQuestions.isEmpty()}" class="empty-list-msg">Nenhum erro registrado. Parabéns! 🎉</div>
             <div th:each="q : ${testSession.wrongQuestions}" class="question-item item-wrong">
                 <span class="q-topic" th:text="${q.topic}">TOPIC</span>
                 <p class="q-desc" th:text="${q.description}">Descrição da questão...</p>
@@ -347,40 +322,39 @@
         <details class="list-column col-correct">
             <summary class="list-header">
                 <div style="display:flex; align-items:center; gap:8px;">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="20 6 9 17 4 12"></polyline>
+                    </svg>
                     Acertos (Consolidado)
                 </div>
-                <svg class="arrow-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                <svg class="arrow-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="6 9 12 15 18 9"></polyline>
+                </svg>
             </summary>
-
-            <div th:if="${testSession.correctQuestions.isEmpty()}" class="empty-list-msg">
-                Ainda não há acertos registrados. Continue tentando!
-            </div>
-
+            <div th:if="${testSession.correctQuestions.isEmpty()}" class="empty-list-msg">Ainda não há acertos registrados. Continue tentando!</div>
             <div th:each="q : ${testSession.correctQuestions}" class="question-item item-correct">
                 <span class="q-topic" th:text="${q.topic}">TOPIC</span>
                 <p class="q-desc" th:text="${q.description}">Descrição da questão...</p>
             </div>
         </details>
-
     </div>
 
     <div class="ai-section" th:if="${testSession.wrongQuestionsPrompt != null and !testSession.wrongQuestionsPrompt.isEmpty()}">
         <div class="ai-header">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+            </svg>
             <h3>Estudo Personalizado com IA</h3>
             <span class="ai-tag">Prompt Gerado</span>
         </div>
-
-        <p style="color:var(--color-text-muted); margin-bottom:1rem;">
-            Copie o prompt abaixo e cole no seu LLM favorito para receber um plano de estudo focado nos seus erros.
-        </p>
-
+        <p style="color:var(--color-text-muted); margin-bottom:1rem;">Copie o prompt abaixo e cole no seu LLM favorito para receber um plano de estudo focado nos seus erros.</p>
         <div class="prompt-container">
             <textarea id="aiPromptText" class="prompt-textarea" readonly th:text="${testSession.wrongQuestionsPrompt}"></textarea>
-
             <button class="copy-btn" onclick="copyToClipboard()">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                    <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                </svg>
                 <span id="copyBtnText">Copiar</span>
             </button>
         </div>

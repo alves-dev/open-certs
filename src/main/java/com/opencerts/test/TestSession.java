@@ -27,6 +27,8 @@ public class TestSession {
     private LocalDateTime startedAt;
     private List<String> questionsCorrect = new ArrayList<>();
     private List<String> questionsIncorrect = new ArrayList<>();
+    private boolean finished;
+    private long timeSpentSeconds;
 
     public TestSession(User user, Certification certification, String identifier) {
         this.id = UUID.randomUUID().toString();
@@ -34,6 +36,8 @@ public class TestSession {
         this.certification = certification;
         this.identifier = identifier;
         this.startedAt = LocalDateTime.now();
+        this.finished = false;
+        this.timeSpentSeconds = 0;
     }
 
     // --- Getters ---
@@ -65,14 +69,27 @@ public class TestSession {
         return questionsIncorrect;
     }
 
+    public boolean isFinished() {
+        return finished;
+    }
+
+    public Long timeSpentSeconds() {
+        return timeSpentSeconds;
+    }
+
     // --- Métodos de negócio ---
 
-    public void markQuestionResult(String questionId, boolean isCorrect) {
+    void markQuestionResult(String questionId, boolean isCorrect, long timeSpentSeconds) {
         if (isCorrect) {
             questionsCorrect.add(questionId);
         } else {
             questionsIncorrect.add(questionId);
         }
+        this.timeSpentSeconds += timeSpentSeconds;
+    }
+
+    void finish() {
+        this.finished = true;
     }
 
     public int percentageCorrect() {

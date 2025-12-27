@@ -28,7 +28,7 @@
             transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
             position: relative;
             overflow: hidden;
-            height: 100%; /* Para alinhar alturas no grid */
+            height: 100%;
         }
 
         .session-card:hover {
@@ -62,9 +62,22 @@
             gap: 4px;
         }
 
-        /* --- Bloco da Certificação (Novo Design) --- */
+        /* Status Badge */
+        .status-tag {
+            font-size: 0.65rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            padding: 2px 6px;
+            border-radius: 4px;
+            margin-bottom: 0.5rem;
+            display: inline-block;
+        }
+        .status-finished { background: rgba(16, 185, 129, 0.1); color: var(--color-primary); }
+        .status-pending { background: rgba(245, 158, 11, 0.1); color: #f59e0b; }
+
+        /* --- Bloco da Certificação --- */
         .cert-block {
-            margin-bottom: 1.5rem;
+            margin-bottom: 1rem;
         }
 
         .cert-provider {
@@ -76,33 +89,30 @@
             margin-bottom: 4px;
         }
 
-        .cert-main-info {
-            display: flex;
-            align-items: flex-start;
-            justify-content: space-between;
-            gap: 10px;
-        }
-
         .cert-name {
             font-size: 1.15rem;
             font-weight: 700;
             color: var(--color-text-main);
             line-height: 1.3;
+            margin-bottom: 0.5rem;
         }
 
-        .cert-level-badge {
-            font-size: 0.65rem;
-            text-transform: uppercase;
-            padding: 2px 6px;
-            border-radius: 4px;
-            background-color: var(--color-bg-body);
-            border: 1px solid var(--border-color);
+        /* --- Test Stats Row --- */
+        .test-stats-row {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 1.25rem;
+            font-size: 0.8rem;
             color: var(--color-text-muted);
-            white-space: nowrap;
-            margin-top: 4px;
         }
 
-        /* --- Score Bar (Bicolor) --- */
+        .stat-item {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        /* --- Score Bar --- */
         .score-section {
             margin-bottom: 1.5rem;
         }
@@ -118,7 +128,7 @@
         .score-bar-container {
             width: 100%;
             height: 8px;
-            background-color: var(--color-danger); /* O fundo é vermelho (erro) */
+            background-color: var(--color-danger);
             border-radius: 4px;
             overflow: hidden;
             display: flex;
@@ -126,19 +136,18 @@
 
         .score-bar-success {
             height: 100%;
-            background-color: var(--color-primary); /* A barra verde sobrepõe */
-            /* Largura definida via inline-style */
+            background-color: var(--color-primary);
         }
 
-        /* Rodapé: Botões Lado a Lado */
+        /* Rodapé: Botões */
         .card-actions {
             margin-top: auto;
-            display: grid;
-            grid-template-columns: 1fr 1.2fr; /* Detalhes menor, Continuar maior */
+            display: flex;
             gap: 10px;
         }
 
         .btn-action {
+            flex: 1;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -151,7 +160,6 @@
             transition: all 0.2s;
         }
 
-        /* Botão Secundário (Detalhes) */
         .btn-secondary {
             border: 1px solid var(--border-color);
             color: var(--color-text-muted);
@@ -162,17 +170,15 @@
             color: var(--color-text-main);
         }
 
-        /* Botão Primário (Continuar) */
         .btn-primary-action {
-            background-color: var(--color-secondary); /* Azul para ação de continuar */
+            background-color: var(--color-secondary);
             color: white;
             border: 1px solid var(--color-secondary);
         }
         .btn-primary-action:hover {
-            background-color: #2563EB; /* Azul mais escuro */
+            background-color: #2563EB;
         }
 
-        /* Empty State */
         .empty-state {
             text-align: center;
             padding: 4rem 2rem;
@@ -180,12 +186,6 @@
             border-radius: 1rem;
             border: 1px dashed var(--border-color);
         }
-        .empty-icon {
-            color: var(--color-text-muted);
-            margin-bottom: 1rem;
-            opacity: 0.5;
-        }
-
     </style>
 </th:block>
 
@@ -197,10 +197,7 @@
         </div>
         <h3 style="color: var(--color-text-main); margin-bottom: 0.5rem">Nenhum teste encontrado</h3>
         <p style="color: var(--color-text-muted); margin-bottom: 2rem;">Você ainda não iniciou nenhuma sessão de estudo.</p>
-
-        <a href="/" class="btn btn-primary">
-            Iniciar Novo Teste
-        </a>
+        <a href="/" class="btn btn-primary">Iniciar Novo Teste</a>
     </div>
 
     <div th:unless="${testSessions == null or testSessions.isEmpty()}" class="sessions-grid">
@@ -209,48 +206,57 @@
 
             <div class="meta-header">
                 <span class="session-id-badge" th:title="'Identificador: ' + ${test.identifier}">
-                    <span style="opacity:0.6">#</span><span th:text="${test.identifier}">aws-dev-01</span>
+                    <span style="opacity:0.6">#</span><span th:text="${test.identifier}">ID</span>
                 </span>
-                <span class="session-date" th:title="'Iniciado em: ' + ${#temporals.format(test.startedAt, 'dd/MM/yyyy HH:mm')}">
+                <span class="session-date">
                     <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
                     <span th:text="${#temporals.format(test.startedAt, 'dd/MM')}">15/11</span>
                 </span>
             </div>
 
+            <div>
+                <span th:if="${test.finished}" class="status-tag status-finished">Finalizado</span>
+                <span th:if="${!test.finished}" class="status-tag status-pending">Em andamento</span>
+            </div>
+
             <div class="cert-block">
                 <div class="cert-provider" th:text="${test.certification.provider}">AWS</div>
+                <div class="cert-name" th:text="${test.certification.name}">Cloud Practitioner</div>
+            </div>
 
-                <div class="cert-main-info">
-                    <div class="cert-name" th:text="${test.certification.name}">Cloud Practitioner</div>
-
-                    <div class="cert-level-badge" th:text="${test.certification.level}">FOUNDATIONAL</div>
+            <div class="test-stats-row">
+                <div class="stat-item" title="Total de questões respondidas">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+                    <span th:text="${test.totalAnswers} + ' questões'">0 questões</span>
+                </div>
+                <div class="stat-item" title="Tempo total gasto">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                    <span th:text="${T(java.lang.String).format('%02d:%02d:%02d', test.timeSpentSeconds / 3600, (test.timeSpentSeconds % 3600) / 60, test.timeSpentSeconds % 60)}">00:00:00</span>
                 </div>
             </div>
 
             <div class="score-section">
                 <div class="score-labels">
                     <span style="color: var(--color-primary)">
-                        <span th:text="${test.percentageCorrect} + '%'">80%</span> Acertos
-                    </span>
-                    <span style="color: var(--color-danger)">
-                        Erros
+                        <span th:text="${test.percentageCorrect} + '%'">0%</span> Acertos
                     </span>
                 </div>
-
-                <div class="score-bar-container" title="Verde: Acertos | Vermelho: Erros">
+                <div class="score-bar-container">
                     <div class="score-bar-success" th:style="'width: ' + ${test.percentageCorrect} + '%'"></div>
                 </div>
             </div>
 
             <div class="card-actions">
-                <a th:href="@{/tests/details/{identifier}(identifier=${test.identifier})}" class="btn-action btn-secondary" title="Ver estatísticas detalhadas">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>
+                <a th:href="@{/tests/details/{identifier}(identifier=${test.identifier})}" class="btn-action btn-secondary">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>
                     Detalhes
                 </a>
 
-                <a th:href="@{/questions/{id}(id=${test.certification.id}, testIdentifier=${test.identifier})}" class="btn-action btn-primary-action">
+                <a th:if="${!test.finished}"
+                   th:href="@{/questions/{id}(id=${test.certification.id}, testIdentifier=${test.identifier})}"
+                   class="btn-action btn-primary-action">
                     Continuar
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
                 </a>
             </div>
 

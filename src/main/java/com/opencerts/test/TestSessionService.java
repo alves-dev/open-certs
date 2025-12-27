@@ -41,9 +41,10 @@ public class TestSessionService {
         return new TestSessionDTO(test);
     }
 
-    public TestSessionDTO addQuestionInTest(String testIdentifier, String certificationId, String questionId, boolean answerCorrect) {
+    public TestSessionDTO addQuestionInTest(String testIdentifier, String certificationId, String questionId,
+                                            boolean answerCorrect, long timeSpentSeconds) {
         TestSession test = createOrGetByIdentifier(testIdentifier, certificationId);
-        test.markQuestionResult(questionId, answerCorrect);
+        test.markQuestionResult(questionId, answerCorrect, timeSpentSeconds);
         repository.save(test);
         return new TestSessionDTO(test);
     }
@@ -56,5 +57,16 @@ public class TestSessionService {
 
         var test = new TestSession(user, certificationService.getById(certificationId).get(), identifier);
         return repository.save(test);
+    }
+
+    public void finishByIdentifier(String identifier) {
+        var userId = userService.getCurrent().id();
+        Optional<TestSession> optionalTestSession = repository.findByUserIdAndIdentifier(userId, identifier);
+        if (optionalTestSession.isEmpty())
+            throw new IllegalArgumentException("Test session not found");
+
+        TestSession testSession = optionalTestSession.get();
+        testSession.finish();
+        repository.save(testSession);
     }
 }

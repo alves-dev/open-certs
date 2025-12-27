@@ -107,7 +107,7 @@ public class QuestionController {
         TestSessionDTO testSession = null;
         if (!form.testIdentifier().isEmpty())
             testSession = testSessionService.addQuestionInTest(
-                    form.testIdentifier(), certificationId, form.questionId(), isCorrect
+                    form.testIdentifier(), certificationId, form.questionId(), isCorrect, form.timeSpentSeconds()
             );
 
 

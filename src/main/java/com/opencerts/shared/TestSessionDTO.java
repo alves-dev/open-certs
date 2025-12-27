@@ -6,10 +6,11 @@ public record TestSessionDTO(
         String identifier,
         int totalCorrect,
         int totalError,
-        int percentageCorrect
+        int percentageCorrect,
+        long timeSpentSeconds
 ) {
 
     public TestSessionDTO(TestSession test) {
-        this(test.identifier(), test.totalCorrect(), test.totalError(), test.percentageCorrect());
+        this(test.identifier(), test.totalCorrect(), test.totalError(), test.percentageCorrect(), test.timeSpentSeconds());
     }
 }

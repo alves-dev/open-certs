@@ -7,19 +7,21 @@ import java.time.LocalDateTime;
 record ListTestSessionDTO(
         String identifier,
         CertificationDTO certification,
-        int totalCorrect,
-        int totalError,
+        int totalAnswers,
         int percentageCorrect,
-        LocalDateTime startedAt
+        LocalDateTime startedAt,
+        long timeSpentSeconds,
+        boolean finished
 ) {
 
     ListTestSessionDTO(TestSession test) {
         this(test.identifier(),
                 new CertificationDTO(test.certification()),
-                test.totalCorrect(),
-                test.totalError(),
+                test.totalCorrect() + test.totalError(),
                 test.percentageCorrect(),
-                test.startedAt()
+                test.startedAt(),
+                test.timeSpentSeconds(),
+                test.isFinished()
         );
     }
 }

@@ -9,10 +9,12 @@ import java.util.List;
 
 record TestSessionDetailsDTO(
         String identifier,
+        boolean finished,
         CertificationDTO certification,
         int totalCorrect,
         int totalError,
         int percentageCorrect,
+        long timeSpentSeconds,
         List<Question> correctQuestions,
         List<Question> wrongQuestions,
         String wrongQuestionsPrompt
@@ -22,10 +24,12 @@ record TestSessionDetailsDTO(
         List<Question> incorrectQuestions = questionService.findAllById(test.questionsIncorrectIds());
 
         this(test.identifier(),
+                test.isFinished(),
                 new CertificationDTO(test.certification()),
                 test.totalCorrect(),
                 test.totalError(),
                 test.percentageCorrect(),
+                test.timeSpentSeconds(),
                 questionService.findAllById(test.questionsCorrectIds()),
                 incorrectQuestions,
                 PromptUtil.generateBy(incorrectQuestions)
