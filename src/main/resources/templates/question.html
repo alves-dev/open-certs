@@ -21,7 +21,7 @@
             overflow: hidden;
         }
 
-        /* --- Toolbar de Sessão (Topo) --- */
+        /* --- Toolbar de Sessão --- */
         .session-toolbar {
             display: flex;
             flex-wrap: wrap;
@@ -75,7 +75,7 @@
         .stat-timer { color: var(--color-secondary); background: rgba(59, 130, 246, 0.1); border: 1px solid rgba(59, 130, 246, 0.2); }
         .stat-session-time { color: var(--color-text-muted); background: var(--color-bg-card); border: 1px solid var(--border-color); }
 
-        /* --- Tipografia da Questão --- */
+        /* --- Tipografia --- */
         .topic-badge {
             display: inline-block;
             font-size: 0.75rem;
@@ -103,7 +103,13 @@
             gap: 0.75rem;
         }
 
-        .option-item { position: relative; }
+        .option-item {
+            position: relative;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
         .option-input { position: absolute; opacity: 0; width: 0; height: 0; }
 
         .option-label {
@@ -116,14 +122,28 @@
             cursor: pointer;
             transition: all 0.2s ease;
             background-color: var(--color-bg-card);
+            flex: 1;
         }
 
         .option-label:hover { border-color: var(--color-text-muted); background-color: rgba(255,255,255, 0.02); }
 
+        /* Estilo para opção marcada como "Eliminada" (Local) */
+        .option-item.is-eliminated .option-label {
+            opacity: 0.4;
+            text-decoration: line-through;
+            filter: grayscale(1);
+        }
+
+        /* Estilo para marcar o que o usuário selecionou no retorno */
+        .option-label.was-selected {
+            border-color: var(--color-secondary);
+            background-color: rgba(59, 130, 246, 0.08);
+            box-shadow: 0 0 0 1px var(--color-secondary);
+        }
+
         .option-input:checked + .option-label {
             border-color: var(--color-secondary);
             background-color: rgba(59, 130, 246, 0.05);
-            box-shadow: 0 0 0 1px var(--color-secondary);
         }
 
         .option-indicator {
@@ -141,6 +161,24 @@
         .option-input:checked + .option-label .option-indicator { border-color: var(--color-secondary); background-color: var(--color-secondary); }
         .option-indicator::after { content: ''; width: 8px; height: 8px; background: white; border-radius: 50%; display: none; }
         .option-input:checked + .option-label .option-indicator::after { display: block; }
+
+        /* Botão de Eliminar (X) */
+        .btn-eliminate {
+            background: transparent;
+            border: 1px solid var(--border-color);
+            color: var(--color-text-muted);
+            border-radius: 6px;
+            width: 36px;
+            height: 36px;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+        .btn-eliminate:hover { border-color: var(--color-danger); color: var(--color-danger); }
+        .option-item.is-eliminated .btn-eliminate { background-color: var(--color-danger); color: white; border-color: var(--color-danger); }
 
         /* --- Ações e Feedback --- */
         .action-bar {
@@ -162,7 +200,6 @@
             cursor: pointer;
             flex: 1;
         }
-        .btn-check:hover { background-color: var(--color-primary-hover); }
 
         .btn-skip {
             background-color: transparent;
@@ -175,12 +212,45 @@
             text-align: center;
         }
 
-        .feedback-container { margin-top: 2rem; animation: slideDown 0.3s ease-out; }
-        @keyframes slideDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
-        .feedback-header { font-size: 1.25rem; font-weight: 700; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem; }
-        .feedback-correct .feedback-header { color: var(--color-primary); }
-        .feedback-wrong .feedback-header { color: var(--color-danger); }
-        .answer-reveal { background-color: var(--color-bg-body); border-left: 4px solid var(--color-primary); padding: 1rem; border-radius: 0 0.5rem 0.5rem 0; }
+        /* --- Feedback Visual Melhorado --- */
+        .feedback-box {
+            margin-top: 2rem;
+            padding: 1.5rem;
+            border-radius: 0.75rem;
+            border: 1px solid transparent;
+            animation: slideIn 0.3s ease-out;
+        }
+        @keyframes slideIn { from { opacity: 0; transform: translateY(10px); } }
+
+        .feedback-box.correct {
+            background-color: rgba(16, 185, 129, 0.1);
+            border-color: var(--color-primary);
+            color: var(--color-primary);
+        }
+
+        .feedback-box.wrong {
+            background-color: rgba(239, 68, 68, 0.1);
+            border-color: var(--color-danger);
+            color: var(--color-danger);
+        }
+
+        .feedback-title {
+            font-size: 1.25rem;
+            font-weight: 800;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .correct-answers-list {
+            background: var(--color-bg-body);
+            color: var(--color-text-main);
+            padding: 1rem;
+            border-radius: 0.5rem;
+            margin-top: 1rem;
+            list-style: none;
+        }
 
         .validation-toast {
             position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
@@ -192,143 +262,187 @@
 </th:block>
 
 <th:block th:fragment="content">
+    <div id="question-wrapper">
 
-    <div class="question-card" th:if="${question == null}" style="text-align: center; padding: 4rem 2rem;">
-        <div style="font-size: 3rem; margin-bottom: 1rem;">🎉</div>
-        <h2 style="color: var(--color-text-main); margin-bottom: 1rem;">Você completou todas as questões!</h2>
-        <a th:href="@{/questions/new(certId=${certification.id})}" class="btn btn-primary">Contribuir com uma Questão</a>
-    </div>
-
-    <div class="question-card" th:if="${question != null}">
-
-        <div class="session-toolbar">
-            <div class="session-input-group">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--color-text-muted)" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
-                <input type="text" id="testIdentifier" class="session-input" placeholder="ID da Sessão" th:value="${testSession != null} ? ${testSession.identifier} : ''">
-            </div>
-
-            <div class="stats-group" th:if="${testSession != null}">
-                <div class="stat-badge stat-session-time" title="Tempo total acumulado">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
-                    <span th:text="${T(java.lang.String).format('%02d:%02d', testSession.timeSpentSeconds / 60, testSession.timeSpentSeconds % 60)}">00:00</span>
-                </div>
-
-                <div th:if="${isCorrect == null}" class="stat-badge stat-timer" title="Tempo nesta questão">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"></path></svg>
-                    <span id="timer-display">00:00</span>
-                </div>
-
-                <div class="stat-badge stat-success"><span th:text="${testSession.totalCorrect}">0</span></div>
-                <div class="stat-badge stat-error"><span th:text="${testSession.totalError}">0</span></div>
-            </div>
+        <div class="question-card" th:if="${question == null}" style="text-align: center; padding: 4rem 2rem;">
+            <div style="font-size: 3rem; margin-bottom: 1rem;">🎉</div>
+            <h2 style="color: var(--color-text-main); margin-bottom: 1rem;">Você completou todas as questões!</h2>
+            <a th:href="@{/questions/new(certId=${certification.id})}" class="btn btn-primary">Contribuir com uma Questão</a>
         </div>
 
-        <span class="topic-badge" th:text="${question.topic}">TOPIC</span>
-        <h3 class="question-text" th:text="${question.description}">Descrição da questão...</h3>
+        <div class="question-card" th:if="${question != null}">
 
-        <form id="questionForm" th:action="@{/questions/{id}/check(id=${certification.id})}" method="post">
-            <input type="hidden" name="questionId" th:value="${question.id}"/>
-            <input type="hidden" id="hiddenTestIdentifier" name="testIdentifier" th:value="${testSession != null ? testSession.identifier : ''}"/>
+            <div class="session-toolbar">
+                <div class="session-input-group">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--color-text-muted)" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                    <input type="text" id="testIdentifier" class="session-input" placeholder="ID da Sessão" th:value="${testSession != null} ? ${testSession.identifier} : ''">
+                </div>
 
-            <input type="hidden" id="timeSpentSeconds" name="timeSpentSeconds" value="0"/>
+                <div class="stats-group" th:if="${testSession != null}">
+                    <div class="stat-badge stat-session-time" title="Tempo total acumulado">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                        <span th:text="${T(java.lang.String).format('%02d:%02d', testSession.timeSpentSeconds / 60, testSession.timeSpentSeconds % 60)}">00:00</span>
+                    </div>
 
-            <ul class="options-list">
-                <li th:each="answer, iterStat : ${answers}" class="option-item">
-                    <input th:type="${question.isMultipleChoice} ? 'checkbox' : 'radio'"
-                           th:name="selectedOptions" th:id="${'opt-' + iterStat.index}"
-                           th:value="${answer}" class="option-input" th:disabled="${isCorrect != null}">
-                    <label th:for="${'opt-' + iterStat.index}" class="option-label">
-                        <div class="option-indicator"></div>
-                        <span th:text="${answer}">Opção</span>
-                    </label>
-                </li>
-            </ul>
+                    <div th:if="${isCorrect == null}" class="stat-badge stat-timer" title="Tempo nesta questão">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"></path></svg>
+                        <span id="timer-display">00:00</span>
+                    </div>
 
-            <div class="action-bar">
-                <th:block th:if="${isCorrect == null}">
-                    <button type="submit" id="checkButton" class="btn-check">Verificar Resposta</button>
-                    <a th:href="@{/questions/{id}(id=${certification.id}, testIdentifier=${testSession != null ? testSession.identifier : ''})}" class="btn-skip">Pular</a>
-                </th:block>
-
-                <th:block th:if="${isCorrect != null}">
-                    <a th:href="@{/questions/{id}(id=${certification.id}, testIdentifier=${testSession != null ? testSession.identifier : ''})}"
-                       class="btn-check" style="text-decoration:none; text-align:center;">Próxima Questão →</a>
-                </th:block>
+                    <div class="stat-badge stat-success"><span th:text="${testSession.totalCorrect}">0</span></div>
+                    <div class="stat-badge stat-error"><span th:text="${testSession.totalError}">0</span></div>
+                </div>
             </div>
-        </form>
 
-        <div th:if="${isCorrect != null}" class="feedback-container" th:classappend="${isCorrect} ? 'feedback-correct' : 'feedback-wrong'">
-            <div class="feedback-header">
-                <span th:if="${isCorrect}">✅ Correto!</span>
-                <span th:if="${!isCorrect}">❌ Incorreto.</span>
-            </div>
-            <div th:if="${!isCorrect}" class="answer-reveal">
-                <p style="font-weight:600; color:var(--color-text-main);">A resposta correta é:</p>
-                <ul style="list-style:none; padding:0; color:var(--color-text-muted);">
-                    <li th:each="answer : ${correctAnswers}" th:text="'• ' + ${answer}"></li>
+            <span class="topic-badge" th:text="${question.topic}">TOPIC</span>
+            <h3 class="question-text" th:text="${question.description}">Descrição da questão...</h3>
+
+            <form id="questionForm" th:action="@{/questions/{id}/check(id=${certification.id})}" method="post">
+                <input type="hidden" name="questionId" th:value="${question.id}"/>
+                <input type="hidden" id="hiddenTestIdentifier" name="testIdentifier" th:value="${testSession != null ? testSession.identifier : ''}"/>
+                <input type="hidden" id="timeSpentSeconds" name="timeSpentSeconds" value="0"/>
+
+                <ul class="options-list">
+                    <li th:each="answer, iterStat : ${answers}" class="option-item" th:id="${'item-' + iterStat.index}">
+                        <input th:type="${question.isMultipleChoice} ? 'checkbox' : 'radio'"
+                               th:name="selectedOptions" th:id="${'opt-' + iterStat.index}"
+                               th:value="${answer}" class="option-input"
+                               th:disabled="${isCorrect != null}"
+                               th:checked="${selectedAnswers != null && #lists.contains(selectedAnswers, answer)}">
+
+                        <label th:for="${'opt-' + iterStat.index}" class="option-label"
+                               th:classappend="${selectedAnswers != null && #lists.contains(selectedAnswers, answer)} ? 'was-selected' : ''">
+                            <div class="option-indicator"></div>
+                            <span th:text="${answer}">Opção</span>
+                        </label>
+
+                        <button th:if="${isCorrect == null}" type="button" class="btn-eliminate"
+                                th:onclick="'document.getElementById(\'item-' + ${iterStat.index} + '\').classList.toggle(\'is-eliminated\')'"
+                                title="Marcar como incorreta">
+                            ✕
+                        </button>
+                    </li>
                 </ul>
+
+                <div class="action-bar">
+                    <th:block th:if="${isCorrect == null}">
+                        <button type="submit" id="checkButton" class="btn-check">Verificar Resposta</button>
+                        <a th:href="@{/questions/{id}(id=${certification.id}, testIdentifier=${testSession != null ? testSession.identifier : ''})}" class="btn-skip">Pular</a>
+                    </th:block>
+
+                    <th:block th:if="${isCorrect != null}">
+                        <a th:href="@{/questions/{id}(id=${certification.id}, testIdentifier=${testSession != null ? testSession.identifier : ''})}"
+                           class="btn-check" style="text-decoration:none; text-align:center;">Próxima Questão →</a>
+                    </th:block>
+                </div>
+            </form>
+
+            <div th:if="${isCorrect != null}" class="feedback-box" th:classappend="${isCorrect} ? 'correct' : 'wrong'">
+                <div class="feedback-title">
+                    <span th:text="${isCorrect} ? '✅ Resposta Correta!' : '❌ Resposta Incorreta'"></span>
+                </div>
+
+                <div th:if="${!isCorrect}">
+                    <p style="color: var(--color-text-main); font-weight: 600; margin-top: 1rem;">As respostas corretas são:</p>
+                    <ul class="correct-answers-list">
+                        <li th:each="correct : ${correctAnswers}" th:text="'• ' + ${correct}"></li>
+                    </ul>
+                </div>
             </div>
         </div>
     </div>
 
-    <div id="validationToast" class="validation-toast">⚠️ Selecione uma opção</div>
+    <div id="validationToast" class="validation-toast">⚠️ Selecione pelo menos uma opção</div>
 </th:block>
 
 <th:block th:fragment="scripts">
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            const visibleInput = document.getElementById('testIdentifier');
-            const hiddenInput = document.getElementById('hiddenTestIdentifier');
-            const timerDisplay = document.getElementById('timer-display');
-            const timeSpentInput = document.getElementById('timeSpentSeconds');
-            const form = document.getElementById('questionForm');
-            const checkButton = document.getElementById('checkButton');
-            const toast = document.getElementById('validationToast');
+            // Função para inicializar os listeners (necessária após o swap de HTML)
+            function initQuestionLogic() {
+                const visibleInput = document.getElementById('testIdentifier');
+                const hiddenInput = document.getElementById('hiddenTestIdentifier');
+                const timerDisplay = document.getElementById('timer-display');
+                const timeSpentInput = document.getElementById('timeSpentSeconds');
+                const form = document.getElementById('questionForm');
+                const checkButton = document.getElementById('checkButton');
+                const toast = document.getElementById('validationToast');
 
-            // 1. Sincronia de ID da Sessão
-            if (visibleInput && hiddenInput) {
-                visibleInput.addEventListener('input', function() {
-                    this.value = this.value.replace(/[^a-z0-9_-]/g, '');
-                    hiddenInput.value = this.value;
-                });
-            }
+                // 1. Sincronia de ID da Sessão
+                if (visibleInput && hiddenInput) {
+                    visibleInput.addEventListener('input', function() {
+                        this.value = this.value.replace(/[^a-z0-9_-]/g, '');
+                        hiddenInput.value = this.value;
+                    });
+                }
 
-            // 2. Lógica do Cronômetro (Só executa se o elemento existir - ou seja, isCorrect == null)
-            let timerInterval = null;
-            if (timerDisplay && timeSpentInput) {
+                // 2. Cronômetro
                 let secondsElapsed = 0;
-                timerInterval = setInterval(() => {
-                    secondsElapsed++;
+                let timerInterval = null;
+                if (timerDisplay && timeSpentInput) {
+                    timerInterval = setInterval(() => {
+                        secondsElapsed++;
+                        const m = Math.floor(secondsElapsed / 60).toString().padStart(2, '0');
+                        const s = (secondsElapsed % 60).toString().padStart(2, '0');
+                        timerDisplay.textContent = `${m}:${s}`;
+                        timeSpentInput.value = secondsElapsed;
+                    }, 1000);
+                }
 
-                    // Formata visualmente
-                    const m = Math.floor(secondsElapsed / 60).toString().padStart(2, '0');
-                    const s = (secondsElapsed % 60).toString().padStart(2, '0');
-                    timerDisplay.textContent = `${m}:${s}`;
-
-                    // Atualiza o input que será enviado ao servidor
-                    timeSpentInput.value = secondsElapsed;
-                }, 1000);
-            }
-
-            // 3. Validação e Submissão
-            if (form && checkButton) {
-                form.addEventListener('submit', function(e) {
-                    const checked = form.querySelectorAll('input[name="selectedOptions"]:checked');
-
-                    if (checked.length === 0) {
+                // 3. Submissão AJAX para evitar FOUC (Flash of Unstyled Content)
+                if (form) {
+                    form.addEventListener('submit', function(e) {
                         e.preventDefault();
-                        toast.style.display = 'block';
-                        setTimeout(() => { toast.style.display = 'none'; }, 3000);
-                        return;
-                    }
 
-                    // Para o cronômetro imediatamente ao clicar em verificar
-                    if (timerInterval) clearInterval(timerInterval);
+                        const checked = form.querySelectorAll('input[name="selectedOptions"]:checked');
+                        if (checked.length === 0) {
+                            toast.style.display = 'block';
+                            setTimeout(() => { toast.style.display = 'none'; }, 3000);
+                            return;
+                        }
 
-                    checkButton.disabled = true;
-                    checkButton.textContent = 'Verificando...';
-                });
+                        if (timerInterval) clearInterval(timerInterval);
+
+                        checkButton.disabled = true;
+                        checkButton.innerHTML = 'Processando...';
+
+                        const payload = {
+                            questionId: form.querySelector('input[name="questionId"]').value,
+                            testIdentifier: hiddenInput.value,
+                            timeSpentSeconds: parseInt(timeSpentInput.value) || 0,
+                            selectedOptions: Array.from(checked).map(i => i.value)
+                        };
+
+                        fetch(form.action, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify(payload)
+                        })
+                        .then(response => response.text())
+                        .then(html => {
+                            const parser = new DOMParser();
+                            const doc = parser.parseFromString(html, 'text/html');
+                            const newContent = doc.getElementById('question-wrapper');
+
+                            if (newContent) {
+                                document.getElementById('question-wrapper').innerHTML = newContent.innerHTML;
+                                // Reinicializa a lógica para o novo conteúdo inserido
+                                initQuestionLogic();
+                            } else {
+                                // Fallback caso algo dê errado
+                                window.location.reload();
+                            }
+                        })
+                        .catch(err => {
+                            console.error(err);
+                            alert('Erro ao verificar resposta.');
+                            checkButton.disabled = false;
+                        });
+                    });
+                }
             }
+
+            initQuestionLogic();
         });
     </script>
 </th:block>

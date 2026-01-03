@@ -3,7 +3,7 @@ schema: v1
 repository:
   title: OpenCerts
   description: Uma plataforma open-source e colaborativa para preparação de certificações Cloud.
-  license: GPL-3.0
+  license: GPL-3
   type: code
   topics:
     - java

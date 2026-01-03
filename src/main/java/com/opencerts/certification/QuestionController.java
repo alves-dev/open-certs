@@ -98,7 +98,7 @@ public class QuestionController {
 
     @PostMapping("/{certificationId}/check")
     public String checkAnswer(@PathVariable String certificationId,
-                              @ModelAttribute AnswerFormDTO form,
+                              @RequestBody AnswerFormDTO form,
                               Model model) {
 
         var question = questionService.getById(form.questionId());
@@ -117,6 +117,7 @@ public class QuestionController {
         model.addAttribute("isCorrect", isCorrect);
         model.addAttribute("testSession", testSession);
         model.addAttribute("correctAnswers", question.correctAnswers());
+        model.addAttribute("selectedAnswers", form.selectedOptions());
 
         return Page.QUESTION;
     }
