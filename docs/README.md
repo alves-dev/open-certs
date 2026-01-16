@@ -26,3 +26,11 @@
   - [x] https://github.com/Ditectrev/Amazon-Web-Services-Certified-AWS-Certified-Advanced-Networking-Specialty-ANS-C01-Practice-Test-Exam
     - Status: Importado
     - 91
+
+https://github.com/Ditectrev/AWS-Certified-SysOps-Administrator-Associate-SOA-C02-Practice-Tests-Exams-Questions-Answers
+
+https://github.com/Ditectrev/Amazon-Web-Services-Certified-AWS-Certified-Data-Analytics-DAS-C01-Practice-Tests-Exams-Question
+
+https://github.com/Ditectrev/Amazon-Web-Services-Certified-AWS-Certified-Database-DBS-C01-Practice-Tests-Exams-Questions-Answers
+
+https://github.com/Ditectrev/Amazon-Web-Services-Certified-AWS-Certified-Machine-Learning-MLS-C01-Practice-Tests-Exams-Question

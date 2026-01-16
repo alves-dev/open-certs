@@ -14,10 +14,10 @@ repository:
   website: https://opencerts.alves-dev.com
 
 project:
-  status: development
+  status: maintenance
   stack:
     language: java
-    framework: spring-boot
+    framework: spring
     database: mongodb
     protocols:
     tools:
