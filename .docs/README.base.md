@@ -2,13 +2,9 @@
 
 <div align="center">
   <img src=".dev/logo-opencerts.svg" alt="OpenCerts Logo" width="300">
-  <br><br>
-
-  <h1>OpenCerts</h1>
-
+  <br>
   <p>
     <strong>Estude, Pratique e Evolua.</strong><br>
-    Uma plataforma open-source e colaborativa para preparação de certificações Cloud.
   </p>
 
   <p>
