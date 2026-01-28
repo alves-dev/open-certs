@@ -27,13 +27,9 @@ template_version=v1
 
 <div align="center">
   <img src=".dev/logo-opencerts.svg" alt="OpenCerts Logo" width="300">
-  <br><br>
-
-  <h1>OpenCerts</h1>
-
+  <br>
   <p>
     <strong>Estude, Pratique e Evolua.</strong><br>
-    Uma plataforma open-source e colaborativa para preparação de certificações Cloud.
   </p>
 
   <p>
@@ -109,6 +105,6 @@ template_version=v1
 
 <p align="center">
   <sub style="color:#94A3B8;">
-    Atualizado em 2026-01-28 13:24
+    Atualizado em 2026-01-28 13:31
   </sub>
 </p>
