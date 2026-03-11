@@ -14,15 +14,21 @@ template_version=v1
 </p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/topics-10B981?style=flat-square&logoColor=white"/> <img src="https://img.shields.io/badge/java-1E293B?style=flat-square&logoColor=white"/> <img src="https://img.shields.io/badge/spring-1E293B?style=flat-square&logoColor=white"/> <img src="https://img.shields.io/badge/thymeleaf-1E293B?style=flat-square&logoColor=white"/> <img src="https://img.shields.io/badge/redis-1E293B?style=flat-square&logoColor=white"/> <img src="https://img.shields.io/badge/mongodb-1E293B?style=flat-square&logoColor=white"/>
+  <img src="https://img.shields.io/badge/topics-10B981?style=flat-square&logoColor=white"/> <img src="https://img.shields.io/badge/java-1E293B?style=flat-square&logoColor=white"/> <img src="https://img.shields.io/badge/spring-1E293B?style=flat-square&logoColor=white"/> <img src="https://img.shields.io/badge/thymeleaf-1E293B?style=flat-square&logoColor=white"/> <img src="https://img.shields.io/badge/redis-1E293B?style=flat-square&logoColor=white"/> <img src="https://img.shields.io/badge/mongodb-1E293B?style=flat-square&logoColor=white"/> <img src="https://img.shields.io/badge/docker-1E293B?style=flat-square&logoColor=white"/> <img src="https://img.shields.io/badge/gradle-1E293B?style=flat-square&logoColor=white"/>
 </p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/status-maintenance-10B981?style=flat-square"/>
+  <img src="https://img.shields.io/badge/status-maintenance-38BDF8?style=flat-square"/>
 </p>
 
-<hr/>
+<p align="center" style="margin-top: 4px;">
+  <span style="color:38BDF8; font-size:13px;">
+    🔧 No new features planned. Bugs and small fixes only.
+  </span>
+</p>
 
+
+<hr/>
 
 
 <div align="center">
@@ -107,6 +113,6 @@ template_version=v1
 
 <p align="center">
   <sub style="color:#94A3B8;">
-    Atualizado em 2026-01-28 13:49
+    Atualizado em 2026-02-14 11:59
   </sub>
 </p>
