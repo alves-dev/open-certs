@@ -113,6 +113,6 @@ template_version=v1
 
 <p align="center">
   <sub style="color:#94A3B8;">
-    Atualizado em 2026-02-14 11:59
+    Atualizado em 2026-03-11 07:35
   </sub>
 </p>
